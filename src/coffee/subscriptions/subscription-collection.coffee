@@ -1,5 +1,7 @@
-define ['backbone', 'localstorage', 'subscriptions/subscription-model'],
-(Backbone, Store, SubscriptionModel) ->
+define ['backbone', 'localstorage', 'services/vent'
+'subscriptions/subscription-model'],
+(Backbone, Store, vent, \
+SubscriptionModel) ->
 
   class SubscriptionsCollection extends Backbone.Collection
 
@@ -8,8 +10,7 @@ define ['backbone', 'localstorage', 'subscriptions/subscription-model'],
     localStorage: new Store 'subscriptions'
 
     initialize: ->
-      require ['app/app-router'], (app) =>
-        app.on 'subscription:add', (modelAttrs) =>
-          @create modelAttrs
+      vent.on 'subscription:add', (modelAttrs) =>
+        @create modelAttrs
 
   new SubscriptionsCollection

@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'handlebars', 'text!templates/subscription-search-result.html'], function(Backbone, Handlebars, subSearchResultsTemplate) {
+  define(['backbone', 'handlebars', 'services/vent', 'text!templates/subscription-search-result.html'], function(Backbone, Handlebars, vent, subSearchResultsTemplate) {
     var SubscriptionSearchResultView;
     return SubscriptionSearchResultView = (function(_super) {
 
@@ -33,12 +33,9 @@
       };
 
       SubscriptionSearchResultView.prototype.addSub = function(e) {
-        var _this = this;
         e.preventDefault();
-        return require(['app/app-router'], function(app) {
-          app.trigger('subscription:add', _this.model.attributes);
-          return _this.model.destroy();
-        });
+        vent.trigger('subscription:add', this.model.attributes);
+        return this.model.destroy();
       };
 
       return SubscriptionSearchResultView;

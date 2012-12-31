@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'localstorage', 'subscriptions/subscription-model'], function(Backbone, Store, SubscriptionModel) {
+  define(['backbone', 'localstorage', 'services/vent', 'subscriptions/subscription-model'], function(Backbone, Store, vent, SubscriptionModel) {
     var SubscriptionsCollection;
     SubscriptionsCollection = (function(_super) {
 
@@ -19,10 +19,8 @@
 
       SubscriptionsCollection.prototype.initialize = function() {
         var _this = this;
-        return require(['app/app-router'], function(app) {
-          return app.on('subscription:add', function(modelAttrs) {
-            return _this.create(modelAttrs);
-          });
+        return vent.on('subscription:add', function(modelAttrs) {
+          return _this.create(modelAttrs);
         });
       };
 

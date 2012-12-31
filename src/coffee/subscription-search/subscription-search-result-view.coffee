@@ -1,6 +1,6 @@
-define ['backbone', 'handlebars'
+define ['backbone', 'handlebars', 'services/vent'
 'text!templates/subscription-search-result.html'],
-(Backbone, Handlebars, \
+(Backbone, Handlebars, vent, \
 subSearchResultsTemplate) ->
 
   class SubscriptionSearchResultView extends Backbone.View
@@ -13,7 +13,6 @@ subSearchResultsTemplate) ->
       'click .add-subscription' : 'addSub'
 
     initialize: ->
-      # @model.on 'change', @render
       @model.on 'destroy', @remove, @
 
     render: =>
@@ -22,6 +21,5 @@ subSearchResultsTemplate) ->
 
     addSub: (e) ->
       e.preventDefault()
-      require ['app/app-router'], (app) =>
-        app.trigger 'subscription:add', @model.attributes
-        @model.destroy()
+      vent.trigger 'subscription:add', @model.attributes
+      @model.destroy()

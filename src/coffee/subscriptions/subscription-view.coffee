@@ -12,7 +12,6 @@ define ['backbone', 'handlebars', 'text!templates/subscription.html'],
       'click .delete-subscription' : 'delete'
 
     initialize: ->
-      # @model.on 'change', @render
       @model.on 'destroy', @remove, @
 
     render: =>
