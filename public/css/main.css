@@ -7133,54 +7133,49 @@ body {
 .subscription-search-region a {
   margin-bottom: 10px;
 }
-/* line 29, ../../src/scss/main.scss */
-.subscription-search-region form {
-  clear: both;
-  margin-bottom: 0;
-}
-/* line 33, ../../src/scss/main.scss */
+/* line 30, ../../src/scss/main.scss */
 .subscription-search-region form input {
   width: 170px;
 }
 
-/* line 39, ../../src/scss/main.scss */
+/* line 36, ../../src/scss/main.scss */
 .subscription {
   border-top: solid 1px #d3d3d3;
   font-size: .9em;
   padding: 10px 0;
 }
-/* line 44, ../../src/scss/main.scss */
+/* line 41, ../../src/scss/main.scss */
 .subscription:first-child {
   border-top: none;
 }
-/* line 49, ../../src/scss/main.scss */
+/* line 46, ../../src/scss/main.scss */
 .subscription h4,
 .subscription p {
   margin-left: 60px;
 }
-/* line 53, ../../src/scss/main.scss */
+/* line 50, ../../src/scss/main.scss */
 .subscription h4 {
   font-size: 1em;
   margin-top: 0;
   margin-bottom: 2px;
 }
-/* line 59, ../../src/scss/main.scss */
+/* line 56, ../../src/scss/main.scss */
 .subscription p {
   margin-bottom: 0;
 }
-/* line 63, ../../src/scss/main.scss */
+/* line 60, ../../src/scss/main.scss */
 .subscription a {
   margin-left: 10px;
 }
-/* line 67, ../../src/scss/main.scss */
+/* line 64, ../../src/scss/main.scss */
 .subscription .delete-subscription {
   display: none;
 }
-/* line 71, ../../src/scss/main.scss */
+/* line 68, ../../src/scss/main.scss */
 .editing .subscription .delete-subscription {
   display: block;
 }
-/* line 75, ../../src/scss/main.scss */
+/* line 72, ../../src/scss/main.scss */
 .editing .subscription .view-subscription {
   display: none;
 }

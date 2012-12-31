@@ -22,18 +22,18 @@ subscriptions) ->
 
       new SubscriptionSearchView
 
-      subscriptions.on 'add', @addOneSub
-      subscriptions.on 'reset', @addAllSubs
+      subscriptions.on 'add', @addOne
+      subscriptions.on 'reset', @addAll
 
       subscriptions.fetch()
 
-    addOneSub: (sub) =>
+    addOne: (sub) =>
       view = new SubscriptionView model: sub
       @$subs.append view.render().el
 
-    addAllSubs: =>
+    addAll: =>
       @$subs.html ''
-      subscriptions.each @addOneSub, @
+      subscriptions.each @addOne, @
 
     editSubscriptions: (e) ->
       e.preventDefault()

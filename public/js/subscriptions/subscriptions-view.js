@@ -11,9 +11,9 @@
       __extends(SubscriptionsView, _super);
 
       function SubscriptionsView() {
-        this.addAllSubs = __bind(this.addAllSubs, this);
+        this.addAll = __bind(this.addAll, this);
 
-        this.addOneSub = __bind(this.addOneSub, this);
+        this.addOne = __bind(this.addOne, this);
         return SubscriptionsView.__super__.constructor.apply(this, arguments);
       }
 
@@ -30,12 +30,12 @@
       SubscriptionsView.prototype.initialize = function() {
         this.editingSubs = false;
         new SubscriptionSearchView;
-        subscriptions.on('add', this.addOneSub);
-        subscriptions.on('reset', this.addAllSubs);
+        subscriptions.on('add', this.addOne);
+        subscriptions.on('reset', this.addAll);
         return subscriptions.fetch();
       };
 
-      SubscriptionsView.prototype.addOneSub = function(sub) {
+      SubscriptionsView.prototype.addOne = function(sub) {
         var view;
         view = new SubscriptionView({
           model: sub
@@ -43,9 +43,9 @@
         return this.$subs.append(view.render().el);
       };
 
-      SubscriptionsView.prototype.addAllSubs = function() {
+      SubscriptionsView.prototype.addAll = function() {
         this.$subs.html('');
-        return subscriptions.each(this.addOneSub, this);
+        return subscriptions.each(this.addOne, this);
       };
 
       SubscriptionsView.prototype.editSubscriptions = function(e) {

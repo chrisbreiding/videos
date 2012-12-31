@@ -15,39 +15,44 @@ youtube) ->
 
     el: '#subscription-search-region'
 
+    $subSearch: $ '#subscription-search-region'
+    $results: $ '#subscription-search-results'
+
     events:
       'click #new-subscription' : 'showSubSearch'
       'submit #sub-search-form' : 'searchSubs'
       'click #search-subs'      : 'searchSubs'
 
     # # #
+    # Load in some search results for styling purposes
+    #
     # initialize: ->
     #   @showSubSearch { preventDefault: -> }
-    #   youtube.searchSubs('dog').done @showSubResults
+    #   youtube.searchSubs('dog').done @showResults
     # # #
 
     showSubSearch: (e) ->
       e.preventDefault()
-      $('#subscription-search-region').append subSearchTemplate
+      $('#new-subscription').after subSearchTemplate
       $('#sub-query').focus()
 
     searchSubs: (e) ->
       e.preventDefault()
       query = $('#sub-query').val()
-      youtube.searchSubs(query).done @showSubResults
+      youtube.searchSubs(query).done @showResults
 
-    showSubResults: (results) =>
-      @clearSubResults()
-      _.each results.feed.entry, @addSubSearchResult
+    showResults: (results) =>
+      @clearResults()
+      _.each results.feed.entry, @addResult
 
-    clearSubResults: ->
-      $('#subscription-search-results').html('')
+    clearResults: ->
+      @$results.html('')
 
-    addSubSearchResult: (entry) =>
+    addResult: (entry) =>
       model = new SubscriptionSearchResultModel @mapDetails(entry)
       view = new SubscriptionSearchResultView model: model
 
-      $('#subscription-search-results').append view.render().el
+      @$results.append view.render().el
 
     mapDetails: (entry) ->
       channelId : entry.yt$channelId.$t

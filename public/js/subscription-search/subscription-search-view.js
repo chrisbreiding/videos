@@ -11,13 +11,17 @@
       __extends(SubscriptionSearchView, _super);
 
       function SubscriptionSearchView() {
-        this.addSubSearchResult = __bind(this.addSubSearchResult, this);
+        this.addResult = __bind(this.addResult, this);
 
-        this.showSubResults = __bind(this.showSubResults, this);
+        this.showResults = __bind(this.showResults, this);
         return SubscriptionSearchView.__super__.constructor.apply(this, arguments);
       }
 
       SubscriptionSearchView.prototype.el = '#subscription-search-region';
+
+      SubscriptionSearchView.prototype.$subSearch = $('#subscription-search-region');
+
+      SubscriptionSearchView.prototype.$results = $('#subscription-search-results');
 
       SubscriptionSearchView.prototype.events = {
         'click #new-subscription': 'showSubSearch',
@@ -27,7 +31,7 @@
 
       SubscriptionSearchView.prototype.showSubSearch = function(e) {
         e.preventDefault();
-        $('#subscription-search-region').append(subSearchTemplate);
+        $('#new-subscription').after(subSearchTemplate);
         return $('#sub-query').focus();
       };
 
@@ -35,25 +39,25 @@
         var query;
         e.preventDefault();
         query = $('#sub-query').val();
-        return youtube.searchSubs(query).done(this.showSubResults);
+        return youtube.searchSubs(query).done(this.showResults);
       };
 
-      SubscriptionSearchView.prototype.showSubResults = function(results) {
-        this.clearSubResults();
-        return _.each(results.feed.entry, this.addSubSearchResult);
+      SubscriptionSearchView.prototype.showResults = function(results) {
+        this.clearResults();
+        return _.each(results.feed.entry, this.addResult);
       };
 
-      SubscriptionSearchView.prototype.clearSubResults = function() {
-        return $('#subscription-search-results').html('');
+      SubscriptionSearchView.prototype.clearResults = function() {
+        return this.$results.html('');
       };
 
-      SubscriptionSearchView.prototype.addSubSearchResult = function(entry) {
+      SubscriptionSearchView.prototype.addResult = function(entry) {
         var model, view;
         model = new SubscriptionSearchResultModel(this.mapDetails(entry));
         view = new SubscriptionSearchResultView({
           model: model
         });
-        return $('#subscription-search-results').append(view.render().el);
+        return this.$results.append(view.render().el);
       };
 
       SubscriptionSearchView.prototype.mapDetails = function(entry) {
