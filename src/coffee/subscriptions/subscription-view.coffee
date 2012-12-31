@@ -1,7 +1,5 @@
-define ['backbone', 'handlebars'
-'text!templates/subscription.html'],
-(Backbone, Handlebars, \
-subTemplate) ->
+define ['backbone', 'handlebars', 'text!templates/subscription.html'],
+(Backbone, Handlebars, subTemplate) ->
 
   class SubscriptionView extends Backbone.View
 

@@ -1,4 +1,5 @@
-define ['backbone', 'views/subscriptions'], (Backbone, SubscriptionsView) ->
+define ['backbone', 'subscriptions/subscriptions-view'],
+(Backbone, SubscriptionsView) ->
 
   class AppView extends Backbone.View
 

@@ -22,7 +22,7 @@
     }
   });
 
-  require(['app'], function(app) {
+  require(['app/app-router'], function(app) {
     return app.start();
   });
 

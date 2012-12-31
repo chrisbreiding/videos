@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'handlebars', 'models/subscription-search-result', 'views/subscription-search-result', 'text!templates/subscription-search.html', 'modules/youtube'], function(Backbone, Handlebars, SubscriptionSearchResultModel, SubscriptionSearchResultView, subSearchTemplate, youtube) {
+  define(['backbone', 'handlebars', 'subscription-search/subscription-search-result-model', 'subscription-search/subscription-search-result-view', 'text!templates/subscription-search.html', 'services/youtube'], function(Backbone, Handlebars, SubscriptionSearchResultModel, SubscriptionSearchResultView, subSearchTemplate, youtube) {
     var SubscriptionSearchView;
     return SubscriptionSearchView = (function(_super) {
 

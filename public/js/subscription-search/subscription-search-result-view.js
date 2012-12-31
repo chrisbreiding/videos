@@ -35,7 +35,7 @@
       SubscriptionSearchResultView.prototype.addSub = function(e) {
         var _this = this;
         e.preventDefault();
-        return require(['app'], function(app) {
+        return require(['app/app-router'], function(app) {
           app.trigger('subscription:add', _this.model.attributes);
           return _this.model.destroy();
         });

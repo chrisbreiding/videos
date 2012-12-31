@@ -1,4 +1,4 @@
-define ['backbone', 'localstorage', 'models/subscription'],
+define ['backbone', 'localstorage', 'subscriptions/subscription-model'],
 (Backbone, Store, SubscriptionModel) ->
 
   class SubscriptionsCollection extends Backbone.Collection
@@ -8,7 +8,7 @@ define ['backbone', 'localstorage', 'models/subscription'],
     localStorage: new Store 'subscriptions'
 
     initialize: ->
-      require ['app'], (app) =>
+      require ['app/app-router'], (app) =>
         app.on 'subscription:add', (modelAttrs) =>
           @create modelAttrs
 

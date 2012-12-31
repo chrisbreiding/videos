@@ -7110,13 +7110,13 @@ body {
 }
 
 /* line 8, ../../src/scss/main.scss */
-.subscriptions-region {
+.sidebar {
   float: left;
   padding: 10px 20px;
   width: 260px;
 }
 /* line 13, ../../src/scss/main.scss */
-.subscriptions-region h3 {
+.sidebar h3 {
   font-size: 1.2em;
 }
 

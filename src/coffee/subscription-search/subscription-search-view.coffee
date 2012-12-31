@@ -1,9 +1,9 @@
 define [
   'backbone', 'handlebars'
-  'models/subscription-search-result'
-  'views/subscription-search-result'
+  'subscription-search/subscription-search-result-model'
+  'subscription-search/subscription-search-result-view'
   'text!templates/subscription-search.html'
-  'modules/youtube'
+  'services/youtube'
 ],
 (Backbone, Handlebars, \
 SubscriptionSearchResultModel, \

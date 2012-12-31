@@ -14,5 +14,5 @@ requirejs.config
     underscore:
       exports: '_'
 
-require ['app'], (app) ->
+require ['app/app-router'], (app) ->
   app.start()

@@ -22,6 +22,6 @@ subSearchResultsTemplate) ->
 
     addSub: (e) ->
       e.preventDefault()
-      require ['app'], (app) =>
+      require ['app/app-router'], (app) =>
         app.trigger 'subscription:add', @model.attributes
         @model.destroy()

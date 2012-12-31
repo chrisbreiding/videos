@@ -1,9 +1,11 @@
 define ['backbone', 'handlebars'
-'views/subscription-search', 'collections/subscriptions'
-'views/subscription'],
+'subscription-search/subscription-search-view'
+'subscriptions/subscription-view'
+'subscriptions/subscription-collection'],
 (Backbone, Handlebars, \
-SubscriptionSearchView, subscriptions, \
-SubscriptionView) ->
+SubscriptionSearchView, \
+SubscriptionView, \
+subscriptions) ->
 
   class SubscriptionsView extends Backbone.View
 

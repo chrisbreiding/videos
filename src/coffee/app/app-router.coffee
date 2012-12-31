@@ -1,4 +1,4 @@
-define ['backbone', 'views/app'], (Backbone, AppView) ->
+define ['backbone', 'app/app-view'], (Backbone, AppView) ->
 
   class AppRouter extends Backbone.Router
     start: ->

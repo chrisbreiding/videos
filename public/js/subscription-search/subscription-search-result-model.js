@@ -4,16 +4,16 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['backbone'], function(Backbone) {
-    var SubscriptionSearchResult;
-    return SubscriptionSearchResult = (function(_super) {
+    var SubscriptionSearchResultModel;
+    return SubscriptionSearchResultModel = (function(_super) {
 
-      __extends(SubscriptionSearchResult, _super);
+      __extends(SubscriptionSearchResultModel, _super);
 
-      function SubscriptionSearchResult() {
-        return SubscriptionSearchResult.__super__.constructor.apply(this, arguments);
+      function SubscriptionSearchResultModel() {
+        return SubscriptionSearchResultModel.__super__.constructor.apply(this, arguments);
       }
 
-      return SubscriptionSearchResult;
+      return SubscriptionSearchResultModel;
 
     })(Backbone.Model);
   });
