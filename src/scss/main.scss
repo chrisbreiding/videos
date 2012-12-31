@@ -1,0 +1,79 @@
+@import "lib/font-awesome";
+@import "lib/bootstrap/bootstrap";
+
+body {
+  background: #f8f8f8;
+}
+
+.subscriptions-region {
+  float: left;
+  padding: 10px 20px;
+  width: 260px;
+
+  h3 {
+      font-size: 1.2em;
+  }
+}
+
+  .subscriptions-header {
+    margin-bottom: 10px;
+  }
+
+  .subscription-search-region {
+    margin: 10px 0;
+
+    a {
+      margin-bottom: 10px;
+    }
+
+    form {
+      clear: both;
+      margin-bottom: 0;
+
+      input {
+        width: 170px;
+      }
+    }
+  }
+
+  .subscription {
+    border-top: solid 1px #d3d3d3;
+    font-size: .9em;
+    padding: 10px 0;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    h4,
+    p {
+      margin-left: 60px;
+    }
+
+    h4 {
+      font-size: 1em;
+      margin-top: 0;
+      margin-bottom: 2px;
+    }
+
+    p {
+      margin-bottom: 0;
+    }
+
+    a {
+      margin-left: 10px;
+    }
+
+    .delete-subscription {
+      display: none;
+    }
+
+    .editing & .delete-subscription {
+      display: block;
+    }
+
+    .editing & .view-subscription {
+      display: none;
+    }
+
+  }
