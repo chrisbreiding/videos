@@ -1,18 +1,18 @@
 @import "compass";
 @import "compass/css3";
 @import "compass/layout";
-@import "lib/font-awesome";
 @import "lib/bootstrap/bootstrap";
 
 $light-grey: #d3d3d3;
 
 body {
   background: #f8f8f8;
+  @include background(linear-gradient(left, #e3e3e3, #e3e3e3 290px, #f8f8f8 291px, #f8f8f8));
 }
 
 .sidebar {
   float: left;
-  padding: 10px 20px;
+  padding: 10px 15px;
   width: 260px;
 
   h3 {
@@ -33,13 +33,16 @@ body {
 
     form {
       input {
-        width: 170px;
+        width: 155px;
+      }
+      button {
+        width: 87px;
       }
     }
   }
 
   .subscription {
-    border-top: solid 1px $light-grey;
+    border-top: solid 1px darken($light-grey, 10%);
     font-size: .9em;
     padding: 10px 0;
 
@@ -82,7 +85,7 @@ body {
 
 .content {
   float: left;
-  padding: 20px 0 10px;
+  padding: 20px 15px 10px;
   width: 600px;
 }
 
@@ -95,7 +98,7 @@ body {
     }
 
     h4,
-    p {
+    .duration {
       margin-left: 165px;
     }
 
@@ -104,10 +107,8 @@ body {
       margin-top: 0;
     }
 
-    p {
-      span {
-        color: #a4a4a4;
-      }
+    .pub-date span {
+      color: #a4a4a4;
     }
   }
 
@@ -135,8 +136,8 @@ body {
         text-align: center;
         @include transition(all .25s ease-in-out);
         width: 150px;
-        height: 112px;
-        line-height: 112px;
+        height: 84px;
+        line-height: 84px;
       }
 
       &:hover i,
@@ -144,3 +145,5 @@ body {
         @include opacity(100);
       }
     }
+
+@import "lib/font-awesome";

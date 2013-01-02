@@ -34,5 +34,8 @@ define ->
     title     : video.title.$t
     published : video.published.$t
     updated   : video.updated.$t
-    thumb     : video.media$group.media$thumbnail[0].url
-    duration  : video.media$group.yt$duration
+    thumb     : this.betterThumbnail video
+    duration  : video.media$group.yt$duration.seconds
+
+  betterThumbnail: (video) ->
+    video.media$group.media$thumbnail[0].url.replace '0.jpg', 'mqdefault.jpg'
