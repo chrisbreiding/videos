@@ -1,5 +1,10 @@
+@import "compass";
+@import "compass/css3";
+@import "compass/layout";
 @import "lib/font-awesome";
 @import "lib/bootstrap/bootstrap";
+
+$light-grey: #d3d3d3;
 
 body {
   background: #f8f8f8;
@@ -34,7 +39,7 @@ body {
   }
 
   .subscription {
-    border-top: solid 1px #d3d3d3;
+    border-top: solid 1px $light-grey;
     font-size: .9em;
     padding: 10px 0;
 
@@ -74,3 +79,68 @@ body {
     }
 
   }
+
+.content {
+  float: left;
+  padding: 20px 0 10px;
+  width: 600px;
+}
+
+  .video {
+    border-top: solid 1px $light-grey;
+    padding: 10px;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    h4,
+    p {
+      margin-left: 165px;
+    }
+
+    h4 {
+      font-size: 1.1em;
+      margin-top: 0;
+    }
+
+    p {
+      span {
+        color: #a4a4a4;
+      }
+    }
+  }
+
+    .play-video {
+      display: block;
+      position: relative;
+
+      &,
+      &:hover,
+      &:focus {
+        color: #FFF;
+        text-decoration: none;
+      }
+
+      img {
+        display: block;
+      }
+
+      i {
+        display: block;
+        font-size: 4em;
+        @include opacity(70);
+        position: absolute;
+        top: 0;
+        text-align: center;
+        @include transition(all .25s ease-in-out);
+        width: 150px;
+        height: 112px;
+        line-height: 112px;
+      }
+
+      &:hover i,
+      &:focus i {
+        @include opacity(100);
+      }
+    }

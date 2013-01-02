@@ -5,27 +5,28 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['backbone', 'handlebars', 'videos/video-view', 'videos/video-collection'], function(Backbone, Handlebars, VideoView, videos) {
-    return VideoView = (function(_super) {
+    var VideosView;
+    return VideosView = (function(_super) {
 
-      __extends(VideoView, _super);
+      __extends(VideosView, _super);
 
-      function VideoView() {
+      function VideosView() {
         this.addAll = __bind(this.addAll, this);
 
         this.addOne = __bind(this.addOne, this);
-        return VideoView.__super__.constructor.apply(this, arguments);
+        return VideosView.__super__.constructor.apply(this, arguments);
       }
 
-      VideoView.prototype.el = '#videos-region';
+      VideosView.prototype.el = '#videos-region';
 
-      VideoView.prototype.$videos = $('#videos');
+      VideosView.prototype.$videos = $('#videos');
 
-      VideoView.prototype.initialize = function() {
+      VideosView.prototype.initialize = function() {
         videos.on('add', this.addOne);
         return videos.on('reset', this.addAll);
       };
 
-      VideoView.prototype.addOne = function(video) {
+      VideosView.prototype.addOne = function(video) {
         var view;
         view = new VideoView({
           model: video
@@ -33,12 +34,12 @@
         return this.$videos.append(view.render().el);
       };
 
-      VideoView.prototype.addAll = function() {
+      VideosView.prototype.addAll = function() {
         this.$videos.html('');
         return videos.each(this.addOne, this);
       };
 
-      return VideoView;
+      return VideosView;
 
     })(Backbone.View);
   });

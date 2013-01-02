@@ -1,5 +1,5 @@
 define ['backbone', 'handlebars', 'services/vent'
-'text!templates/subscription-search-result.html'],
+'text!template/subscription-search-result.html'],
 (Backbone, Handlebars, vent, \
 subSearchResultsTemplate) ->
 

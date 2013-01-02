@@ -7104,78 +7104,146 @@ a.label:hover, a.badge:hover {
   box-sizing: border-box;
 }
 
-/* line 4, ../../src/scss/main.scss */
+/* line 9, ../../src/scss/main.scss */
 body {
   background: #f8f8f8;
 }
 
-/* line 8, ../../src/scss/main.scss */
+/* line 13, ../../src/scss/main.scss */
 .sidebar {
   float: left;
   padding: 10px 20px;
   width: 260px;
 }
-/* line 13, ../../src/scss/main.scss */
+/* line 18, ../../src/scss/main.scss */
 .sidebar h3 {
   font-size: 1.2em;
 }
 
-/* line 18, ../../src/scss/main.scss */
+/* line 23, ../../src/scss/main.scss */
 .subscriptions-header {
   margin-bottom: 10px;
 }
 
-/* line 22, ../../src/scss/main.scss */
+/* line 27, ../../src/scss/main.scss */
 .subscription-search-region {
   margin: 10px 0;
 }
-/* line 25, ../../src/scss/main.scss */
+/* line 30, ../../src/scss/main.scss */
 .subscription-search-region a {
   margin-bottom: 10px;
 }
-/* line 30, ../../src/scss/main.scss */
+/* line 35, ../../src/scss/main.scss */
 .subscription-search-region form input {
   width: 170px;
 }
 
-/* line 36, ../../src/scss/main.scss */
+/* line 41, ../../src/scss/main.scss */
 .subscription {
-  border-top: solid 1px #d3d3d3;
+  border-top: solid 1px lightgrey;
   font-size: .9em;
   padding: 10px 0;
 }
-/* line 41, ../../src/scss/main.scss */
+/* line 46, ../../src/scss/main.scss */
 .subscription:first-child {
   border-top: none;
 }
-/* line 46, ../../src/scss/main.scss */
+/* line 51, ../../src/scss/main.scss */
 .subscription h4,
 .subscription p {
   margin-left: 60px;
 }
-/* line 50, ../../src/scss/main.scss */
+/* line 55, ../../src/scss/main.scss */
 .subscription h4 {
   font-size: 1em;
   margin-top: 0;
   margin-bottom: 2px;
 }
-/* line 56, ../../src/scss/main.scss */
+/* line 61, ../../src/scss/main.scss */
 .subscription p {
   margin-bottom: 0;
 }
-/* line 60, ../../src/scss/main.scss */
+/* line 65, ../../src/scss/main.scss */
 .subscription a {
   margin-left: 10px;
 }
-/* line 64, ../../src/scss/main.scss */
+/* line 69, ../../src/scss/main.scss */
 .subscription .delete-subscription {
   display: none;
 }
-/* line 68, ../../src/scss/main.scss */
+/* line 73, ../../src/scss/main.scss */
 .editing .subscription .delete-subscription {
   display: block;
 }
-/* line 72, ../../src/scss/main.scss */
+/* line 77, ../../src/scss/main.scss */
 .editing .subscription .view-subscription {
   display: none;
+}
+
+/* line 83, ../../src/scss/main.scss */
+.content {
+  float: left;
+  padding: 20px 0 10px;
+  width: 600px;
+}
+
+/* line 89, ../../src/scss/main.scss */
+.video {
+  border-top: solid 1px lightgrey;
+  padding: 10px;
+}
+/* line 93, ../../src/scss/main.scss */
+.video:first-child {
+  border-top: none;
+}
+/* line 98, ../../src/scss/main.scss */
+.video h4,
+.video p {
+  margin-left: 165px;
+}
+/* line 102, ../../src/scss/main.scss */
+.video h4 {
+  font-size: 1.1em;
+  margin-top: 0;
+}
+/* line 108, ../../src/scss/main.scss */
+.video p span {
+  color: #a4a4a4;
+}
+
+/* line 114, ../../src/scss/main.scss */
+.play-video {
+  display: block;
+  position: relative;
+}
+/* line 120, ../../src/scss/main.scss */
+.play-video, .play-video:hover, .play-video:focus {
+  color: #FFF;
+  text-decoration: none;
+}
+/* line 125, ../../src/scss/main.scss */
+.play-video img {
+  display: block;
+}
+/* line 129, ../../src/scss/main.scss */
+.play-video i {
+  display: block;
+  font-size: 4em;
+  opacity: 0.7;
+  filter: alpha(opacity=70);
+  position: absolute;
+  top: 0;
+  text-align: center;
+  -webkit-transition: all 0.25s ease-in-out;
+  -moz-transition: all 0.25s ease-in-out;
+  -o-transition: all 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
+  width: 150px;
+  height: 112px;
+  line-height: 112px;
+}
+/* line 143, ../../src/scss/main.scss */
+.play-video:hover i, .play-video:focus i {
+  opacity: 1;
+  filter: alpha(opacity=100);
 }

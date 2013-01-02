@@ -1,4 +1,5 @@
-define ['backbone', 'handlebars', 'text!templates/video.html'],
+define ['backbone', 'handlebars', 'text!template/video.html'
+'template-helpers/date'],
 (Backbone, Handlebars, videoTemplate) ->
 
   class VideoView extends Backbone.View
@@ -8,7 +9,6 @@ define ['backbone', 'handlebars', 'text!templates/video.html'],
     template: Handlebars.compile videoTemplate
 
     initialize: ->
-      # @model.on 'change', @render
       @model.on 'destroy', @remove, @
 
     render: =>

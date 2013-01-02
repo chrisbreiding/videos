@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'handlebars', 'subscription-search/subscription-search-result-model', 'subscription-search/subscription-search-result-view', 'text!templates/subscription-search.html', 'services/youtube'], function(Backbone, Handlebars, SubscriptionSearchResultModel, SubscriptionSearchResultView, subSearchTemplate, youtube) {
+  define(['backbone', 'handlebars', 'subscription-search/subscription-search-result-model', 'subscription-search/subscription-search-result-view', 'text!template/subscription-search.html', 'services/youtube'], function(Backbone, Handlebars, SubscriptionSearchResultModel, SubscriptionSearchResultView, subSearchTemplate, youtube) {
     var SubscriptionSearchView;
     return SubscriptionSearchView = (function(_super) {
 
@@ -39,7 +39,7 @@
         var query;
         e.preventDefault();
         query = $('#sub-query').val();
-        return youtube.searchSubs(query).done(this.showResults);
+        return youtube.searchChannels(query).done(this.showResults);
       };
 
       SubscriptionSearchView.prototype.showResults = function(results) {
@@ -53,20 +53,11 @@
 
       SubscriptionSearchView.prototype.addResult = function(entry) {
         var model, view;
-        model = new SubscriptionSearchResultModel(this.mapDetails(entry));
+        model = new SubscriptionSearchResultModel(youtube.mapSubDetails(entry));
         view = new SubscriptionSearchResultView({
           model: model
         });
         return this.$results.append(view.render().el);
-      };
-
-      SubscriptionSearchView.prototype.mapDetails = function(entry) {
-        return {
-          channelId: entry.yt$channelId.$t,
-          title: entry.title.$t,
-          author: entry.author[0].name.$t,
-          thumb: entry.media$thumbnail[0].url
-        };
       };
 
       return SubscriptionSearchView;

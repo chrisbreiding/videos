@@ -3,7 +3,7 @@ define ['backbone', 'handlebars'
 (Backbone, Handlebars, \
 VideoView, videos) ->
 
-  class VideoView extends Backbone.View
+  class VideosView extends Backbone.View
 
     el: '#videos-region'
 

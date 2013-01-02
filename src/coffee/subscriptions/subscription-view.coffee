@@ -1,5 +1,7 @@
-define ['backbone', 'handlebars', 'text!templates/subscription.html'],
-(Backbone, Handlebars, subTemplate) ->
+define ['backbone', 'handlebars', 'services/vent'
+'text!template/subscription.html'],
+(Backbone, Handlebars, vent, \
+subTemplate) ->
 
   class SubscriptionView extends Backbone.View
 
@@ -20,7 +22,7 @@ define ['backbone', 'handlebars', 'text!templates/subscription.html'],
 
     view: (e) ->
       e.preventDefault()
-      console.log 'view it'
+      vent.trigger 'subscription:load', @model.get('channelId')
 
     delete: (e) ->
       e.preventDefault()

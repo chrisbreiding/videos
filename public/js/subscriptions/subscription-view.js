@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'handlebars', 'text!templates/subscription.html'], function(Backbone, Handlebars, subTemplate) {
+  define(['backbone', 'handlebars', 'services/vent', 'text!template/subscription.html'], function(Backbone, Handlebars, vent, subTemplate) {
     var SubscriptionView;
     return SubscriptionView = (function(_super) {
 
@@ -35,7 +35,7 @@
 
       SubscriptionView.prototype.view = function(e) {
         e.preventDefault();
-        return console.log('view it');
+        return vent.trigger('subscription:load', this.model.get('channelId'));
       };
 
       SubscriptionView.prototype["delete"] = function(e) {

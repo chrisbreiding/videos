@@ -2,7 +2,7 @@ define [
   'backbone', 'handlebars'
   'subscription-search/subscription-search-result-model'
   'subscription-search/subscription-search-result-view'
-  'text!templates/subscription-search.html'
+  'text!template/subscription-search.html'
   'services/youtube'
 ],
 (Backbone, Handlebars, \
@@ -39,7 +39,7 @@ youtube) ->
     searchSubs: (e) ->
       e.preventDefault()
       query = $('#sub-query').val()
-      youtube.searchSubs(query).done @showResults
+      youtube.searchChannels(query).done @showResults
 
     showResults: (results) =>
       @clearResults()
@@ -49,13 +49,7 @@ youtube) ->
       @$results.html('')
 
     addResult: (entry) =>
-      model = new SubscriptionSearchResultModel @mapDetails(entry)
+      model = new SubscriptionSearchResultModel youtube.mapSubDetails(entry)
       view = new SubscriptionSearchResultView model: model
 
       @$results.append view.render().el
-
-    mapDetails: (entry) ->
-      channelId : entry.yt$channelId.$t
-      title     : entry.title.$t
-      author    : entry.author[0].name.$t
-      thumb     : entry.media$thumbnail[0].url

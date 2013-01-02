@@ -9,7 +9,9 @@
       backbone: 'lib/backbone.min',
       localstorage: 'lib/backbone.localstorage.min',
       text: 'lib/require.text.min',
-      handlebars: 'lib/handlebars.min'
+      handlebars: 'lib/handlebars.min',
+      moment: 'lib/moment.min',
+      template: '/templates'
     },
     shim: {
       backbone: {
