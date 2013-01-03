@@ -10,6 +10,26 @@ body {
   @include background(linear-gradient(left, #e3e3e3, #e3e3e3 290px, #f8f8f8 291px, #f8f8f8));
 }
 
+.video-region {
+  background: #000;
+  @include background(linear-gradient(top, #222, #000));
+  display: none;
+  padding: 20px 0;
+
+  .video-open & {
+    display: block;
+  }
+}
+
+  .current-video {
+    margin: 0 auto;
+    width: 960px;
+  }
+
+.main {
+  width: 960px;
+}
+
 .sidebar {
   float: left;
   padding: 10px 15px;
@@ -33,10 +53,10 @@ body {
 
     form {
       input {
-        width: 155px;
+        width: 192px;
       }
       button {
-        width: 87px;
+        width: 50px;
       }
     }
   }
@@ -69,24 +89,40 @@ body {
       margin-left: 10px;
     }
 
-    .delete-subscription {
-      display: none;
-    }
+  }
 
-    .editing & .delete-subscription {
+  .delete-subscription {
+    display: none;
+
+    .editing & {
       display: block;
     }
 
-    .editing & .view-subscription {
+    i {
+      margin-right: 3px;
+    }
+  }
+
+  .view-subscription {
+    .editing & {
       display: none;
     }
 
+    i {
+      margin-left: 3px;
+    }
+  }
+
+  .add-subscription {
+    i {
+      margin-right: 3px;
+    }
   }
 
 .content {
   float: left;
   padding: 20px 15px 10px;
-  width: 600px;
+  width: 640px;
 }
 
   .video {
@@ -109,6 +145,11 @@ body {
 
     .pub-date span {
       color: #a4a4a4;
+    }
+
+    .duration span {
+      font-size: 1em;
+      padding: 5px;
     }
   }
 

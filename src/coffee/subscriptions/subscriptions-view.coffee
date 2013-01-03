@@ -7,12 +7,12 @@ SubscriptionSearchView, \
 SubscriptionView, \
 subscriptions) ->
 
+  $subs = $ '#subscriptions'
+  $editText = $ '.edit-subscriptions span'
+
   class SubscriptionsView extends Backbone.View
 
     el: '#subscriptions-region'
-
-    $subs: $ '#subscriptions'
-    $editText: $ '.edit-subscriptions span'
 
     events:
       'click .edit-subscriptions' : 'editSubscriptions'
@@ -29,19 +29,19 @@ subscriptions) ->
 
     addOne: (sub) =>
       view = new SubscriptionView model: sub
-      @$subs.append view.render().el
+      $subs.append view.render().el
 
     addAll: =>
-      @$subs.html ''
+      $subs.html ''
       subscriptions.each @addOne, @
 
     editSubscriptions: (e) ->
       e.preventDefault()
 
       if @editingSubs
-        @$editText.html 'Edit'
+        $editText.html 'Edit'
       else
-        @$editText.html 'Done'
+        $editText.html 'Done'
 
-      @$subs.toggleClass 'editing'
+      $subs.toggleClass 'editing'
       @editingSubs = !@editingSubs
