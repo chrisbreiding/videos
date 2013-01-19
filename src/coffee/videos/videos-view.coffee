@@ -3,11 +3,11 @@ define ['backbone', 'handlebars'
 (Backbone, Handlebars, \
 VideoView, videos) ->
 
+  $videos = $ '#videos'
+
   class VideosView extends Backbone.View
 
     el: '#videos-region'
-
-    $videos: $ '#videos'
 
     initialize: ->
       videos.on 'add', @addOne
@@ -15,8 +15,8 @@ VideoView, videos) ->
 
     addOne: (video) =>
       view = new VideoView model: video
-      @$videos.append view.render().el
+      $videos.append view.render().el
 
     addAll: =>
-      @$videos.html ''
+      $videos.html ''
       videos.each @addOne, @

@@ -8,14 +8,21 @@ youtube, VideoModel) ->
     model: VideoModel
 
     initialize: ->
-      vent.on 'subscription:load', (channelId) =>
+      vent.on 'channel:load', (channelId) =>
+        @type = 'channel'
         youtube.getVideosByChannel(channelId).done @loadVideos
 
-    loadVideos: (results) =>
-      @reset()
-      _.each results.feed.entry, @addVideo
+      vent.on 'playlist:load', (playlist) =>
+        @type = 'playlist'
+        youtube.getVideosByPlaylist(playlist).done @loadVideos
 
-    addVideo: (video) =>
-      @add youtube.mapVideoDetails(video)
+    comparator: (a, b) ->
+      Date.parse(b.get('published')) - Date.parse(a.get('published'))
+
+    loadVideos: (results) =>
+      @reset _.map results.feed.entry, @mapVideo
+
+    mapVideo: (video) =>
+      youtube.mapVideoDetails(video, @type)
 
   new VideoCollection

@@ -23,14 +23,6 @@ youtube) ->
       'submit #sub-search-form' : 'searchSubs'
       'click #search-subs'      : 'searchSubs'
 
-    # # #
-    # Load in some search results for styling purposes
-    #
-    # initialize: ->
-    #   @showSubSearch { preventDefault: -> }
-    #   youtube.searchSubs('dog').done @showResults
-    # # #
-
     showSubSearch: (e) ->
       e.preventDefault()
       $('#new-subscription').after subSearchTemplate
@@ -49,7 +41,7 @@ youtube) ->
       @$results.html('')
 
     addResult: (entry) =>
-      model = new SubscriptionSearchResultModel youtube.mapSubDetails(entry)
+      model = new SubscriptionSearchResultModel youtube.mapChannelDetails(entry)
       view = new SubscriptionSearchResultView model: model
 
       @$results.append view.render().el
