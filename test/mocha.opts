@@ -1,0 +1,7 @@
+--require spec/bootstrap.js
+--ui bdd
+--growl
+--reporter spec
+--colors
+--compilers coffee:coffee-script
+--globals jQuery

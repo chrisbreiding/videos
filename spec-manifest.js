@@ -1,0 +1,1 @@
+requirejs(['public/main.spec']);
