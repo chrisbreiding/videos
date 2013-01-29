@@ -1,5 +1,5 @@
-define ['backbone', 'handlebars', 'text!template/current-video.html'],
-(Backbone, Handlebars, template) ->
+define ['backbone', 'handlebars', 'templates/current-video.hb'],
+(Backbone, Handlebars, template)->
 
   $body = $ document.body
 
@@ -7,19 +7,19 @@ define ['backbone', 'handlebars', 'text!template/current-video.html'],
 
     el: '#current-video'
 
-    template: Handlebars.compile template
+    template: template
 
     events:
       'click .play-video': 'embed'
 
     initialize: ->
       @render()
-      @model.on 'destroy', @remove, @
+      @model.on 'destroy', @remove, this
 
     render: =>
       @$el.html @template(@model.toJSON())
       $body.addClass 'video-open'
-      @
+      this
 
-    embed: (e) =>
+    embed: (e)=>
       e.preventDefault()

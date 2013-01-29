@@ -2,14 +2,14 @@ define [
   'backbone', 'handlebars'
   'subscription-search/subscription-search-result-model'
   'subscription-search/subscription-search-result-view'
-  'text!template/subscription-search.html'
+  'templates/subscription-search.hb'
   'services/youtube'
 ],
 (Backbone, Handlebars, \
 SubscriptionSearchResultModel, \
 SubscriptionSearchResultView, \
-subSearchTemplate, \
-youtube) ->
+template, \
+youtube)->
 
   class SubscriptionSearchView extends Backbone.View
 
@@ -23,24 +23,24 @@ youtube) ->
       'submit #sub-search-form' : 'searchSubs'
       'click #search-subs'      : 'searchSubs'
 
-    showSubSearch: (e) ->
+    showSubSearch: (e)->
       e.preventDefault()
-      $('#new-subscription').after subSearchTemplate
+      $('#new-subscription').after template
       $('#sub-query').focus()
 
-    searchSubs: (e) ->
+    searchSubs: (e)->
       e.preventDefault()
       query = $('#sub-query').val()
       youtube.searchChannels(query).done @showResults
 
-    showResults: (results) =>
+    showResults: (results)=>
       @clearResults()
       _.each results.feed.entry, @addResult
 
     clearResults: ->
-      @$results.html('')
+      @$results.html ''
 
-    addResult: (entry) =>
+    addResult: (entry)=>
       model = new SubscriptionSearchResultModel youtube.mapChannelDetails(entry)
       view = new SubscriptionSearchResultView model: model
 

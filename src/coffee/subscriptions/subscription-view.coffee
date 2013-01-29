@@ -1,13 +1,13 @@
 define ['backbone', 'handlebars', 'services/vent', 'services/youtube'
-'text!template/subscription.html', 'playlists/playlists-view'],
+'templates/subscription.hb', 'playlists/playlists-view'],
 (Backbone, Handlebars, vent, youtube, \
-template, PlaylistsView) ->
+template, PlaylistsView)->
 
   class SubscriptionView extends Backbone.View
 
     className: 'subscription clearfix'
 
-    template: Handlebars.compile template
+    template: template
 
     events:
       'click .view-subscription'   : 'viewVideos'
@@ -15,21 +15,21 @@ template, PlaylistsView) ->
       'click .delete-subscription' : 'delete'
 
     initialize: ->
-      @model.on 'destroy', @remove, @
+      @model.on 'destroy', @remove, this
 
     render: =>
       @$el.html @template(@model.toJSON())
-      @
+      this
 
-    viewVideos: (e) ->
+    viewVideos: (e)->
       e.preventDefault()
       vent.trigger 'channel:load', @model.get('channelId')
 
-    viewPlaylists: (e) ->
+    viewPlaylists: (e)->
       e.preventDefault()
       view = new PlaylistsView channelId: @model.get('channelId')
       @$el.append view.el
 
-    delete: (e) ->
+    delete: (e)->
       e.preventDefault()
       @model.destroy()

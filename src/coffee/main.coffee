@@ -8,7 +8,7 @@ requirejs.config
     text: 'lib/require.text.min'
     handlebars: 'lib/handlebars.min'
     moment: 'lib/moment.min'
-    template: '/templates'
+    templates: '/templates'
   shim:
     backbone:
       deps: ['jquery', 'underscore']

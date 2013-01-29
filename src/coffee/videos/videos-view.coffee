@@ -1,7 +1,5 @@
-define ['backbone', 'handlebars'
-'videos/video-view', 'videos/video-collection'],
-(Backbone, Handlebars, \
-VideoView, videos) ->
+define ['backbone', 'handlebars', 'videos/video-view', 'videos/video-collection'],
+(Backbone, Handlebars, VideoView, videos)->
 
   $videos = $ '#videos'
 
@@ -13,10 +11,10 @@ VideoView, videos) ->
       videos.on 'add', @addOne
       videos.on 'reset', @addAll
 
-    addOne: (video) =>
+    addOne: (video)=>
       view = new VideoView model: video
       $videos.append view.render().el
 
     addAll: =>
       $videos.html ''
-      videos.each @addOne, @
+      videos.each @addOne, this

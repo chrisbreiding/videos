@@ -9,6 +9,6 @@
     "requirejs"     : "*",
     "coffee-script" : "*",
     "mocha"         : "https://github.com/downloads/tnwinc/mocha/mocha-1.6.2tnw.tgz",
-    "handlebars"    : "*"
+    "handlebars"    : "https://github.com/downloads/tnwinc/handlebars.js/handlebars-1.0.7tnw.tgz"
   }
 }

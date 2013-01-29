@@ -1,25 +1,23 @@
-define ['backbone', 'handlebars', 'services/vent'
-'text!template/subscription-search-result.html'],
-(Backbone, Handlebars, vent, \
-subSearchResultsTemplate) ->
+define ['backbone', 'handlebars', 'services/vent', 'templates/subscription-search-result.hb'],
+(Backbone, Handlebars, vent, template)->
 
   class SubscriptionSearchResultView extends Backbone.View
 
     className: 'subscription clearfix'
 
-    template: Handlebars.compile subSearchResultsTemplate
+    template: template
 
     events:
       'click .add-subscription' : 'addSub'
 
     initialize: ->
-      @model.on 'destroy', @remove, @
+      @model.on 'destroy', @remove, this
 
     render: =>
       @$el.html @template(@model.toJSON())
-      @
+      this
 
-    addSub: (e) ->
+    addSub: (e)->
       e.preventDefault()
       vent.trigger 'subscription:add', @model.attributes
       @model.destroy()
