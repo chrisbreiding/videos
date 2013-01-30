@@ -3,7 +3,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'handlebars', 'services/vent', 'templates/playlist.hb'], function(Backbone, Handlebars, vent, template) {
+  define(['backbone', 'services/vent', 'templates/playlist.hb'], function(Backbone, vent, template) {
     var PlaylistView;
     return PlaylistView = (function(_super) {
 

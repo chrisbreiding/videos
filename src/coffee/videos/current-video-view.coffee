@@ -1,9 +1,9 @@
-define ['backbone', 'handlebars', 'templates/current-video.hb'],
-(Backbone, Handlebars, template)->
+define ['backbone', 'templates/current-video.hb'],
+(Backbone, template)->
 
   $body = $ document.body
 
-  class CurrentVideoView extends Backbone.View
+  class CurrenVideoView extends Backbone.View
 
     el: '#current-video'
 

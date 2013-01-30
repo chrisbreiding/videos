@@ -1,5 +1,5 @@
-define ['backbone', 'handlebars', 'services/vent', 'templates/subscription-search-result.hb'],
-(Backbone, Handlebars, vent, template)->
+define ['backbone', 'services/vent', 'templates/subscription-search-result.hb'],
+(Backbone, vent, template)->
 
   class SubscriptionSearchResultView extends Backbone.View
 

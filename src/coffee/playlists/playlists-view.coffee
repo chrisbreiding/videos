@@ -1,9 +1,7 @@
-define ['backbone', 'handlebars'
-'playlists/playlist-view', 'playlists/playlist-collection'],
-(Backbone, Handlebars, \
-PlaylistView, playlists) ->
+define ['backbone', 'playlists/playlist-view', 'playlists/playlist-collection'],
+(Backbone, PlaylistView, playlists)->
 
-  class SubscriptionsView extends Backbone.View
+  class PlaylistsView extends Backbone.View
 
     className: 'playlists'
 
@@ -13,9 +11,9 @@ PlaylistView, playlists) ->
       playlists.on 'add', @addOne
       playlists.on 'reset', @addAll
 
-    addOne: (sub) =>
+    addOne: (sub)=>
       view = new PlaylistView model: sub
       @$el.append view.render().el
 
     addAll: =>
-      playlists.each @addOne, @
+      playlists.each @addOne, this

@@ -1,3 +1,3 @@
-define ['backbone'], (Backbone) ->
+define ['backbone'], (Backbone)->
 
-  class VideoModel extends Backbone.Model
+  Backbone.Model.extend()

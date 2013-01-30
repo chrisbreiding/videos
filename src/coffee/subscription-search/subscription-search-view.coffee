@@ -1,15 +1,11 @@
 define [
-  'backbone', 'handlebars'
-  'subscription-search/subscription-search-result-model'
+  'backbone', 'templates/subscription-search.hb', 'services/youtube', \
+  'subscription-search/subscription-search-result-model', \
   'subscription-search/subscription-search-result-view'
-  'templates/subscription-search.hb'
-  'services/youtube'
 ],
-(Backbone, Handlebars, \
+(Backbone, template, youtube, \
 SubscriptionSearchResultModel, \
-SubscriptionSearchResultView, \
-template, \
-youtube)->
+SubscriptionSearchResultView)->
 
   class SubscriptionSearchView extends Backbone.View
 

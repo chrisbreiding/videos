@@ -1,11 +1,7 @@
-define ['backbone', 'handlebars'
-'subscription-search/subscription-search-view'
-'subscriptions/subscription-view'
-'subscriptions/subscription-collection'],
-(Backbone, Handlebars, \
-SubscriptionSearchView, \
-SubscriptionView, \
-subscriptions) ->
+define ['backbone', 'subscription-search/subscription-search-view', \
+'subscriptions/subscription-view', 'subscriptions/subscription-collection'],
+(Backbone, SubscriptionSearchView, \
+SubscriptionView, subscriptions)->
 
   $subs = $ '#subscriptions'
   $editText = $ '.edit-subscriptions span'
@@ -27,15 +23,15 @@ subscriptions) ->
 
       subscriptions.fetch()
 
-    addOne: (sub) =>
+    addOne: (sub)=>
       view = new SubscriptionView model: sub
       $subs.append view.render().el
 
     addAll: =>
       $subs.html ''
-      subscriptions.each @addOne, @
+      subscriptions.each @addOne, this
 
-    editSubscriptions: (e) ->
+    editSubscriptions: (e)->
       e.preventDefault()
 
       if @editingSubs

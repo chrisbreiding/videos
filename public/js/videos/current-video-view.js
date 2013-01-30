@@ -3,44 +3,44 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'handlebars', 'templates/current-video.hb'], function(Backbone, Handlebars, template) {
-    var $body, CurrentVideoView;
+  define(['backbone', 'templates/current-video.hb'], function(Backbone, template) {
+    var $body, CurrenVideoView;
     $body = $(document.body);
-    return CurrentVideoView = (function(_super) {
+    return CurrenVideoView = (function(_super) {
 
-      __extends(CurrentVideoView, _super);
+      __extends(CurrenVideoView, _super);
 
-      function CurrentVideoView() {
+      function CurrenVideoView() {
         this.embed = __bind(this.embed, this);
 
         this.render = __bind(this.render, this);
-        return CurrentVideoView.__super__.constructor.apply(this, arguments);
+        return CurrenVideoView.__super__.constructor.apply(this, arguments);
       }
 
-      CurrentVideoView.prototype.el = '#current-video';
+      CurrenVideoView.prototype.el = '#current-video';
 
-      CurrentVideoView.prototype.template = template;
+      CurrenVideoView.prototype.template = template;
 
-      CurrentVideoView.prototype.events = {
+      CurrenVideoView.prototype.events = {
         'click .play-video': 'embed'
       };
 
-      CurrentVideoView.prototype.initialize = function() {
+      CurrenVideoView.prototype.initialize = function() {
         this.render();
         return this.model.on('destroy', this.remove, this);
       };
 
-      CurrentVideoView.prototype.render = function() {
+      CurrenVideoView.prototype.render = function() {
         this.$el.html(this.template(this.model.toJSON()));
         $body.addClass('video-open');
         return this;
       };
 
-      CurrentVideoView.prototype.embed = function(e) {
+      CurrenVideoView.prototype.embed = function(e) {
         return e.preventDefault();
       };
 
-      return CurrentVideoView;
+      return CurrenVideoView;
 
     })(Backbone.View);
   });

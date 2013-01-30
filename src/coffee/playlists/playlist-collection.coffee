@@ -1,17 +1,17 @@
 define ['backbone', 'playlists/playlist-model', 'services/youtube'],
-(Backbone, PlaylistModel, youtube) ->
+(Backbone, PlaylistModel, youtube)->
 
   class PlaylistCollection extends Backbone.Collection
 
     model: PlaylistModel
 
-    fetch: (channelId) ->
+    fetch: (channelId)->
       youtube.getPlaylistsByChannel(channelId).done @load
 
-    load: (results) =>
+    load: (results)=>
       _.each results.feed.entry, @show
 
-    show: (playlist) =>
+    show: (playlist)=>
       @add youtube.mapPlaylistDetails playlist
 
   new PlaylistCollection

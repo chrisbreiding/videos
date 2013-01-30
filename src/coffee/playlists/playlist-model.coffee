@@ -1,3 +1,3 @@
-define ['backbone'], (Backbone) ->
+define ['backbone'], (Backbone)->
 
-  class PlaylistModel extends Backbone.Model
+  Backbone.Model.extend()

@@ -1,5 +1,5 @@
-define ['backbone', 'handlebars', 'services/vent', 'templates/playlist.hb'],
-(Backbone, Handlebars, vent, template)->
+define ['backbone', 'services/vent', 'templates/playlist.hb'],
+(Backbone, vent, template)->
 
   class PlaylistView extends Backbone.View
 

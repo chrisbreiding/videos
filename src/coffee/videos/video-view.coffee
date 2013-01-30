@@ -1,6 +1,6 @@
-define ['backbone', 'handlebars', 'templates/video.hb', 'videos/current-video-view', \
+define ['backbone', 'templates/video.hb', 'videos/current-video-view', \
 'template-helpers/date', 'template-helpers/duration'],
-(Backbone, Handlebars, template, CurrentVideoView)->
+(Backbone, template, CurrentVideoView)->
 
   class VideoView extends Backbone.View
 

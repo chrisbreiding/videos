@@ -1,6 +1,6 @@
-define ['backbone', 'handlebars', 'services/vent', 'services/youtube'
+define ['backbone', 'services/vent', 'services/youtube'
 'templates/subscription.hb', 'playlists/playlists-view'],
-(Backbone, Handlebars, vent, youtube, \
+(Backbone, vent, youtube, \
 template, PlaylistsView)->
 
   class SubscriptionView extends Backbone.View
@@ -17,7 +17,7 @@ template, PlaylistsView)->
     initialize: ->
       @model.on 'destroy', @remove, this
 
-    render: =>
+    render: ->
       @$el.html @template(@model.toJSON())
       this
 

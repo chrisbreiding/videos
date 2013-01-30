@@ -1,5 +1,5 @@
-define ['backbone', 'handlebars', 'videos/video-view', 'videos/video-collection'],
-(Backbone, Handlebars, VideoView, videos)->
+define ['backbone', 'videos/video-view', 'videos/video-collection'],
+(Backbone, VideoView, videos)->
 
   $videos = $ '#videos'
 

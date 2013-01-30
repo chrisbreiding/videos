@@ -1,6 +1,6 @@
-define ['handlebars', 'moment'], (Handlebars, moment) ->
+define ['handlebars', 'moment'], (Handlebars, moment)->
 
-  Handlebars.registerHelper 'date', (date) ->
+  Handlebars.registerHelper 'date', (date)->
     mDate = moment(date)
     formattedDate = "#{mDate.fromNow()} <span>(#{mDate.format('MMM D, YYYY h:mma')})</span>"
 

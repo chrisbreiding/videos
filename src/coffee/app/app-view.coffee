@@ -1,5 +1,5 @@
 define ['backbone', 'subscriptions/subscriptions-view', 'videos/videos-view'],
-(Backbone, SubscriptionsView, VideosView) ->
+(Backbone, SubscriptionsView, VideosView)->
 
   class AppView extends Backbone.View
 
