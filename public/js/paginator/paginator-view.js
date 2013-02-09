@@ -3,7 +3,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone'], function(Backbone) {
+  define(['backbone', 'templates/paginator-item.hb'], function(Backbone, itemTemplate) {
     var PaginatorView;
     return PaginatorView = (function(_super) {
 
@@ -14,22 +14,30 @@
         return PaginatorView.__super__.constructor.apply(this, arguments);
       }
 
-      PaginatorView.prototype.tagName = 'ul';
-
-      PaginatorView.prototype.className = 'paginator clearfix';
-
-      PaginatorView.prototype.template = template;
-
-      PaginatorView.prototype.events = {
-        'click li': 'viewPage'
-      };
-
-      PaginatorView.prototype.initialize = function() {
-        return this.model.on('destroy', this.remove, this);
-      };
-
       PaginatorView.prototype.render = function() {
-        return this;
+        var i, pageCount;
+        pageCount = Math.floor(this.count / 25);
+        this.$el.html(itemTemplate({
+          label: '«'
+        }));
+        this.$el.append(((function() {
+          var _i, _results;
+          _results = [];
+          for (i = _i = 0; 0 <= pageCount ? _i <= pageCount : _i >= pageCount; i = 0 <= pageCount ? ++_i : --_i) {
+            _results.push(itemTemplate({
+              label: i + 1
+            }));
+          }
+          return _results;
+        })()).join(''));
+        return this.$el.append(itemTemplate({
+          label: '»'
+        }));
+      };
+
+      PaginatorView.prototype.update = function(count) {
+        this.count = count;
+        return this.render();
       };
 
       PaginatorView.prototype.viewPage = function() {};

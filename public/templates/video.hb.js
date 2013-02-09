@@ -21,6 +21,6 @@ return templates['video.hb'] = template(function (Handlebars,depth0,helpers,part
   stack1 = depth0.duration;
   foundHelper = helpers.duration;
   stack1 = foundHelper ? foundHelper.call(depth0, stack1, {hash:{}}) : helperMissing.call(depth0, "duration", stack1, {hash:{}});
-  buffer += escapeExpression(stack1) + "\n  </span>\n</p>\n";
+  buffer += escapeExpression(stack1) + "\n  </span>\n  <a href=\"#\" class=\"mark-watched\">Mark Watched</a>\n  <a href=\"#\" class=\"mark-unwatched\">Mark Unwatched</a>\n</p>\n";
   return buffer;});
 });

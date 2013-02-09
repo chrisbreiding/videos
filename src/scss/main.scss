@@ -159,6 +159,10 @@ body {
     border-top: solid 1px $light-grey;
     padding: 10px;
 
+    &.watched {
+      opacity: 0.6;
+    }
+
     &:first-child {
       border-top: none;
     }

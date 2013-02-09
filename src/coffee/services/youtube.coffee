@@ -1,17 +1,16 @@
-define ['underscore'], (_) ->
+define ['underscore'], (_)->
 
   baseUrl = 'https://gdata.youtube.com/feeds/'
-  youTubeIdRegEx = /\/([a-zA-Z0-9_-]+)$/
+  youTubeIdRegEx = /[^\/]+$/
 
-  channelVideoId = (video) ->
-    matches = video.id.$t.match(youTubeIdRegEx)
-    matches[1]
+  channelVideoId = (video)->
+    video.id.$t.match(youTubeIdRegEx)[0]
 
-  playlistVideoId = (video) ->
+  playlistVideoId = (video)->
     video.media$group.yt$videoid.$t
 
 
-  queryYouTube: (url, data = {}) ->
+  queryYouTube: (url, data = {})->
     defaultData = alt : 'json'
     data = _.extend defaultData, data
 
@@ -20,40 +19,43 @@ define ['underscore'], (_) ->
       url      : baseUrl + url
       data     : data
 
-  searchChannels: (query) ->
+  searchChannels: (query)->
     @queryYouTube 'api/channels',
       q             : query
       v             : 2
       'max-results' : 10
 
-  getPlaylistsByChannel: (channelId) ->
+  getPlaylistsByChannel: (channelId)->
     @queryYouTube "api/users/#{channelId}/playlists"
 
-  getVideosByChannel: (channelId) ->
+  getVideosByChannel: (channelId)->
     @queryYouTube "users/#{channelId}/uploads"
 
-  getVideosByPlaylist: (playlist) ->
+  getVideosByPlaylist: (playlist)->
     @queryYouTube "api/playlists/#{playlist.playlistId}",
       v             : 2
       orderby       : 'published'
-      'start-index' : if playlist.count > 24 then playlist.count - 24 else 1
+      # 'start-index' : if playlist.count > 24 then playlist.count - 24 else 1
 
-  # getChannelInfo: (channelId) ->
+  # getChannelInfo: (channelId)->
   #   @queryYouTube "api/channels/#{channelId}", v : 2
 
-  mapChannelDetails: (entry) ->
+  getVideoCount: (results)->
+    results.feed.openSearch$totalResults.$t
+
+  mapChannelDetails: (entry)->
     channelId : entry.yt$channelId.$t
     title     : entry.title.$t
     author    : entry.author[0].name.$t
     thumb     : entry.media$thumbnail[0].url
 
-  mapPlaylistDetails: (playlist) ->
+  mapPlaylistDetails: (playlist)->
     playlistId : playlist.yt$playlistId.$t
     title      : playlist.title.$t
     thumb      : playlist.media$group.media$thumbnail[0].url
     count      : playlist.gd$feedLink[0].countHint
 
-  mapVideoDetails: (video, type) ->
+  mapVideoDetails: (video, type)->
     videoId = if type is 'channel'
       channelVideoId video
     else

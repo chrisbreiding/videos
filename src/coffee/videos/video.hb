@@ -9,4 +9,6 @@
     <i class="icon-time"></i>
     {{duration duration}}
   </span>
+  <a href="#" class="mark-watched">Mark Watched</a>
+  <a href="#" class="mark-unwatched">Mark Unwatched</a>
 </p>

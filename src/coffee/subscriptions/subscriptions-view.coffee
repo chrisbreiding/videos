@@ -34,10 +34,6 @@ SubscriptionView, subscriptions)->
     editSubscriptions: (e)->
       e.preventDefault()
 
-      if @editingSubs
-        $editText.html 'Edit'
-      else
-        $editText.html 'Done'
-
+      $editText.html(if @editingSubs then 'Edit' else 'Done')
       $subs.toggleClass 'editing'
       @editingSubs = !@editingSubs

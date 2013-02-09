@@ -47,11 +47,7 @@
 
       SubscriptionsView.prototype.editSubscriptions = function(e) {
         e.preventDefault();
-        if (this.editingSubs) {
-          $editText.html('Edit');
-        } else {
-          $editText.html('Done');
-        }
+        $editText.html(this.editingSubs ? 'Edit' : 'Done');
         $subs.toggleClass('editing');
         return this.editingSubs = !this.editingSubs;
       };

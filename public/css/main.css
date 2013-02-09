@@ -6130,44 +6130,48 @@ body {
   padding: 10px;
 }
 /* line 162, ../../src/scss/main.scss */
+.video.watched {
+  opacity: 0.6;
+}
+/* line 166, ../../src/scss/main.scss */
 .video:first-child {
   border-top: none;
 }
-/* line 167, ../../src/scss/main.scss */
+/* line 171, ../../src/scss/main.scss */
 .video h4,
 .video .duration {
   margin-left: 165px;
 }
-/* line 171, ../../src/scss/main.scss */
+/* line 175, ../../src/scss/main.scss */
 .video h4 {
   font-size: 1.1em;
   margin-top: 0;
 }
-/* line 176, ../../src/scss/main.scss */
+/* line 180, ../../src/scss/main.scss */
 .video .pub-date span {
   color: #a4a4a4;
 }
-/* line 180, ../../src/scss/main.scss */
+/* line 184, ../../src/scss/main.scss */
 .video .duration span {
   font-size: 1em;
   padding: 5px;
 }
 
-/* line 186, ../../src/scss/main.scss */
+/* line 190, ../../src/scss/main.scss */
 .play-video {
   display: block;
   position: relative;
 }
-/* line 192, ../../src/scss/main.scss */
+/* line 196, ../../src/scss/main.scss */
 .play-video, .play-video:hover, .play-video:focus {
   color: #FFF;
   text-decoration: none;
 }
-/* line 197, ../../src/scss/main.scss */
+/* line 201, ../../src/scss/main.scss */
 .play-video img {
   display: block;
 }
-/* line 201, ../../src/scss/main.scss */
+/* line 205, ../../src/scss/main.scss */
 .play-video i {
   background: rgba(0, 0, 0, 0);
   display: block;
@@ -6185,7 +6189,7 @@ body {
   height: 112px;
   line-height: 112px;
 }
-/* line 216, ../../src/scss/main.scss */
+/* line 220, ../../src/scss/main.scss */
 .play-video:hover i, .play-video:focus i {
   background: rgba(0, 0, 0, 0.5);
   opacity: 1;

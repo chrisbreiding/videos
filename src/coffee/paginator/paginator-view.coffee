@@ -1,20 +1,18 @@
-define ['backbone'], (Backbone)->
+define ['backbone', 'templates/paginator-item.hb'], (Backbone, itemTemplate)->
 
   class PaginatorView extends Backbone.View
 
-    tagName: 'ul'
-
-    className: 'paginator clearfix'
-
-    template: template
-
-    events:
-      'click li' : 'viewPage'
-
-    initialize: ->
-      @model.on 'destroy', @remove, this
-
     render: =>
-      this
+      pageCount = Math.floor(@count / 25)
+
+      @$el.html (itemTemplate label: '«')
+
+      @$el.append ((itemTemplate label: i + 1) for i in [0..pageCount]).join('')
+
+      @$el.append (itemTemplate label: '»')
+
+    update: (count)->
+      @count = count
+      @render()
 
     viewPage: ->
