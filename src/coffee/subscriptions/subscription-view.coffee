@@ -11,7 +11,7 @@ template, PlaylistsView)->
 
     events:
       'click .view-subscription'   : 'viewVideos'
-      'click .view-playlists'      : 'viewPlaylists'
+      'click .toggle-playlists'    : 'togglePlaylists'
       'click .delete-subscription' : 'delete'
 
     initialize: ->
@@ -19,7 +19,8 @@ template, PlaylistsView)->
 
     render: ->
       @$el.html @template(@model.toJSON())
-      @$el.find('.view-playlists').hide() if @model.get('type') is 'playlist'
+      @$togglePlaylists = @$el.find('.toggle-playlists')
+      @$togglePlaylists.hide() if @model.get('type') is 'playlist'
       this
 
     viewVideos: (e)->
@@ -29,10 +30,16 @@ template, PlaylistsView)->
       else
         vent.trigger 'playlist:load', _.clone(@model.attributes)
 
-    viewPlaylists: (e)->
+    togglePlaylists: (e)->
       e.preventDefault()
-      view = new PlaylistsView channelId: @model.get('channelId')
-      @$el.append view.el
+      if @playlistsView
+        @playlistsView.remove()
+        @playlistsView = false
+        @$togglePlaylists.find('i').addClass('icon-chevron-down').removeClass('icon-chevron-up')
+      else
+        @playlistsView = new PlaylistsView channelId: @model.get('channelId')
+        @$el.append @playlistsView.el
+        @$togglePlaylists.find('i').removeClass('icon-chevron-down').addClass('icon-chevron-up')
 
     delete: (e)->
       e.preventDefault()

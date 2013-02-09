@@ -18,7 +18,7 @@
 
       SubscriptionView.prototype.events = {
         'click .view-subscription': 'viewVideos',
-        'click .view-playlists': 'viewPlaylists',
+        'click .toggle-playlists': 'togglePlaylists',
         'click .delete-subscription': 'delete'
       };
 
@@ -28,8 +28,9 @@
 
       SubscriptionView.prototype.render = function() {
         this.$el.html(this.template(this.model.toJSON()));
+        this.$togglePlaylists = this.$el.find('.toggle-playlists');
         if (this.model.get('type') === 'playlist') {
-          this.$el.find('.view-playlists').hide();
+          this.$togglePlaylists.hide();
         }
         return this;
       };
@@ -43,13 +44,19 @@
         }
       };
 
-      SubscriptionView.prototype.viewPlaylists = function(e) {
-        var view;
+      SubscriptionView.prototype.togglePlaylists = function(e) {
         e.preventDefault();
-        view = new PlaylistsView({
-          channelId: this.model.get('channelId')
-        });
-        return this.$el.append(view.el);
+        if (this.playlistsView) {
+          this.playlistsView.remove();
+          this.playlistsView = false;
+          return this.$togglePlaylists.find('i').addClass('icon-chevron-down').removeClass('icon-chevron-up');
+        } else {
+          this.playlistsView = new PlaylistsView({
+            channelId: this.model.get('channelId')
+          });
+          this.$el.append(this.playlistsView.el);
+          return this.$togglePlaylists.find('i').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+        }
       };
 
       SubscriptionView.prototype["delete"] = function(e) {

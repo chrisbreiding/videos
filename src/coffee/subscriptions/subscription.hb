@@ -4,7 +4,7 @@
     View
     <i class="icon-chevron-right"></i>
   </a>
-  <a class="view-playlists" href="#">
+  <a class="toggle-playlists" href="#">
     Playlists
     <i class="icon-chevron-down"></i>
   </a>
