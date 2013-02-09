@@ -8,7 +8,7 @@ define ['backbone', 'localstorage', 'services/vent', 'subscriptions/subscription
     localStorage: new Store 'subscriptions'
 
     initialize: ->
-      vent.on 'subscription:add', (modelAttrs)=>
-        @create modelAttrs
+      vent.on 'subscription:add', (model)=>
+        @create model
 
   new SubscriptionCollection

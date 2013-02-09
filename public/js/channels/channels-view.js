@@ -3,7 +3,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'templates/subscription-search.hb', 'services/youtube', 'subscription-search/subscription-search-result-model', 'subscription-search/subscription-search-result-view'], function(Backbone, template, youtube, SubscriptionSearchResultModel, SubscriptionSearchResultView) {
+  define(['backbone', 'templates/subscription-search.hb', 'services/youtube', 'channels/channel-model', 'channels/channel-view'], function(Backbone, template, youtube, ChannelModel, ChannelView) {
     var SubscriptionSearchView;
     return SubscriptionSearchView = (function(_super) {
 
@@ -52,8 +52,8 @@
 
       SubscriptionSearchView.prototype.addResult = function(entry) {
         var model, view;
-        model = new SubscriptionSearchResultModel(youtube.mapChannelDetails(entry));
-        view = new SubscriptionSearchResultView({
+        model = new ChannelModel(youtube.mapChannelDetails(entry));
+        view = new ChannelView({
           model: model
         });
         return this.$results.append(view.render().el);

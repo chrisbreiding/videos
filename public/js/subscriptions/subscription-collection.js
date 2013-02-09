@@ -18,8 +18,8 @@
 
       SubscriptionCollection.prototype.initialize = function() {
         var _this = this;
-        return vent.on('subscription:add', function(modelAttrs) {
-          return _this.create(modelAttrs);
+        return vent.on('subscription:add', function(model) {
+          return _this.create(model);
         });
       };
 

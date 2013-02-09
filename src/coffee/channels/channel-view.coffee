@@ -1,7 +1,7 @@
-define ['backbone', 'services/vent', 'templates/subscription-search-result.hb'],
+define ['backbone', 'services/vent', 'templates/channel.hb'],
 (Backbone, vent, template)->
 
-  class SubscriptionSearchResultView extends Backbone.View
+  class ChannelView extends Backbone.View
 
     className: 'subscription clearfix'
 
@@ -19,5 +19,7 @@ define ['backbone', 'services/vent', 'templates/subscription-search-result.hb'],
 
     addSub: (e)->
       e.preventDefault()
-      vent.trigger 'subscription:add', @model.attributes
+      attrs = _.clone @model.attributes
+      attrs.type = 'channel'
+      vent.trigger 'subscription:add', attrs
       @model.destroy()

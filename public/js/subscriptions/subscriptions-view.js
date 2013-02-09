@@ -3,7 +3,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'subscription-search/subscription-search-view', 'subscriptions/subscription-view', 'subscriptions/subscription-collection'], function(Backbone, SubscriptionSearchView, SubscriptionView, subscriptions) {
+  define(['backbone', 'channels/channels-view', 'subscriptions/subscription-view', 'subscriptions/subscription-collection'], function(Backbone, ChannelsView, SubscriptionView, subscriptions) {
     var $editText, $subs, SubscriptionsView;
     $subs = $('#subscriptions');
     $editText = $('.edit-subscriptions span');
@@ -26,7 +26,7 @@
 
       SubscriptionsView.prototype.initialize = function() {
         this.editingSubs = false;
-        new SubscriptionSearchView;
+        new ChannelsView;
         subscriptions.on('add', this.addOne);
         subscriptions.on('reset', this.addAll);
         return subscriptions.fetch();

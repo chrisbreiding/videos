@@ -1,11 +1,9 @@
 define [
   'backbone', 'templates/subscription-search.hb', 'services/youtube', \
-  'subscription-search/subscription-search-result-model', \
-  'subscription-search/subscription-search-result-view'
+  'channels/channel-model', 'channels/channel-view'
 ],
 (Backbone, template, youtube, \
-SubscriptionSearchResultModel, \
-SubscriptionSearchResultView)->
+ChannelModel, ChannelView)->
 
   class SubscriptionSearchView extends Backbone.View
 
@@ -37,7 +35,7 @@ SubscriptionSearchResultView)->
       @$results.html ''
 
     addResult: (entry)=>
-      model = new SubscriptionSearchResultModel youtube.mapChannelDetails(entry)
-      view = new SubscriptionSearchResultView model: model
+      model = new ChannelModel youtube.mapChannelDetails(entry)
+      view = new ChannelView model: model
 
       @$results.append view.render().el

@@ -1,6 +1,6 @@
-define ['backbone', 'subscription-search/subscription-search-view', \
+define ['backbone', 'channels/channels-view', \
 'subscriptions/subscription-view', 'subscriptions/subscription-collection'],
-(Backbone, SubscriptionSearchView, \
+(Backbone, ChannelsView, \
 SubscriptionView, subscriptions)->
 
   $subs = $ '#subscriptions'
@@ -16,7 +16,7 @@ SubscriptionView, subscriptions)->
     initialize: ->
       @editingSubs = false
 
-      new SubscriptionSearchView
+      new ChannelsView
 
       subscriptions.on 'add', @addOne
       subscriptions.on 'reset', @addAll

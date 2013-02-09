@@ -8,7 +8,7 @@ define ['backbone', 'services/vent', 'templates/playlist.hb'],
     template: template
 
     events:
-      'click .view-playlist' : 'viewVideos'
+      'click .add-subscription' : 'addSub'
 
     initialize: ->
       @model.on 'destroy', @remove, this
@@ -19,4 +19,11 @@ define ['backbone', 'services/vent', 'templates/playlist.hb'],
 
     viewVideos: (e)->
       e.preventDefault()
-      vent.trigger 'playlist:load', @model.attributes
+      vent.trigger 'playlist:load', _.clone(@model.attributes)
+
+    addSub: (e)->
+      e.preventDefault()
+      attrs = _.clone @model.attributes
+      attrs.type = 'playlist'
+      vent.trigger 'subscription:add', attrs
+      @model.destroy()

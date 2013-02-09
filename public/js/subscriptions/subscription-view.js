@@ -28,12 +28,19 @@
 
       SubscriptionView.prototype.render = function() {
         this.$el.html(this.template(this.model.toJSON()));
+        if (this.model.get('type') === 'playlist') {
+          this.$el.find('.view-playlists').hide();
+        }
         return this;
       };
 
       SubscriptionView.prototype.viewVideos = function(e) {
         e.preventDefault();
-        return vent.trigger('channel:load', this.model.get('channelId'));
+        if (this.model.get('type') === 'channel') {
+          return vent.trigger('channel:load', this.model.get('channelId'));
+        } else {
+          return vent.trigger('playlist:load', _.clone(this.model.attributes));
+        }
       };
 
       SubscriptionView.prototype.viewPlaylists = function(e) {

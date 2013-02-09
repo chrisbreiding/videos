@@ -19,11 +19,15 @@ template, PlaylistsView)->
 
     render: ->
       @$el.html @template(@model.toJSON())
+      @$el.find('.view-playlists').hide() if @model.get('type') is 'playlist'
       this
 
     viewVideos: (e)->
       e.preventDefault()
-      vent.trigger 'channel:load', @model.get('channelId')
+      if @model.get('type') is 'channel'
+        vent.trigger 'channel:load', @model.get('channelId')
+      else
+        vent.trigger 'playlist:load', _.clone(@model.attributes)
 
     viewPlaylists: (e)->
       e.preventDefault()
