@@ -1,1 +1,1 @@
-<li><a href="#">{{label}}</a></li>
+<li><a href="#" data-to="{{to}}">{{label}}</a></li>

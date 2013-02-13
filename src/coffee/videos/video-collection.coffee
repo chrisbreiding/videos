@@ -24,6 +24,9 @@ define ['backbone', 'underscore', 'services/vent', 'services/youtube', 'services
       @count = youtube.getVideoCount results
       @reset (youtube.mapVideoDetails(video, @type) for video in results.feed.entry)
 
+    loadPage: (page)->
+      console.log "load page ##{page}"
+
     addWatched: (id)->
       @watchedVideos.push id
       ls.set 'watchedVideos', @watchedVideos

@@ -19,11 +19,14 @@
 
       VideosView.prototype.el = '#videos-region';
 
+      VideosView.prototype.collection = videos;
+
       VideosView.prototype.initialize = function() {
-        videos.on('add', this.addOne);
-        videos.on('reset', this.addAll);
+        this.collection.on('add', this.addOne);
+        this.collection.on('reset', this.addAll);
         return this.paginator = new Paginator({
-          el: '#video-paginator'
+          el: '#video-paginator',
+          collection: this.collection
         });
       };
 
@@ -37,8 +40,8 @@
 
       VideosView.prototype.addAll = function() {
         $videos.html('');
-        this.paginator.update(videos.count);
-        return videos.each(this.addOne, this);
+        this.paginator.update(this.collection.count);
+        return this.collection.each(this.addOne, this);
       };
 
       return VideosView;

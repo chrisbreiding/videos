@@ -5,7 +5,11 @@ return templates['paginator-item.hb'] = template(function (Handlebars,depth0,hel
   var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<li><a href=\"#\">";
+  buffer += "<li><a href=\"#\" data-to=\"";
+  foundHelper = helpers.to;
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
+  else { stack1 = depth0.to; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1) + "\">";
   foundHelper = helpers.label;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.label; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }

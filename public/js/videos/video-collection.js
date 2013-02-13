@@ -50,6 +50,10 @@
         }).call(this));
       };
 
+      VideoCollection.prototype.loadPage = function(page) {
+        return console.log("load page #" + page);
+      };
+
       VideoCollection.prototype.addWatched = function(id) {
         this.watchedVideos.push(id);
         return ls.set('watchedVideos', this.watchedVideos);

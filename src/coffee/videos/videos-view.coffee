@@ -7,11 +7,15 @@ define ['backbone', 'videos/video-view', 'videos/video-collection', 'paginator/p
 
     el: '#videos-region'
 
-    initialize: ->
-      videos.on 'add', @addOne
-      videos.on 'reset', @addAll
+    collection: videos
 
-      @paginator = new Paginator el: '#video-paginator'
+    initialize: ->
+      @collection.on 'add', @addOne
+      @collection.on 'reset', @addAll
+
+      @paginator = new Paginator
+        el: '#video-paginator'
+        collection: @collection
 
     addOne: (video)=>
       view = new VideoView model: video
@@ -19,5 +23,5 @@ define ['backbone', 'videos/video-view', 'videos/video-collection', 'paginator/p
 
     addAll: =>
       $videos.html ''
-      @paginator.update videos.count
-      videos.each @addOne, this
+      @paginator.update @collection.count
+      @collection.each @addOne, this
