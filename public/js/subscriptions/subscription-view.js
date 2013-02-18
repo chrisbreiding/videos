@@ -40,7 +40,7 @@
         if (this.model.get('type') === 'channel') {
           return vent.trigger('channel:load', this.model.get('channelId'));
         } else {
-          return vent.trigger('playlist:load', _.clone(this.model.attributes));
+          return vent.trigger('playlist:load', this.model.get('playlistId'));
         }
       };
 

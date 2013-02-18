@@ -3,7 +3,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'underscore', 'services/vent', 'services/youtube', 'services/local-storage', 'videos/video-model'], function(Backbone, _, vent, youtube, ls, VideoModel) {
+  define(['backbone', 'underscore', 'services/vent', 'services/youtube', 'services/local-storage', 'videos/video-model', 'paginator/paginator-view'], function(Backbone, _, vent, youtube, ls, VideoModel, PaginatorView) {
     var VideoCollection;
     VideoCollection = (function(_super) {
 
@@ -18,27 +18,27 @@
 
       VideoCollection.prototype.initialize = function() {
         var _this = this;
-        vent.on('channel:load', function(channelId) {
+        vent.on('channel:load', function(channelId, page) {
           _this.type = 'channel';
           _this.subId = channelId;
-          return youtube.getVideosByChannel(channelId).done(_this.loadVideos);
+          return youtube.getVideosByChannel(channelId, page || 1).done(_this.loadVideos);
         });
-        return vent.on('playlist:load', function(playlist) {
+        vent.on('playlist:load', function(playlistId, page) {
           _this.type = 'playlist';
-          _this.subId = playlist.playlistId;
-          return youtube.getVideosByPlaylist(playlist).done(_this.loadVideos);
+          _this.subId = playlistId;
+          return youtube.getVideosByPlaylist(playlistId, page || 1).done(_this.loadVideos);
         });
-      };
-
-      VideoCollection.prototype.comparator = function(a, b) {
-        return Date.parse(b.get('published')) - Date.parse(a.get('published'));
+        return this.paginator = new PaginatorView({
+          el: '#video-paginator',
+          collection: this
+        });
       };
 
       VideoCollection.prototype.loadVideos = function(results) {
         var video;
         this.watchedVideos = ls.get('watchedVideos') || [];
         this.count = youtube.getVideoCount(results);
-        return this.reset((function() {
+        this.reset((function() {
           var _i, _len, _ref, _results;
           _ref = results.feed.entry;
           _results = [];
@@ -48,10 +48,11 @@
           }
           return _results;
         }).call(this));
+        return this.paginator.update(this.count);
       };
 
       VideoCollection.prototype.loadPage = function(page) {
-        return console.log("load page #" + page);
+        return vent.trigger("" + this.type + ":load", this.subId, page);
       };
 
       VideoCollection.prototype.addWatched = function(id) {
@@ -60,9 +61,10 @@
       };
 
       VideoCollection.prototype.removeWatched = function(id) {
-        return ls.set('watchedVideos', _.reject(this.watchedVideos, function(watchedId) {
+        this.watchedVideos = _.reject(this.watchedVideos, function(watchedId) {
           return id === watchedId;
-        }));
+        });
+        return ls.set('watchedVideos', this.watchedVideos);
       };
 
       return VideoCollection;

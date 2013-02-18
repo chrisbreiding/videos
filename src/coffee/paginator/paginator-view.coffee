@@ -10,13 +10,13 @@ define ['backbone', 'templates/paginator-item.hb'], (Backbone, itemTemplate)->
       'click a': 'goToPage'
 
     render: =>
-      pageCount = Math.floor(@count / 25)
+      pageCount = Math.ceil(@count / 25)
 
-      @$el.html (itemTemplate label: '«', to: 'previous')
+      pages = [itemTemplate label: '«', to: 'previous']
+      pages.push(itemTemplate label: i, to: i) for i in [1..pageCount]
+      pages.push(itemTemplate label: '»', to: 'next')
 
-      @$el.append ((itemTemplate label: i + 1, to: i + 1) for i in [0..pageCount]).join('')
-
-      @$el.append (itemTemplate label: '»', to: 'next')
+      @$el.html pages.join('')
 
     update: (count)->
       @count = count

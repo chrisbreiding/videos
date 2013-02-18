@@ -1,5 +1,5 @@
-define ['backbone', 'videos/video-view', 'videos/video-collection', 'paginator/paginator-view'],
-(Backbone, VideoView, videos, Paginator)->
+define ['backbone', 'videos/video-view', 'videos/video-collection'],
+(Backbone, VideoView, videos)->
 
   $videos = $ '#videos'
 
@@ -13,15 +13,10 @@ define ['backbone', 'videos/video-view', 'videos/video-collection', 'paginator/p
       @collection.on 'add', @addOne
       @collection.on 'reset', @addAll
 
-      @paginator = new Paginator
-        el: '#video-paginator'
-        collection: @collection
-
     addOne: (video)=>
       view = new VideoView model: video
       $videos.append view.render().el
 
     addAll: =>
       $videos.html ''
-      @paginator.update @collection.count
       @collection.each @addOne, this

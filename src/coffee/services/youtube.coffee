@@ -31,11 +31,11 @@ define ['underscore'], (_)->
   getVideosByChannel: (channelId)->
     @queryYouTube "users/#{channelId}/uploads"
 
-  getVideosByPlaylist: (playlist)->
-    @queryYouTube "api/playlists/#{playlist.playlistId}",
+  getVideosByPlaylist: (playlistId, page)->
+    query = @queryYouTube "api/playlists/#{playlistId}",
       v             : 2
       orderby       : 'published'
-      # 'start-index' : if playlist.count > 24 then playlist.count - 24 else 1
+      'start-index' : (page - 1) * 25 + 1
 
   # getChannelInfo: (channelId)->
   #   @queryYouTube "api/channels/#{channelId}", v : 2

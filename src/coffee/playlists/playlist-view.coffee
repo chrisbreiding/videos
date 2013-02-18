@@ -17,10 +17,6 @@ define ['backbone', 'services/vent', 'templates/playlist.hb'],
       @$el.html @template(@model.toJSON())
       this
 
-    viewVideos: (e)->
-      e.preventDefault()
-      vent.trigger 'playlist:load', _.clone(@model.attributes)
-
     addSub: (e)->
       e.preventDefault()
       attrs = _.clone @model.attributes

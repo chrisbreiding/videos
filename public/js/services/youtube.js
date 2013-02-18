@@ -39,10 +39,12 @@
       getVideosByChannel: function(channelId) {
         return this.queryYouTube("users/" + channelId + "/uploads");
       },
-      getVideosByPlaylist: function(playlist) {
-        return this.queryYouTube("api/playlists/" + playlist.playlistId, {
+      getVideosByPlaylist: function(playlistId, page) {
+        var query;
+        return query = this.queryYouTube("api/playlists/" + playlistId, {
           v: 2,
-          orderby: 'published'
+          orderby: 'published',
+          'start-index': (page - 1) * 25 + 1
         });
       },
       getVideoCount: function(results) {

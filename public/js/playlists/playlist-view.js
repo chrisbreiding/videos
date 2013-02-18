@@ -31,11 +31,6 @@
         return this;
       };
 
-      PlaylistView.prototype.viewVideos = function(e) {
-        e.preventDefault();
-        return vent.trigger('playlist:load', _.clone(this.model.attributes));
-      };
-
       PlaylistView.prototype.addSub = function(e) {
         var attrs;
         e.preventDefault();

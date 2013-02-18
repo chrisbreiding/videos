@@ -24,27 +24,25 @@
       };
 
       PaginatorView.prototype.render = function() {
-        var i, pageCount;
-        pageCount = Math.floor(this.count / 25);
-        this.$el.html(itemTemplate({
-          label: '«',
-          to: 'previous'
-        }));
-        this.$el.append(((function() {
-          var _i, _results;
-          _results = [];
-          for (i = _i = 0; 0 <= pageCount ? _i <= pageCount : _i >= pageCount; i = 0 <= pageCount ? ++_i : --_i) {
-            _results.push(itemTemplate({
-              label: i + 1,
-              to: i + 1
-            }));
-          }
-          return _results;
-        })()).join(''));
-        return this.$el.append(itemTemplate({
+        var i, pageCount, pages, _i;
+        pageCount = Math.ceil(this.count / 25);
+        pages = [
+          itemTemplate({
+            label: '«',
+            to: 'previous'
+          })
+        ];
+        for (i = _i = 1; 1 <= pageCount ? _i <= pageCount : _i >= pageCount; i = 1 <= pageCount ? ++_i : --_i) {
+          pages.push(itemTemplate({
+            label: i,
+            to: i
+          }));
+        }
+        pages.push(itemTemplate({
           label: '»',
           to: 'next'
         }));
+        return this.$el.html(pages.join(''));
       };
 
       PaginatorView.prototype.update = function(count) {

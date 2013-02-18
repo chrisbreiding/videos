@@ -28,7 +28,7 @@ template, PlaylistsView)->
       if @model.get('type') is 'channel'
         vent.trigger 'channel:load', @model.get('channelId')
       else
-        vent.trigger 'playlist:load', _.clone(@model.attributes)
+        vent.trigger 'playlist:load', @model.get('playlistId')
 
     togglePlaylists: (e)->
       e.preventDefault()
