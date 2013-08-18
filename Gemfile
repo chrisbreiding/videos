@@ -1,8 +1,7 @@
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
-gem "compass"
-gem "guard"
-gem "guard-compass"
-gem "guard-shell"
-gem "guard-coffeescript"
-gem 'rb-fsevent', '~> 0.9.1'
+gem "middleman",        "~>3.0.12"
+gem "middleman-deploy", "~> 0.0.10"
+
+gem "ember-middleman"
+gem 'ember-source', '1.0.0.rc7'

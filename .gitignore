@@ -1,4 +1,14 @@
+.bundle
+db/*.sqlite3*
+log/*.log
+*.log
+/tmp/
+doc/
+*.swp
+*~
+.project
 .DS_Store
 *.sublime-*
+development.log
 .sass-cache
-node_modules
+/build/
