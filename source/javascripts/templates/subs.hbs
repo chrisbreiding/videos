@@ -1,0 +1,73 @@
+<div class="video-region">
+  <div class="current-video"></div>
+</div>
+
+<div class="main clearfix">
+
+  <div class="sidebar">
+
+    <div class="subs-region">
+
+      <div class="subs-header clearfix">
+        <h3 class="pull-left">Subscriptions</h3>
+
+        {{#if model}}
+          <a class="edit-subs btn btn-mini pull-right" href="#">
+            <i class="icon-edit"></i>
+            <span>Edit</span>
+          </a>
+        {{/if}}
+      </div>
+
+      <div class="subs">
+        {{#each model}}
+          {{partial 'sub'}}
+        {{else}}
+          <p>No subscriptions...</p>
+        {{/each}}
+      </div>
+
+    </div>
+
+    <div class="sub-search-region clearfix">
+
+      <div class="sub-search-header clearfix">
+        <a href="#" class="btn btn-mini pull-right" {{action 'toggleSubSearch'}}>
+          {{#if searchingSubs}}
+            Done
+          {{else}}
+            <i class="icon-plus"></i>
+            New Subscription
+          {{/if}}
+        </a>
+      </div>
+
+      <form class="sub-search-form form-inline clearfix" {{action 'searchSubs' on="submit"}} {{bindAttr class="searchingSubs:show"}}>
+        {{view Ember.TextField valueBinding="subQuery"}}
+        <button class="btn btn-primary">
+          <i class="icon-search"></i>
+        </button>
+      </form>
+
+      {{#each subSearchResults}}
+        {{partial 'channel'}}
+      {{/each}}
+    </div>
+
+  </div>
+
+  <div class="content">
+
+    <div class="videos-region">
+
+      <div class="pagination">
+        <ul class="video-paginator" class="video-paginator"></ul>
+      </div>
+
+      <div class="videos"></div>
+
+    </div>
+
+  </div>
+
+</div>

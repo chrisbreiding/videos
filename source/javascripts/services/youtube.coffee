@@ -1,0 +1,71 @@
+baseUrl = 'https://gdata.youtube.com/feeds/'
+youTubeIdRegEx = /[^\/]+$/
+
+queryYouTube = (url, data = {})->
+  defaultData = alt: 'json'
+  data = _.extend defaultData, data
+
+  request = $.ajax
+    dataType: 'JSONP'
+    url: baseUrl + url
+    data: data
+
+  request.then mapChannelDetails
+
+channelVideoId = (video)->
+  video.id.$t.match(youTubeIdRegEx)[0]
+
+playlistVideoId = (video)->
+  video.media$group.yt$videoid.$t
+
+mapChannelDetails = (result)->
+  result.feed.entry.map (video)->
+    channelId: video.yt$channelId.$t
+    title: video.title.$t
+    author: video.author[0].name.$t
+    thumb: video.media$thumbnail[0].url
+
+mapPlaylistDetails = (playlist)->
+  playlistId: playlist.yt$playlistId.$t
+  title: playlist.title.$t
+  thumb: playlist.media$group.media$thumbnail[0].url
+  count: playlist.gd$feedLink[0].countHint
+
+mapVideoDetails = (video, type)->
+  videoId = if type is 'channel'
+    channelVideoId video
+  else
+    playlistVideoId video
+
+  videoId: videoId
+  title: video.title.$t
+  published: video.published.$t
+  updated: video.updated.$t
+  thumb: video.media$group.media$thumbnail[0].url
+  duration: video.media$group.yt$duration.seconds
+
+getVideoCount = (results)->
+  results.feed.openSearch$totalResults.$t
+
+App.youTube =
+
+  searchChannels: (query)->
+    queryYouTube 'api/channels',
+      q: query
+      v: 2
+      'max-results': 10
+
+  getPlaylistsByChannel: (channelId)->
+    queryYouTube "api/users/#{channelId}/playlists"
+
+  getVideosByChannel: (channelId)->
+    queryYouTube "users/#{channelId}/uploads"
+
+  getVideosByPlaylist: (playlistId, page)->
+    query = queryYouTube "api/playlists/#{playlistId}",
+      v: 2
+      orderby: 'published'
+      'start-index': (page - 1) * 25 + 1
+
+  # getChannelInfo: (channelId)->
+  #   @queryYouTube "api/channels/#{channelId}", v : 2

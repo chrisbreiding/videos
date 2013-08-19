@@ -40,11 +40,24 @@ body {
   }
 }
 
-  .subscriptions-header {
+  .sub-header {
     margin-bottom: 10px;
   }
 
-  .subscription-search-region {
+
+    .edit-sub {
+      margin-top: 20px;
+    }
+
+  .sub-search-form {
+    display: none;
+  }
+
+  .show {
+    display: block;
+  }
+
+  .sub-search-region {
     margin: 10px 0;
 
     a {
@@ -61,7 +74,7 @@ body {
     }
   }
 
-  .subscription {
+  .sub {
     border-top: solid 1px darken($light-grey, 10%);
     font-size: .9em;
     padding: 10px 0;
@@ -123,7 +136,7 @@ body {
         }
       }
 
-  .delete-subscription {
+  .delete-sub {
     display: none;
 
     .editing & {
@@ -135,7 +148,7 @@ body {
     }
   }
 
-  .view-subscription {
+  .view-sub {
     margin-bottom: 8px;
 
     i {
@@ -143,7 +156,7 @@ body {
     }
   }
 
-  .add-subscription {
+  .add-sub {
     i {
       margin-right: 3px;
     }

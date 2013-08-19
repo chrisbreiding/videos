@@ -1,2 +1,2 @@
 App.Router.map ->
-  @resource 'channels'
+  @resource 'subs'
