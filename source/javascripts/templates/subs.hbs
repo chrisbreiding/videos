@@ -12,7 +12,7 @@
         <h3 class="pull-left">Subscriptions</h3>
 
         {{#if model}}
-          <a class="edit-subs btn btn-mini pull-right" href="#">
+          <a class="edit-subs btn btn-xs pull-right" href="#">
             <i class="icon-edit"></i>
             <span>Edit</span>
           </a>
@@ -32,7 +32,7 @@
     <div class="sub-search-region clearfix">
 
       <div class="sub-search-header clearfix">
-        <a href="#" class="btn btn-mini pull-right" {{action 'toggleSubSearch'}}>
+        <a href="#" class="btn btn-default btn-xs pull-right" {{action 'toggleSubSearch'}}>
           {{#if searchingSubs}}
             Done
           {{else}}
@@ -42,16 +42,18 @@
         </a>
       </div>
 
-      <form class="sub-search-form form-inline clearfix" {{action 'searchSubs' on="submit"}} {{bindAttr class="searchingSubs:show"}}>
-        {{view Ember.TextField valueBinding="subQuery"}}
-        <button class="btn btn-primary">
-          <i class="icon-search"></i>
-        </button>
-      </form>
+      {{#if searchingSubs}}
+        <form class="sub-search-form form-inline clearfix" {{action 'searchSubs' on="submit"}}>
+          {{view Ember.TextField valueBinding="subQuery" class="form-control"}}
+          <button class="btn btn-primary">
+            <i class="icon-search"></i>
+          </button>
+        </form>
 
-      {{#each subSearchResults}}
-        {{partial 'channel'}}
-      {{/each}}
+        {{#each subSearchResults}}
+          {{partial 'channel'}}
+        {{/each}}
+      {{/if}}
     </div>
 
   </div>

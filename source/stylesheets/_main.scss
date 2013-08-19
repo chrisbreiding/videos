@@ -1,7 +1,6 @@
 @import "compass";
 @import "compass/css3";
 @import "compass/layout";
-@import "lib/bootstrap/bootstrap";
 
 $light-grey: #d3d3d3;
 
@@ -33,7 +32,7 @@ body {
 .sidebar {
   float: left;
   padding: 10px 15px;
-  width: 260px;
+  width: 290px;
 
   h3 {
       font-size: 1.2em;
@@ -49,14 +48,6 @@ body {
       margin-top: 20px;
     }
 
-  .sub-search-form {
-    display: none;
-  }
-
-  .show {
-    display: block;
-  }
-
   .sub-search-region {
     margin: 10px 0;
 
@@ -66,7 +57,7 @@ body {
 
     form {
       input {
-        width: 192px;
+        width: 206px;
       }
       button {
         width: 50px;
@@ -236,4 +227,4 @@ body {
       }
     }
 
-@import "lib/font-awesome";
+@import "lib/font-awesome/font-awesome";

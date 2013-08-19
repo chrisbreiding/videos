@@ -3,6 +3,7 @@ App.SubsController = Ember.ArrayController.extend
   searchingSubs: false
 
   toggleSubSearch: ->
+    @set 'subSearchResults', []
     @set 'searchingSubs', !@get('searchingSubs')
 
   searchSubs: ->
