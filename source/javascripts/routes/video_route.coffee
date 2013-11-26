@@ -1,6 +1,7 @@
 App.VideoRoute = Ember.Route.extend
 
   model: (params)->
+    console.log 'video route model'
     App.youTube.getVideoById params.video_id
 
   serialize: (model)->
