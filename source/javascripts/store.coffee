@@ -1,2 +1,5 @@
 App.Store = DS.Store.extend
-  adapter: DS.LSAdapter.create()
+  adapter: 'App.LSAdapter'
+
+App.LSAdapter = DS.LSAdapter.extend
+  namespace: 'byt'

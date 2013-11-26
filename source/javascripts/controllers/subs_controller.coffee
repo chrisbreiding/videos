@@ -1,12 +1,27 @@
 App.SubsController = Ember.ArrayController.extend
 
-  searchingSubs: false
+  editing: false
+  searching: false
 
-  toggleSubSearch: ->
-    @set 'subSearchResults', []
-    @set 'searchingSubs', !@get('searchingSubs')
+  actions:
+    toggleEditing: ->
+      @set 'editing', !@get('editing')
 
-  searchSubs: ->
-    request = App.youTube.searchChannels @get('subQuery')
-    request.done (subs)=>
-      @set 'subSearchResults', subs
+    toggleSearching: ->
+      @set 'subSearchResults', []
+      @set 'subQuery', ''
+      @set 'searching', !@get('searching')
+
+    searchSubs: ->
+      request = App.youTube.searchChannels @get('subQuery')
+      request.done (subs)=>
+        @set 'subSearchResults', subs
+
+    add: (sub)->
+      App.Sub.createRecord sub
+      @get('subSearchResults').removeObject sub
+      @get('store').commit()
+
+    delete: (sub)->
+      sub.deleteRecord()
+      @get('store').commit()

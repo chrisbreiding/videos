@@ -1,0 +1,23 @@
+<div class="video clearfix">
+  <a href="#" class="play-video pull-left" {{action 'playVideo' this }}>
+    <img {{bindAttr src="thumb"}} width="150" />
+    <i class="icon-play-circle"></i>
+  </a>
+  <div class="video-info">
+    <h4>{{title}}</h4>
+    <p class="pub-date pull-right">{{date published}}</p>
+    <p class="duration">
+      <span class="label label-info">
+        <i class="icon-time"></i>
+        {{duration duration}}
+      </span>
+    </p>
+    <p class="watched">
+      {{#if watched}}
+        <a href="#" class="mark-unwatched">Mark Unwatched</a>
+      {{else}}
+        <a href="#" class="mark-watched">Mark Watched</a>
+      {{/if}}
+    </p>
+  </div>
+</div>

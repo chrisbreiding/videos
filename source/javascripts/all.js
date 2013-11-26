@@ -4,6 +4,7 @@
 //= require ember-data
 //= require lib/underscore
 //= require lib/ember-localstorage-adapter
+//= require lib/moment
 //= require ./app
 //= require ./store
 //= require_tree ./services

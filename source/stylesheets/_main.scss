@@ -57,9 +57,11 @@ body {
 
     form {
       input {
-        width: 206px;
+        float: left;
+        width: 200px;
       }
       button {
+        float: right;
         width: 50px;
       }
     }
@@ -171,8 +173,7 @@ body {
       border-top: none;
     }
 
-    h4,
-    .duration {
+    .video-info {
       margin-left: 165px;
     }
 
