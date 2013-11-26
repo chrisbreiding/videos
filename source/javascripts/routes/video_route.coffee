@@ -5,3 +5,8 @@ App.VideoRoute = Ember.Route.extend
 
   serialize: (model)->
     video_id: model.get 'videoId'
+
+  renderTemplate: ->
+    @render
+      into: 'application'
+      outlet: 'viewer'

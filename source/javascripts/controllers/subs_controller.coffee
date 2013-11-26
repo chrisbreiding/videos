@@ -25,3 +25,6 @@ App.SubsController = Ember.ArrayController.extend
     delete: (sub)->
       sub.deleteRecord()
       @get('store').commit()
+
+  renderTemplate: ->
+    @render outlet: 'main'

@@ -12,12 +12,7 @@ body {
 .video-region {
   background: #000;
   @include background(linear-gradient(top, #222, #000));
-  display: none;
   padding: 20px 0;
-
-  .video-open & {
-    display: block;
-  }
 }
 
   .current-video {
