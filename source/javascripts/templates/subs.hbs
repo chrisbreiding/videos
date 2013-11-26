@@ -8,7 +8,7 @@
         <h3 class="pull-left">Subscriptions</h3>
 
         {{#if model}}
-          <a href="#" {{bindAttr class="editing:active :edit-subs :btn :btn-default :btn-xs :pull-right"}} {{action 'toggleEditing'}}>
+          <a href="#" {{bind-attr class="editing:active :edit-subs :btn :btn-default :btn-xs :pull-right"}} {{action 'toggleEditing'}}>
           {{#if editing}}
             Done
           {{else}}
@@ -19,7 +19,7 @@
         {{/if}}
       </div>
 
-      <div {{bindAttr class=":subs editing"}}>
+      <div {{bind-attr class=":subs editing"}}>
         {{#each model}}
           {{partial 'sub'}}
         {{else}}
@@ -32,7 +32,7 @@
     <div class="sub-search-region clearfix">
 
       <div class="sub-search-header clearfix">
-        <a href="#" {{bindAttr class="searching:active :btn :btn-default :btn-xs :pull-right"}} {{action 'toggleSearching'}}>
+        <a href="#" {{bind-attr class="searching:active :btn :btn-default :btn-xs :pull-right"}} {{action 'toggleSearching'}}>
           {{#if searching}}
             Done
           {{else}}
