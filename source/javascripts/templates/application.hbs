@@ -1,2 +1,5 @@
-{{outlet viewer}}
-{{outlet main}}
+{{#if video}}
+  {{render 'now_playing' video}}
+{{/if}}
+
+{{outlet}}

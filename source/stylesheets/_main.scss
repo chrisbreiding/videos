@@ -9,13 +9,13 @@ body {
   @include background(linear-gradient(left, #e3e3e3, #e3e3e3 290px, #f8f8f8 291px, #f8f8f8));
 }
 
-.video-region {
+.now-playing {
   background: #000;
   @include background(linear-gradient(top, #222, #000));
   padding: 20px 0;
 }
 
-  .current-video {
+  .now-playing-video {
     margin: 0 auto;
     width: 960px;
   }
