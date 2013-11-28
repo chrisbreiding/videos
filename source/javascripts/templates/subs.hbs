@@ -5,16 +5,16 @@
     <div class="subs-region">
 
       <div class="subs-header clearfix">
-        <h3 class="pull-left">Subscriptions</h3>
+        <h2>Subscriptions</h2>
 
         {{#if model}}
-          <a href="#" {{bind-attr class="editing:active :edit-subs :btn :btn-default :btn-xs :pull-right"}} {{action 'toggleEditing'}}>
-          {{#if editing}}
-            Done
-          {{else}}
-            <i class="icon-edit"></i>
-            <span>Edit</span>
-          {{/if}}
+          <a href="#" {{bind-attr class="editing:active :edit-subs :btn"}} {{action 'toggleEditing'}}>
+            {{#if editing}}
+              Done
+            {{else}}
+              <i class="icon-edit"></i>
+              Edit
+            {{/if}}
           </a>
         {{/if}}
       </div>
@@ -32,27 +32,29 @@
     <div class="sub-search-region clearfix">
 
       <div class="sub-search-header clearfix">
-        <a href="#" {{bind-attr class="searching:active :btn :btn-default :btn-xs :pull-right"}} {{action 'toggleSearching'}}>
+        <a href="#" {{bind-attr class="searching:active :search-subs :btn"}} {{action 'toggleSearching'}}>
           {{#if searching}}
             Done
           {{else}}
             <i class="icon-plus"></i>
-            New Subscription
+            Add Subscription
           {{/if}}
         </a>
       </div>
 
       {{#if searching}}
-        <form class="sub-search-form form-inline clearfix" {{action 'searchSubs' on="submit"}}>
+        <form class="sub-search-form clearfix" {{action 'searchSubs' on="submit"}}>
           {{view App.TextField valueBinding="subQuery" class="form-control"}}
-          <button class="btn btn-primary">
+          <button>
             <i class="icon-search"></i>
           </button>
         </form>
 
-        {{#each subSearchResults}}
-          {{partial 'channel'}}
-        {{/each}}
+        <div class="sub-search-results">
+          {{#each subSearchResults}}
+            {{partial 'channel'}}
+          {{/each}}
+        </div>
       {{/if}}
     </div>
 

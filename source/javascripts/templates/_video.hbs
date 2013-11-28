@@ -1,23 +1,30 @@
-<div class="video clearfix">
-  <a href="#" class="play-video pull-left" {{action 'playVideo' this}}>
+<div {{bind-attr class="watched :video :clearfix"}}>
+
+  <a href="#" class="play-video" {{action 'playVideo' this}}>
     <img {{bind-attr src="thumb"}} width="150" />
-    <i class="icon-play-circle"></i>
+    <i class="icon-youtube-play"></i>
   </a>
+
   <div class="video-info">
+
     <h4>{{title}}</h4>
-    <p class="pub-date pull-right">{{date published}}</p>
+
     <p class="duration">
-      <span class="label label-info">
-        <i class="icon-time"></i>
-        {{duration duration}}
-      </span>
+      <i class="icon-time"></i>
+      {{duration duration}}
     </p>
-    <p class="watched">
+
+    <a href="#" class="toggle-watched" {{action 'toggleWatched' this}}>
+      <i {{bind-attr class="watched:icon-eye-close:icon-eye-open"}}></i>
       {{#if watched}}
-        <a href="#" class="mark-unwatched">Mark Unwatched</a>
+        Mark Unwatched
       {{else}}
-        <a href="#" class="mark-watched">Mark Watched</a>
+        Mark Watched
       {{/if}}
-    </p>
+    </a>
+    <p class="pub-date">{{date published}}</p>
+
+
   </div>
+
 </div>

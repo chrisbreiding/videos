@@ -1,19 +1,14 @@
 <div class="sub clearfix">
-  <img class="pull-left" {{bind-attr src="thumb"}} width="50" height="50" />
-  <p class="buttons pull-right">
-    {{#link-to 'sub' this class="view-sub btn btn-default btn-sm"}}
-      View
-      <i class="icon-chevron-right"></i>
-    {{/link-to}}
-    <a href="#" class="toggle-playlists">
-      Playlists
-      <i class="icon-chevron-down"></i>
-    </a>
-  </p>
-  <a href="#" class="delete-sub pull-right btn btn-danger btn-sm" {{action "delete" this}}>
+  <img {{bind-attr src=thumb}} width="70" height="70" />
+  {{#link-to 'sub' this class="view-sub" title="View"}}
+    <i class="icon-chevron-right"></i>
+  {{/link-to}}
+  <a href="#" class="delete-sub" title="Delete" {{action "delete" this}}>
     <i class="icon-minus-sign"></i>
-    Delete
   </a>
-  <h4>{{title}}</h4>
-  <p>{{author}}</p>
+  <h3>{{author}}</h3>
+  <a href="#" class="toggle-playlists">
+    <i class="icon-chevron-down"></i>
+    Playlists
+  </a>
 </div>

@@ -1,6 +1,7 @@
 <div class="sub clearfix">
-  <img class="pull-left" {{bind-attr src="thumb"}} width="50" height="50" />
-  <a class="add-sub pull-right btn btn-success btn-sm" href="#" {{action 'add' this}}><i class="icon-plus"></i></a>
-  <h4>{{title}}</h4>
-  <p>{{author}}</p>
+  <img class="pull-left" {{bind-attr src="thumb"}} width="70" height="70" />
+  <a href="#" class="add-sub pull-right btn btn-success btn-sm" title="Add" {{action 'add' this}}>
+    <i class="icon-plus"></i>
+  </a>
+  <h3>{{author}}</h3>
 </div>
