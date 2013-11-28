@@ -7,6 +7,11 @@ App.ApplicationRoute = Ember.Route.extend
     controller.set 'video', video
 
   actions:
+
     playVideo: (video)->
       @get('controller').set 'video', video
       localStorage.setItem 'nowPlaying', JSON.stringify(video)
+
+    closeVideo: ->
+      @get('controller').set 'video', null
+      localStorage.removeItem 'nowPlaying'

@@ -31,11 +31,40 @@ body {
   background: #000;
   @include background(linear-gradient(top, #222, #000));
   padding: 20px 0;
+  position: relative;
 }
 
   .now-playing-video {
     margin: 0 auto;
     width: 960px;
+  }
+
+  a.close-now-playing {
+    background: #000;
+    border-bottom-left-radius: 3px;
+    color: #f8f8f8;
+    font-size: 1.7em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: center;
+
+    &,
+    i {
+      display: block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+    }
+
+    i {
+      @include opacity(0.5);
+    }
+
+    &:hover i,
+    &:focus i {
+      @include opacity(1);
+    }
   }
 
 .main {
@@ -326,7 +355,8 @@ body {
 
     .pub-date {
       float: right;
-      margin: 15px 0;
+      margin: 8px 0;
+      text-align: right;
 
       span {
         color: #a4a4a4;
