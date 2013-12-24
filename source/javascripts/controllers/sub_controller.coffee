@@ -1,5 +1,9 @@
 App.SubController = Ember.ObjectController.extend
 
   actions:
+
     toggleWatched: (video)->
-      video.set 'watched', !video.get('watched')
+      watched = video.get 'watched'
+      action = if watched then 'remove' else 'add'
+      App.Store.List[action] 'watched_videos', video.get('videoId')
+      video.set 'watched', !watched

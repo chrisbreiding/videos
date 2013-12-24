@@ -26,9 +26,37 @@ Single = Ember.Object.extend
     App.Store._data.singles
 
 
+List = Ember.Object.extend
+
+  add: (type, record)->
+    @_recordsForType(type).push record
+    App.Store._saveData()
+    Ember.RSVP.resolve record
+
+  remove: (type, record)->
+    storedRecords = @_recordsForType type
+    App.Store._data.lists[type] = _.reject storedRecords, (storedRecord)->
+      record is storedRecord
+    App.Store._saveData()
+    Ember.RSVP.resolve()
+
+  has: (type, record)->
+    Ember.RSVP.resolve _.contains(@_recordsForType(type), record)
+
+  _recordsForType: (type)->
+    unless App.Store._data.lists?
+      App.Store._data.lists = {}
+
+    unless App.Store._data.lists[type]?
+      App.Store._data.lists[type] = []
+
+    App.Store._data.lists[type]
+
+
 Store = Ember.Object.extend
 
   Single: Single.create()
+  List: List.create()
 
   init: ->
     @_loadData()
@@ -87,14 +115,14 @@ Store = Ember.Object.extend
       null
 
   _recordForType: (type, id)->
-    unless @_data[type]?['records']?
+    unless @_data[type]?.records?
       @_data[type] = records: {}
 
-    @_data[type]['records'][id]
+    @_data[type].records[id]
 
   _recordsForType: (type)->
-    if @_data[type]? and @_data[type]['records']?
-      @_data[type]['records']
+    if @_data[type]? and @_data[type].records?
+      @_data[type].records
     else
       @_data[type] = records: {}
       {}
