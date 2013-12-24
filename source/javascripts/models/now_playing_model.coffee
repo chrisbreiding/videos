@@ -3,11 +3,10 @@ App.NowPlaying = Ember.Object.extend()
 App.NowPlaying.reopenClass
 
   get: ->
-    App.Store.find 'now_playing', 1
+    App.Store.Single.find 'now_playing'
 
   set: (record)->
-    App.Store.createRecordWithId 'now_playing', record, 1
+    App.Store.Single.createRecord 'now_playing', record
 
   destroy: ->
-    App.Store.find('now_playing', 1).then (record)->
-      App.Store.deleteRecord 'now_playing', record
+    App.Store.Single.deleteRecord 'now_playing'

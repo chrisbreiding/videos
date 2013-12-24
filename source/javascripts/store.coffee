@@ -1,6 +1,34 @@
 NAMESPACE = 'byt'
 
+Single = Ember.Object.extend
+
+  find: (type)->
+    record = @_namespace()[type]
+    if record
+      Ember.RSVP.resolve record
+    else
+      Ember.RSVP.reject()
+
+  createRecord: (type, record)->
+    @_namespace()[type] = record
+    App.Store._saveData()
+    Ember.RSVP.resolve record
+
+  deleteRecord: (type)->
+    delete @_namespace()[type]
+    App.Store._saveData()
+    Ember.RSVP.resolve()
+
+  _namespace: ->
+    unless App.Store._data.singles?
+      App.Store._data.singles = {}
+
+    App.Store._data.singles
+
+
 Store = Ember.Object.extend
+
+  Single: Single.create()
 
   init: ->
     @_loadData()
