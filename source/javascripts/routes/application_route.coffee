@@ -1,17 +1,15 @@
 App.ApplicationRoute = Ember.Route.extend
 
   setupController: (controller)->
-    nowPlaying = localStorage.getItem 'nowPlaying'
-    return unless nowPlaying
-    video = JSON.parse nowPlaying
-    controller.set 'video', video
+    App.NowPlaying.get().then (nowPlaying)->
+      controller.set('nowPlaying', nowPlaying) if nowPlaying
 
   actions:
 
     playVideo: (video)->
-      @get('controller').set 'video', video
-      localStorage.setItem 'nowPlaying', JSON.stringify(video)
+      @get('controller').set 'nowPlaying', video
+      App.NowPlaying.set video
 
     closeVideo: ->
-      @get('controller').set 'video', null
-      localStorage.removeItem 'nowPlaying'
+      App.NowPlaying.destroy()
+      @get('controller').set 'nowPlaying', null

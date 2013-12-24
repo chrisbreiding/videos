@@ -18,10 +18,10 @@ App.SubsController = Ember.ArrayController.extend
         @set 'subSearchResults', subs
 
     add: (sub)->
-      App.Sub.createRecord sub
+      App.Sub.createRecord(sub).then (record)=>
+        @addObject record
       @get('subSearchResults').removeObject sub
-      @get('store').commit()
 
     delete: (sub)->
-      sub.deleteRecord()
-      @get('store').commit()
+      @removeObject sub
+      App.Sub.deleteRecord sub
