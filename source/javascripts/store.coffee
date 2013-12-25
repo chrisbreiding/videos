@@ -68,7 +68,10 @@ Store = Ember.Object.extend
     else
       found = @_findAll type
 
-    Ember.RSVP.resolve found
+    if found?
+      Ember.RSVP.resolve found
+    else
+      Ember.RSVP.reject()
 
   createRecord: (type, record)->
     @createRecordWithId type, record, @_randomId()
