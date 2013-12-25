@@ -59,36 +59,44 @@ Store = Ember.Object.extend
   List: List.create()
 
   init: ->
+    @cache = {}
     @_loadData()
 
   find: (type, id)->
     if id?
       found = @_findById type, id
     else
-      found = @_findAll type, id
+      found = @_findAll type
 
     Ember.RSVP.resolve found
 
   createRecord: (type, record)->
-    createRecordWithId type, record, @_randomId()
+    @createRecordWithId type, record, @_randomId()
 
   createRecordWithId: (type, record, id)->
     record.id = id
     record = @_namespaceForType(type).create record
     records = @_recordsForType type
     records[id] = record
+    unless @cache[type]?
+      @cache[type] = {}
+    @cache[type][id] = record
     @_saveData()
     Ember.RSVP.resolve record
 
   updateRecord: (type, record)->
     records = @_recordsForType type
-    records[record.get('id')] = record
+    id = record.get 'id'
+    records[id] = record
+    @cache[type][id] = record
     @_saveData()
     Ember.RSVP.resolve record
 
   deleteRecord: (type, record)->
     records = @_recordsForType type
-    delete records[record.get('id')]
+    id = record.get 'id'
+    delete records[id]
+    delete @cache[type][id]
     @_saveData()
     Ember.RSVP.resolve()
 
@@ -103,16 +111,25 @@ Store = Ember.Object.extend
     return Math.random().toString(32).slice(2).substr(0, 5)
 
   _findById: (type, id)->
-    record = @_recordForType(type, id)
-    record and @_namespaceForType(type).create record
+    unless @cache[type]?
+      @cache[type] = Em.A()
 
-  _findAll: (type, id)->
-    records = @_recordsForType type
-    if Object.keys(records).length > 0
-      namespace = @_namespaceForType type
-      Em.A (namespace.create(record) for id, record of records)
-    else
-      null
+    record = _.find @cache[type], (record)-> id is record.get 'id'
+
+    unless record?
+      record = @_recordForType(type, id)
+      if record
+        record = @_namespaceForType(type).create record
+        @cache[type].push record
+
+    record
+
+  _findAll: (type)->
+    unless @cache[type]?
+      records = @_recordsForType type
+      @cache[type] = Em.A (@_findById type, id for id, record of records)
+
+    @cache[type]
 
   _recordForType: (type, id)->
     unless @_data[type]?.records?
