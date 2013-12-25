@@ -20,13 +20,13 @@ playlistVideoId = (video)->
 
 mapChannelDetails = (result)->
   result.feed.entry.map (channel)->
-    channelId: channel.yt$channelId.$t
+    id: channel.yt$channelId.$t
     title: channel.title.$t
     author: channel.author[0].name.$t
     thumb: channel.media$thumbnail[0].url
 
 mapPlaylistDetails = (playlist)->
-  playlistId: playlist.yt$playlistId.$t
+  id: playlist.yt$playlistId.$t
   title: playlist.title.$t
   thumb: playlist.media$group.media$thumbnail[0].url
   count: playlist.gd$feedLink[0].countHint
@@ -37,7 +37,7 @@ parseVideoDetails = (video, type)->
   else
     playlistVideoId video
 
-  videoId: videoId
+  id: videoId
   title: video.title.$t
   published: video.published.$t
   updated: video.updated.$t

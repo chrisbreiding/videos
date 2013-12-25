@@ -74,7 +74,7 @@ Store = Ember.Object.extend
       Ember.RSVP.reject()
 
   createRecord: (type, record)->
-    @createRecordWithId type, record, @_randomId()
+    @createRecordWithId type, record, (record.id || @_randomId())
 
   createRecordWithId: (type, record, id)->
     record.id = id
