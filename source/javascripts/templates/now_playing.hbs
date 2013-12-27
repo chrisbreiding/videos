@@ -1,11 +1,5 @@
 <div class="now-playing">
-  <div class="now-playing-video">
-    <iframe
-      width="960" height="540"
-      frameborder="0" allowfullscreen
-      {{bind-attr src=src}}>
-    </iframe>
-  </div>
+  {{youtube-player videoId=id autoplay=autoplay}}
   <a href="#" class="close-now-playing btn" {{action 'closeVideo'}}>
     <i class="icon-remove"></i>
   </a>

@@ -1,6 +1,7 @@
 //= require lib/jquery
 //= require handlebars
 //= require ember
+//= require lib/youtube-iframe-api
 //= require lib/underscore
 //= require lib/moment
 //= require ./app
