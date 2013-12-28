@@ -345,7 +345,8 @@ body {
     padding: 10px;
 
     &.watched {
-      opacity: 0.6;
+      background: #e3e3e3;
+      opacity: 0.4;
     }
 
     &:first-of-type {
