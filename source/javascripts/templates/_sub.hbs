@@ -1,10 +1,13 @@
-<div class="sub clearfix">
+<div {{bind-attr class="default :sub :clearfix"}}>
   <img {{bind-attr src=thumb}} width="70" height="70" />
   {{#link-to 'sub' this class="view-sub" title="View"}}
     <i class="icon-chevron-right"></i>
   {{/link-to}}
   <a href="#" class="delete-sub" title="Delete" {{action "delete" this}}>
     <i class="icon-minus-sign"></i>
+  </a>
+  <a href="#" class="make-sub-default" title="Make Default" {{action 'makeDefault' this}}>
+    <i class="icon-star-empty"></i>
   </a>
   <h3>{{author}}</h3>
   <a href="#" class="toggle-playlists">

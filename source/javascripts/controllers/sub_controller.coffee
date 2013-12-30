@@ -2,6 +2,8 @@ App.SubController = Ember.ObjectController.extend
 
   needs: 'application'
 
+  isDefault: true
+
   setVideoWatched: (video, watched)->
     action = if watched then 'add' else 'remove'
     App.Store.List[action] "watched_videos_#{@get('id')}", video.get('id')

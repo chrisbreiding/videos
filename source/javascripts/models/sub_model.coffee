@@ -8,5 +8,8 @@ App.Sub.reopenClass
   createRecord: (record)->
     App.Store.createRecord 'sub', record
 
+  updateRecord: (record)->
+    App.Store.updateRecord 'sub', record
+
   deleteRecord: (record)->
     App.Store.deleteRecord 'sub', record

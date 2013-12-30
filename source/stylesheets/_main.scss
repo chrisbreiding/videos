@@ -212,6 +212,20 @@ body {
       }
     }
 
+    a.make-sub-default {
+      display: none;
+      position: absolute;
+      top: 5px;
+      right: 35px;
+      text-decoration: none;
+
+      .sub:hover &,
+      .default & {
+        display: inline;
+      }
+    }
+
+
     a.toggle-playlists {
       color: #797979;
       display: block;
