@@ -14,25 +14,27 @@ App.SubAdapter = App.ApplicationAdapter.extend
     App.LS.get(type).then (data)->
       data.records[id]
 
-  save: ->
-    debugger
-
   createRecord: (store, type, record)->
+    @_saveRecord store, type, record
+
+  updateRecord: (store, type, record)->
+    @_saveRecord store, type, record
+
+  deleteRecord: (store, type, record)->
+    id = record.get 'id'
+    App.LS.get(type).then (data)->
+      delete data.records[id] if data.records?[id]?
+      App.LS.set(type, data).then -> record
+
+  _saveRecord: (store, type, record)->
     id = record.get 'id'
     App.LS.get(type).then (data)->
       data.records ||= {}
-      newRecord =
+      savedRecord =
         id: record.get 'id'
         title: record.get 'title'
         author: record.get 'author'
         thumb: record.get 'thumb'
         default: false
-      data.records[id] = newRecord
-      App.LS.set type, data
-      newRecord
-
-  deleteRecord: ->
-    debugger
-
-  destroyRecord: ->
-    debugger
+      data.records[id] = savedRecord
+      App.LS.set(type, data).then -> savedRecord
