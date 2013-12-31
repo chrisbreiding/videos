@@ -2,9 +2,10 @@ App.ApplicationController = Ember.Controller.extend
 
   init: ->
     @_super()
-    App.NowPlaying.get().then (nowPlaying)=>
-      if nowPlaying
-        @playVideo nowPlaying, false
+    console.log 'unimplemented - ApplicationController#init'
+    # App.NowPlaying.get().then (nowPlaying)=>
+    #   if nowPlaying
+    #     @playVideo nowPlaying, false
 
   playVideo: (video, autoplay)->
     video.autoplay = autoplay
@@ -13,9 +14,11 @@ App.ApplicationController = Ember.Controller.extend
   actions:
 
     playVideo: (video)->
-      App.NowPlaying.set video
+      console.log 'incomplete implementation - ApplicationController#playVideo'
+      # App.NowPlaying.set video
       @playVideo video, true
 
     closeVideo: ->
-      App.NowPlaying.destroy()
+      console.log 'incomplete implementation - ApplicationController#destroy'
+      # App.NowPlaying.destroy()
       @set 'nowPlaying', null

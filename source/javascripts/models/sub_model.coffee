@@ -1,15 +1,38 @@
-App.Sub = Ember.Object.extend()
+App.Sub = DS.Model.extend
+  title:   DS.attr 'string'
+  author:  DS.attr 'string'
+  thumb:   DS.attr 'string'
+  default: DS.attr 'boolean'
 
-App.Sub.reopenClass
+App.SubAdapter = App.ApplicationAdapter.extend
 
-  find: (id)->
-    App.Store.find 'sub', id
+  findAll: (store, type)->
+    App.LS.get(type).then (data)->
+      (record for key, record of data.records)
 
-  createRecord: (record)->
-    App.Store.createRecord 'sub', record
+  find: (store, type, id)->
+    App.LS.get(type).then (data)->
+      data.records[id]
 
-  updateRecord: (record)->
-    App.Store.updateRecord 'sub', record
+  save: ->
+    debugger
 
-  deleteRecord: (record)->
-    App.Store.deleteRecord 'sub', record
+  createRecord: (store, type, record)->
+    id = record.get 'id'
+    App.LS.get(type).then (data)->
+      data.records ||= {}
+      newRecord =
+        id: record.get 'id'
+        title: record.get 'title'
+        author: record.get 'author'
+        thumb: record.get 'thumb'
+        default: false
+      data.records[id] = newRecord
+      App.LS.set type, data
+      newRecord
+
+  deleteRecord: ->
+    debugger
+
+  destroyRecord: ->
+    debugger

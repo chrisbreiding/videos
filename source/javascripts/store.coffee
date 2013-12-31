@@ -1,153 +1,71 @@
-NAMESPACE = 'byt'
+App.ApplicationAdapter = DS.Adapter.extend()
 
-Single = Ember.Object.extend
+namespaceify = (text)->
+  "#{App.NAMESPACE}_#{text}"
 
-  find: (type)->
-    record = @_namespace()[type]
-    if record
-      Ember.RSVP.resolve record
-    else
-      Ember.RSVP.reject()
+App.LS =
 
-  createRecord: (type, record)->
-    @_namespace()[type] = record
-    App.Store._saveData()
-    Ember.RSVP.resolve record
+  get: (key)->
+    key = namespaceify key
+    Ember.RSVP.resolve JSON.parse(localStorage.getItem(key) || '{}')
 
-  deleteRecord: (type)->
-    delete @_namespace()[type]
-    App.Store._saveData()
-    Ember.RSVP.resolve()
-
-  _namespace: ->
-    unless App.Store._data.singles?
-      App.Store._data.singles = {}
-
-    App.Store._data.singles
+  set: (key, value)->
+    key = namespaceify key
+    localStorage.setItem key, JSON.stringify(value)
+    Ember.RSVP.resolve value
 
 
-List = Ember.Object.extend
-
-  add: (type, record)->
-    @_recordsForType(type).push record
-    App.Store._saveData()
-    Ember.RSVP.resolve record
-
-  remove: (type, record)->
-    storedRecords = @_recordsForType type
-    App.Store._data.lists[type] = _.reject storedRecords, (storedRecord)->
-      record is storedRecord
-    App.Store._saveData()
-    Ember.RSVP.resolve()
-
-  has: (type, record)->
-    Ember.RSVP.resolve _.contains(@_recordsForType(type), record)
-
-  _recordsForType: (type)->
-    unless App.Store._data.lists?
-      App.Store._data.lists = {}
-
-    unless App.Store._data.lists[type]?
-      App.Store._data.lists[type] = []
-
-    App.Store._data.lists[type]
-
-
-Store = Ember.Object.extend
-
-  Single: Single.create()
-  List: List.create()
-
-  init: ->
-    @cache = {}
-    @_loadData()
-
-  find: (type, id)->
-    if id?
-      found = @_findById type, id
-    else
-      found = @_findAll type
-
-    if found?
-      Ember.RSVP.resolve found
-    else
-      Ember.RSVP.reject()
-
-  createRecord: (type, record)->
-    @createRecordWithId type, record, (record.id || @_randomId())
-
-  createRecordWithId: (type, record, id)->
-    record.id = id
-    record = @_namespaceForType(type).create record
-    records = @_recordsForType type
-    records[id] = record
-    unless @cache[type]?
-      @cache[type] = {}
-    @cache[type][id] = record
-    @_saveData()
-    Ember.RSVP.resolve record
-
-  updateRecord: (type, record)->
-    records = @_recordsForType type
-    id = record.get 'id'
-    records[id] = record
-    @cache[type][id] = record
-    @_saveData()
-    Ember.RSVP.resolve record
-
-  deleteRecord: (type, record)->
-    records = @_recordsForType type
-    id = record.get 'id'
-    delete records[id]
-    delete @cache[type][id]
-    @_saveData()
-    Ember.RSVP.resolve()
-
-  _loadData: ->
-    storage = localStorage.getItem NAMESPACE
-    @_data = if storage then JSON.parse(storage) else {}
-
-  _saveData: ->
-    localStorage.setItem NAMESPACE, JSON.stringify(@_data)
-
-  _randomId: ->
-    return Math.random().toString(32).slice(2).substr(0, 5)
-
-  _findById: (type, id)->
-    unless @cache[type]?
-      @cache[type] = Em.A()
-
-    record = _.find @cache[type], (record)-> id is record.get 'id'
-
-    unless record?
-      record = @_recordForType(type, id)
-      if record
-        record = @_namespaceForType(type).create record
-        @cache[type].push record
-
-    record
-
-  _findAll: (type)->
-    unless @cache[type]?
-      records = @_recordsForType type
-      @cache[type] = Em.A (@_findById type, id for id, record of records)
-
-    @cache[type]
-
-  _recordForType: (type, id)->
-    unless @_data[type]?.records?
-      @_data[type] = records: {}
-
-    @_data[type].records[id]
-
-  _recordsForType: (type)->
-    if @_data[type]? and @_data[type].records?
-      @_data[type].records
-    else
-      @_data[type] = records: {}
-      {}
-
-  _namespaceForType: (type)->
-    App[type.classify()]
-
-App.Store = Store.create()
+# {
+#     "sub": {
+#         "records": {
+#             "UCJTWU5K7kl9EE109HBeoldA": {
+#                 "id": "UCJTWU5K7kl9EE109HBeoldA",
+#                 "title": "Generikb",
+#                 "author": "Generikb",
+#                 "thumb": "https://lh6.googleusercontent.com/-YzwncYuIejo/AAAAAAAAAAI/AAAAAAAAAAA/lmWTWrVXTbA/photo.jpg",
+#                 "videos": [],
+#                 "default": true
+#             },
+#             "UCP6f9x4iXk3LH8Q1sqJmYPQ": {
+#                 "id": "UCP6f9x4iXk3LH8Q1sqJmYPQ",
+#                 "title": "paulsoaresjr",
+#                 "author": "paulsoaresjr",
+#                 "thumb": "https://lh5.googleusercontent.com/-lHQGaB6kiOg/AAAAAAAAAAI/AAAAAAAAAAA/W7sE98_H3o0/photo.jpg",
+#                 "videos": [],
+#                 "default": false
+#             }
+#         }
+#     },
+#     "singles": {},
+#     "lists": {
+#         "watched_videos_UCJTWU5K7kl9EE109HBeoldA": [
+#             "F14KqWVTQ6E",
+#             "Qr3MiKUtZ0c",
+#             "7dH7_7ywGkc",
+#             "BsOkMIa5ILE",
+#             "6jFHV4Rjf20",
+#             "opdHrl78Lec",
+#             "iiRfMrb0Vno",
+#             "F-65qj45Ov8",
+#             "RI7tRjkdg6A",
+#             "k2fUbzfBQf8",
+#             "XugTuQuAA_o",
+#             "7LvdbDrIvJU",
+#             "Nhk2bbDLUrw",
+#             "YFg__-LJaVk",
+#             "Bg5pvCT5H3E",
+#             "Ozb1n4LdwR4",
+#             "oSPsprKQaDA",
+#             "RgBc0jX9S7A",
+#             "17k367y7xqk",
+#             "CI9fL9Nlfh0",
+#             "4OrUPkW7n3w",
+#             "skYPyELYx00"
+#],
+#         "watched_videos_UCP6f9x4iXk3LH8Q1sqJmYPQ": [
+#             "a84NKsIQG1c",
+#             "q9DL36N4ta4",
+#             "gsLZzAht9_0"
+#]
+#     }
+# }

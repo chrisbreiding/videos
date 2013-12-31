@@ -5,18 +5,16 @@ set :fonts_dir, 'fonts'
 
 activate :ember
 
-# Build-specific configuration
+configure :development do
+  set :debug_assets, true
+end
+
 configure :build do
-  # For example, change the Compass output style for deployment
   activate :minify_css
-
-  # Minify Javascript on build
   activate :minify_javascript
-
-  # Enable cache buster
+  # cache buster
   activate :asset_hash
-
-  # Use relative URLs
+  # use relative URLs
   activate :relative_assets
 end
 
