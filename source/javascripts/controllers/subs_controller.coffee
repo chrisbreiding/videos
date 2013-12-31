@@ -11,6 +11,7 @@ App.SubsController = Ember.ArrayController.extend
   #     sub.set 'videos', videos
 
   actions:
+
     toggleEditing: ->
       @set 'editing', !@get('editing')
 
@@ -26,9 +27,7 @@ App.SubsController = Ember.ArrayController.extend
 
     add: (sub)->
       @get('subSearchResults').removeObject sub
-      # @addObject sub
-      record = @store.createRecord 'sub', sub
-      record.save()
+      @store.createRecord('sub', sub).save()
 
     delete: (sub)->
       @removeObject sub
