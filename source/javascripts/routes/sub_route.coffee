@@ -1,15 +1,15 @@
 App.SubRoute = Ember.Route.extend
 
-  # setupController: (controller, model)->
-  #   controller.set 'model', model
-  #   id = model.get 'id'
-  #   App.youTube.getVideosByChannel(id).then (videos)=>
-  #     model.set 'videos', Ember.ArrayProxy.create content: videos.map (video)=>
-  #       videoModel = Ember.Object.create video
-  #       @setWatched model, videoModel
-  #       videoModel
+  setupController: (controller, model)->
+    controller.set 'model', model
+    id = model.get 'id'
+    App.youTube.getVideosByChannel(id).then (videos)=>
+      model.set 'videos', Ember.ArrayProxy.create content: videos.map (video)=>
+        videoModel = Ember.Object.create video
+        @setWatched videoModel
+        videoModel
 
-  setWatched: (model, video)->
-    console.log 'unimplemented - SubRoute#setWatched'
-    # App.Store.List.has("watched_videos_#{model.get('id')}", video.get('id')).then (watched)=>
-    #   video.set 'watched', watched
+  setWatched: (video)->
+    @store.find('watched_video').then (watchedVideos)=>
+      video.set 'watched', _.any watchedVideos.get('content'), (watchedVideo)->
+        video.get('id') is watchedVideo.get('id')

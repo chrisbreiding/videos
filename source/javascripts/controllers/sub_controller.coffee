@@ -5,10 +5,12 @@ App.SubController = Ember.ObjectController.extend
   isDefault: true
 
   setVideoWatched: (video, watched)->
-    console.log 'unimplemented - SubController#setVideoWatched'
-    # action = if watched then 'add' else 'remove'
-    # App.Store.List[action] "watched_videos_#{@get('id')}", video.get('id')
-    # video.set 'watched', watched
+    video.set 'watched', watched
+    if watched
+      @store.createRecord('watched_video', id: video.get('id')).save()
+    else
+      @store.find('watched_video', video.get('id')).then (watchedVideo)->
+        watchedVideo.destroyRecord()
 
   actions:
 
