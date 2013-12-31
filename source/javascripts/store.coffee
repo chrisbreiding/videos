@@ -1,11 +1,11 @@
 App.ApplicationAdapter = DS.Adapter.extend
 
   findAll: (store, type)->
-    App.LS.get(type).then (data)->
+    App.ls.get(type).then (data)->
       (record for key, record of data.records)
 
   find: (store, type, id)->
-    App.LS.get(type).then (data)->
+    App.ls.get(type).then (data)->
       data.records[id]
 
   createRecord: (store, type, record)->
@@ -16,33 +16,17 @@ App.ApplicationAdapter = DS.Adapter.extend
 
   deleteRecord: (store, type, record)->
     id = record.get 'id'
-    App.LS.get(type).then (data)->
+    App.ls.get(type).then (data)->
       delete data.records[id] if data.records?[id]?
-      App.LS.set(type, data).then -> record
+      App.ls.set(type, data).then -> record
 
   _saveRecord: (store, type, record)->
     id = record.get 'id'
-    App.LS.get(type).then (data)->
+    App.ls.get(type).then (data)->
       data.records ||= {}
       savedRecord = type.serialize record
       data.records[id] = savedRecord
-      App.LS.set(type, data).then -> savedRecord
-
-
-namespaceify = (text)->
-  "#{App.NAMESPACE}_#{text}"
-
-App.LS =
-
-  get: (key)->
-    key = namespaceify key
-    Ember.RSVP.resolve JSON.parse(localStorage.getItem(key) || '{}')
-
-  set: (key, value)->
-    key = namespaceify key
-    localStorage.setItem key, JSON.stringify(value)
-    Ember.RSVP.resolve value
-
+      App.ls.set(type, data).then -> savedRecord
 
 # {
 #     "sub": {
