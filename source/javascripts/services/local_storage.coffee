@@ -1,5 +1,5 @@
 namespaceify = (text)->
-  "#{App.NAMESPACE}_#{text}"
+  "#{App.NAMESPACE}.#{text}"
 
 LS = Ember.Object.extend
 
