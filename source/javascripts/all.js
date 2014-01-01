@@ -2,7 +2,6 @@
 //= require lib/handlebars
 //= require lib/ember
 //= require lib/ember-data
-//= require lib/youtube-iframe-api
 //= require lib/underscore
 //= require lib/moment
 //= require ./app
@@ -11,6 +10,7 @@
 //= require_tree ./models
 //= require_tree ./controllers
 //= require_tree ./components
+//= require lib/youtube-iframe-api
 //= require_tree ./views
 //= require_tree ./helpers
 //= require_tree ./templates

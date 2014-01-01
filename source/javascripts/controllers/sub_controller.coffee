@@ -2,8 +2,6 @@ App.SubController = Ember.ObjectController.extend
 
   needs: 'application'
 
-  isDefault: true
-
   setVideoWatched: (video, watched)->
     video.set 'watched', watched
     if watched
@@ -15,7 +13,7 @@ App.SubController = Ember.ObjectController.extend
   actions:
 
     playVideo: (video)->
-      @setVideoWatched video, true
+      @setVideoWatched video, true if not video.get 'watched'
       @get('controllers.application').send 'playVideo', video
 
     toggleWatched: (video)->

@@ -2,23 +2,27 @@ App.ApplicationController = Ember.Controller.extend
 
   init: ->
     @_super()
-    console.log 'unimplemented - ApplicationController#init'
-    # App.NowPlaying.get().then (nowPlaying)=>
-    #   if nowPlaying
-    #     @playVideo nowPlaying, false
+    @store.find('now_playing').then (nowPlaying)=>
+      if nowPlaying.get('content').length
+        @playVideo nowPlaying.get('firstObject'), false
+
+  serializedVideo: (video)->
+    videoId: video.get 'id'
+    title: video.get 'title'
+    time: 0
 
   playVideo: (video, autoplay)->
-    video.autoplay = autoplay
+    video.set 'autoplay', autoplay
     @set 'nowPlaying', video
 
   actions:
 
     playVideo: (video)->
-      console.log 'incomplete implementation - ApplicationController#playVideo'
-      # App.NowPlaying.set video
-      @playVideo video, true
+      record = @store.createRecord 'now_playing', @serializedVideo(video)
+      record.save().then (nowPlaying)=>
+        @playVideo nowPlaying, true
 
     closeVideo: ->
-      console.log 'incomplete implementation - ApplicationController#destroy'
-      # App.NowPlaying.destroy()
-      @set 'nowPlaying', null
+      @store.find('now_playing').then (nowPlaying)=>
+        nowPlaying.get('firstObject').destroyRecord()
+        @set 'nowPlaying', null

@@ -1,15 +1,33 @@
-App.NowPlaying = Ember.Object.extend()
+App.NowPlaying = DS.Model.extend
+  videoId: DS.attr 'string'
+  title: DS.attr 'string'
+  time: DS.attr 'number'
 
 App.NowPlaying.reopenClass
 
-  get: ->
-    console.log 'unimplemented - NowPlaying.get'
-    # App.Store.Single.find 'now_playing'
+  serialize: (record)->
+    id: '1'
+    videoId: record.get 'videoId'
+    title: record.get 'title'
+    time: record.get('time') || 0
 
-  set: (record)->
-    console.log 'unimplemented - NowPlaying.set'
-    # App.Store.Single.createRecord 'now_playing', record
+App.NowPlayingAdapter = App.ApplicationAdapter.extend
 
-  destroy: ->
-    console.log 'unimplemented - NowPlaying.destroy'
-    # App.Store.Single.deleteRecord 'now_playing'
+  findAll: (store, type, id)->
+    App.ls.get(type).then (data)->
+      unless Object.keys(data).length
+        data = []
+      data
+
+  createRecord: (store, type, record)->
+    @_saveRecord store, type, record
+
+  updateRecord: (store, type, record)->
+    @_saveRecord store, type, record
+
+  deleteRecord: (store, type, record)->
+    App.ls.set(type, []).then -> type.serialize record
+
+  _saveRecord: (store, type, record)->
+    savedRecord = type.serialize record
+    App.ls.set(type, [savedRecord]).then -> savedRecord
