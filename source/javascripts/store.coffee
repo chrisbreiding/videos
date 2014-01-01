@@ -2,11 +2,16 @@ App.ApplicationAdapter = DS.Adapter.extend
 
   findAll: (store, type)->
     App.ls.get(type).then (data)->
-      (record for key, record of data.records)
+      _.values data.records
 
   find: (store, type, id)->
     App.ls.get(type).then (data)->
       data.records[id]
+
+  findQuery: (store, type, query)->
+    App.ls.get(type).then (data)->
+      found = _.findWhere(data.records, query)
+      if found then [found] else []
 
   createRecord: (store, type, record)->
     @_saveRecord store, type, record

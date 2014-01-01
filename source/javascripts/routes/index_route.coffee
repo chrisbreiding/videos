@@ -1,9 +1,8 @@
 App.IndexRoute = Ember.Route.extend
 
-  redirect: -> @transitionTo 'subs'
-    # App.Sub.find().then (subs)=>
-    #   defaultSub = _.find subs, (sub)-> sub.get 'default'
-    #   if defaultSub
-    #     @transitionTo 'sub', defaultSub
-    #   else
-    #     @transitionTo 'subs'
+  redirect: ->
+    @store.find('sub', default: true).then (currentDefaults)=>
+      if currentDefaults.get('content').length
+        @transitionTo 'sub', currentDefaults.get 'firstObject'
+      else
+        @transitionTo 'subs'
