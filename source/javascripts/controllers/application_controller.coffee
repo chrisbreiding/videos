@@ -2,27 +2,42 @@ App.ApplicationController = Ember.Controller.extend
 
   init: ->
     @_super()
-    @store.find('now_playing').then (nowPlaying)=>
-      if nowPlaying.get('content').length
-        @playVideo nowPlaying.get('firstObject'), false
+    @getNowPlaying().then (nowPlaying)=>
+      @playVideo nowPlaying, false if nowPlaying
 
-  serializedVideo: (video)->
-    videoId: video.get 'id'
-    title: video.get 'title'
-    time: 0
+  serializedVideo: (video, includeId)->
+    video =
+      videoId: video.get 'id'
+      title: video.get 'title'
+      time: 0
+    video.id = '1' if includeId
+    video
 
   playVideo: (video, autoplay)->
     video.set 'autoplay', autoplay
     @set 'nowPlaying', video
 
+  getNowPlaying: ->
+    @store.find('now_playing').then (nowPlaying)=>
+      if nowPlaying.get('content').length
+        nowPlaying.get 'firstObject'
+      else
+        null
+
   actions:
 
     playVideo: (video)->
-      record = @store.createRecord 'now_playing', @serializedVideo(video)
-      record.save().then (nowPlaying)=>
-        @playVideo nowPlaying, true
+      @getNowPlaying().then (nowPlaying)=>
+        if nowPlaying
+          nowPlaying.setProperties @serializedVideo(video, false)
+          record = nowPlaying
+        else
+          record = @store.createRecord 'now_playing', @serializedVideo(video, true)
+
+        record.save().then (nowPlaying)=>
+          @playVideo nowPlaying, true
 
     closeVideo: ->
-      @store.find('now_playing').then (nowPlaying)=>
-        nowPlaying.get('firstObject').destroyRecord()
+      @getNowPlaying().then (nowPlaying)=>
+        nowPlaying.destroyRecord()
         @set 'nowPlaying', null

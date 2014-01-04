@@ -1,15 +1,15 @@
 App.ApplicationAdapter = DS.Adapter.extend
 
   findAll: (store, type)->
-    App.ls.get(type).then (data)->
+    App.ls.fetch(type).then (data)->
       _.values data.records
 
   find: (store, type, id)->
-    App.ls.get(type).then (data)->
+    App.ls.fetch(type).then (data)->
       data.records[id]
 
   findQuery: (store, type, query)->
-    App.ls.get(type).then (data)->
+    App.ls.fetch(type).then (data)->
       found = _.findWhere(data.records, query)
       if found then [found] else []
 
@@ -21,14 +21,14 @@ App.ApplicationAdapter = DS.Adapter.extend
 
   deleteRecord: (store, type, record)->
     id = record.get 'id'
-    App.ls.get(type).then (data)->
+    App.ls.fetch(type).then (data)->
       delete data.records[id] if data.records?[id]?
-      App.ls.set(type, data).then -> record
+      App.ls.save(type, data).then -> type.serialize record
 
   _saveRecord: (store, type, record)->
     id = record.get 'id'
-    App.ls.get(type).then (data)->
+    App.ls.fetch(type).then (data)->
       data.records ||= {}
       savedRecord = type.serialize record
       data.records[id] = savedRecord
-      App.ls.set(type, data).then -> savedRecord
+      App.ls.save(type, data).then -> savedRecord

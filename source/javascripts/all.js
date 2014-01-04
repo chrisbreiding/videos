@@ -4,8 +4,12 @@
 //= require lib/ember-data
 //= require lib/underscore
 //= require lib/moment
-//= require ./app
-//= require ./store
+//= require app
+//= require data/local_storage
+//= require data/version_assistant
+//= require data/migrator
+//= require_tree ./data/migrations
+//= require data/store
 //= require_tree ./services
 //= require_tree ./models
 //= require_tree ./controllers
@@ -15,4 +19,4 @@
 //= require_tree ./helpers
 //= require_tree ./templates
 //= require_tree ./routes
-//= require ./router
+//= require router
