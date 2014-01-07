@@ -1,1 +1,39 @@
-<div id="youtube-iframe"></div>
+<div class="youtube-player">
+  <div id="youtube-iframe"></div>
+</div>
+
+<div class="youtube-player-bar">
+  <ul>
+    <li>
+      <a href="#" class="youtube-toggle-info control" {{action 'toggleInfo'}}>
+        <i class="icon-info-sign"></i>
+      </a>
+    </li>
+    <li>
+      <a href="#" class="control" {{action 'previous'}}>
+        <i class="icon-chevron-up"></i>
+      </a>
+      <span {{bind-attr class="hasPrevious::disabled"}}></span>
+    </li>
+    <li>
+      <a href="#" class="youtube-toggle-play control" {{action 'togglePlay'}}>
+        <i {{bind-attr class="playing:icon-pause:icon-play"}}></i>
+      </a>
+    </li>
+    <li>
+      <a href="#" class="control" {{action 'next'}}>
+        <i class="icon-chevron-down"></i>
+      </a>
+      <span {{bind-attr class="hasNext::disabled"}}></span>
+    </li>
+  </ul>
+  <h3>{{video.title}}</h3>
+
+  <a href="#" class="close-youtube-player control" {{action 'close'}}>
+    <i class="icon-remove"></i>
+  </a>
+
+  <div {{bind-attr class="showingInfo :youtube-player-info"}}>
+    <p>{{youtube-description video.description}}</p>
+  </div>
+</div>

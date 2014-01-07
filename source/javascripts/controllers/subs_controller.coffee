@@ -6,12 +6,12 @@ App.SubsController = Ember.ArrayController.extend
   actions:
 
     toggleEditing: ->
-      @set 'editing', !@get('editing')
+      @toggleProperty 'editing'
 
     toggleSearching: ->
       @set 'subSearchResults', []
       @set 'subQuery', ''
-      @set 'searching', !@get('searching')
+      @toggleProperty 'searching'
 
     searchSubs: ->
       request = App.youTube.searchChannels @get('subQuery')

@@ -3,19 +3,18 @@ App.ApplicationController = Ember.Controller.extend
   init: ->
     @_super()
     @getNowPlaying().then (nowPlaying)=>
-      @playVideo nowPlaying, false if nowPlaying
+      @setNowPlaying nowPlaying, false if nowPlaying
 
   serializedVideo: (video, includeId)->
     video =
       videoId: video.get 'id'
       title: video.get 'title'
+      description: video.get 'description'
       time: 0
+      hasPrevious: video.get 'hasPrevious'
+      hasNext: video.get 'hasNext'
     video.id = '1' if includeId
     video
-
-  playVideo: (video, autoplay)->
-    video.set 'autoplay', autoplay
-    @set 'nowPlaying', video
 
   getNowPlaying: ->
     @store.find('now_playing').then (nowPlaying)=>
@@ -23,6 +22,10 @@ App.ApplicationController = Ember.Controller.extend
         nowPlaying.get 'firstObject'
       else
         null
+
+  setNowPlaying: (video, autoplay)->
+    video.set 'autoplay', autoplay
+    @set 'nowPlaying', video
 
   actions:
 
@@ -35,7 +38,7 @@ App.ApplicationController = Ember.Controller.extend
           record = @store.createRecord 'now_playing', @serializedVideo(video, true)
 
         record.save().then (nowPlaying)=>
-          @playVideo nowPlaying, true
+          @setNowPlaying nowPlaying, true
 
     closeVideo: ->
       @getNowPlaying().then (nowPlaying)=>

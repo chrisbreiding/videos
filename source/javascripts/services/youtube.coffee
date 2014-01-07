@@ -39,6 +39,7 @@ parseVideoDetails = (video, type)->
 
   id: videoId
   title: video.title.$t
+  description: video.media$group.media$description.$t
   published: video.published.$t
   updated: video.updated.$t
   thumb: video.media$group.media$thumbnail[0].url
