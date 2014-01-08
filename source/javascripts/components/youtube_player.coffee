@@ -83,6 +83,7 @@ App.YoutubePlayerComponent = Ember.Component.extend
 
     toggleInfo: ->
       @toggleProperty 'showingInfo'
+      return
 
     previous: ->
       @sendAction 'onPrevious'
