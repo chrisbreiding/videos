@@ -24,7 +24,7 @@ a.btn {
 // Main
 
 body {
-  background: #f8f8f8 image-url("body-bg.jpg") repeat-y;
+  background: #f8f8f8 image-url("body-bg.png") repeat-y;
 }
 
 .now-playing {
@@ -153,8 +153,9 @@ body {
   width: 290px;
 
   h2 {
-    color: #f8f8f8;
+    color: #d3d3d3;
     float: left;
+    font-size: 1.1em;
   }
 }
 
@@ -165,13 +166,13 @@ body {
 
     a.edit-subs,
     a.search-subs {
-      color: #e3e3e3;
+      color: #c7c7c7;
       float: right;
       margin-top: 10px;
 
       &:hover,
       &:focus {
-        color: #FFF;
+        color: #b4b4b4;
       }
     }
 
@@ -259,7 +260,7 @@ body {
 
       &:hover,
       &:focus {
-        color: lighten($warning-color, 10%);
+        color: darken($warning-color, 10%);
       }
 
       .editing & {
@@ -277,7 +278,7 @@ body {
 
       &:hover,
       &:focus {
-        color: lighten($go-color, 10%);
+        color: darken($go-color, 10%);
       }
 
       i {
@@ -419,13 +420,6 @@ body {
 
 .content {
   margin-left: 290px;
-
-  h2 {
-    background: #e3e3e3;
-    border-bottom: #c7c7c7;
-    margin: 0;
-    padding: 15px 10px;
-  }
 }
 
   .video {
