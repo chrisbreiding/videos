@@ -1,4 +1,4 @@
-App.SubController = Ember.ObjectController.extend
+App.VideosController = Ember.ArrayController.extend
 
   needs: 'application'
 
@@ -17,14 +17,14 @@ App.SubController = Ember.ObjectController.extend
     @playVideoWithIndex nowPlayingVideo, (index)-> index + 1
 
   playVideoWithIndex: (nowPlayingVideo, indexTransform)->
-    videos = @get 'videos'
+    videos = @get 'content'
     video = videos.findBy 'id', nowPlayingVideo.get('videoId')
     @send 'playVideo', videos.objectAt(indexTransform(videos.indexOf(video)))
 
   actions:
 
     playVideo: (video)->
-      videos = @get 'videos'
+      videos = @get 'content'
       index = videos.indexOf video
       video.setProperties
         hasPrevious: index > 0

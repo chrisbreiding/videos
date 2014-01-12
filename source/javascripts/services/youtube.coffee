@@ -1,5 +1,6 @@
-baseUrl = 'https://gdata.youtube.com/feeds/'
-youTubeIdRegEx = /[^\/]+$/
+BASE_URL = 'https://gdata.youtube.com/feeds/'
+YOUTUBE_ID_REGEX = /[^\/]+$/
+RESULTS_PER_PAGE = 25
 
 queryYouTube = (url, handler, data = {})->
   defaultData = alt: 'json'
@@ -7,13 +8,13 @@ queryYouTube = (url, handler, data = {})->
 
   request = $.ajax
     dataType: 'JSONP'
-    url: baseUrl + url
+    url: BASE_URL + url
     data: data
 
   request.then handler
 
 channelVideoId = (video)->
-  video.id.$t.match(youTubeIdRegEx)[0]
+  video.id.$t.match(YOUTUBE_ID_REGEX)[0]
 
 playlistVideoId = (video)->
   video.media$group.yt$videoid.$t
@@ -70,17 +71,20 @@ App.youTube =
   getPlaylistsByChannel: (channelId)->
     queryYouTube "api/users/#{channelId}/playlists", mapPlaylistDetails
 
-  getVideosByChannel: (channelId)->
-    queryYouTube "users/#{channelId}/uploads", mapChannelVideoDetails
+  getVideosByChannel: (channelId, page = 1)->
+    queryYouTube "users/#{channelId}/uploads", mapChannelVideoDetails,
+      'start-index': (page - 1) * RESULTS_PER_PAGE + 1
+      'max-results': RESULTS_PER_PAGE
 
   getVideoById: (videoId)->
     queryYouTube "api/videos/#{videoId}", parsePlaylistVideoDetails, v: 2
 
-  getVideosByPlaylist: (playlistId, page)->
+  getVideosByPlaylist: (playlistId, page = 1)->
     query = queryYouTube "api/playlists/#{playlistId}", mapPlaylistVideoDetails,
       v: 2
       orderby: 'published'
-      'start-index': (page - 1) * 25 + 1
+      'start-index': (page - 1) * RESULTS_PER_PAGE + 1
+      'max-results': RESULTS_PER_PAGE
 
   # getChannelInfo: (channelId)->
   #   @queryYouTube "api/channels/#{channelId}", v : 2

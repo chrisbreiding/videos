@@ -1,14 +1,14 @@
 App.NowPlayingController = Ember.ObjectController.extend
 
-  needs: 'sub'
+  needs: 'videos'
 
   actions:
 
     playPrevious: ->
-      @get('controllers.sub').playVideoBefore @get('model')
+      @get('controllers.videos').playVideoBefore @get('model')
 
     playNext: ->
-      @get('controllers.sub').playVideoAfter @get('model')
+      @get('controllers.videos').playVideoAfter @get('model')
 
     updateNowPlayingTime: (time)->
       @set 'time', time
