@@ -1,0 +1,11 @@
+.clearfix:before,.clearfix:after { content:""; display:table; }
+.clearfix:after { clear:both; }
+
+.btn {
+  display: block;
+  padding: 3px 6px;
+}
+
+a.btn {
+  text-decoration: none;
+}

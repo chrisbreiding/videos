@@ -1,0 +1,46 @@
+.paginator {
+  @extend .clearfix;
+  margin: 10px;
+  text-align: center;
+
+  &.no-paging {
+    display: none;
+  }
+
+  $border: solid 1px #d3d3d3;
+
+  li {
+    border: $border;
+    cursor: pointer;
+    display: inline-block;
+    padding: 4px 8px;
+    min-width: 20px;
+    text-align: center;
+
+    &:first-of-type {
+      border-left: $border;
+      border-radius: 3px 0 0 3px;
+    }
+
+    &:last-of-type {
+      border-radius: 0 3px 3px 0;
+    }
+
+    &.current {
+      background: #e3e3e3;
+      cursor: default;
+    }
+
+    &.disabled {
+      cursor: default;
+      opacity: 0.2;
+    }
+
+    &.ellipsis {
+      border: none;
+      color: #929292;
+      cursor: default;
+      padding: 5px;
+    }
+  }
+}
