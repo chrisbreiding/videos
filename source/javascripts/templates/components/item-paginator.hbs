@@ -1,0 +1,17 @@
+<li {{action 'previousPage'}} {{bind-attr class="hasPrevious::disabled"}}>
+  <i class="icon-angle-left"></i>
+</li>
+
+{{#each pages}}
+  <li {{bind-attr class="current ellipsis"}} {{action 'selectPage' this}}>
+    {{#if ellipsis}}
+      <i class="icon-ellipsis-horizontal"></i>
+    {{else}}
+      {{label}}
+    {{/if}}
+  </li>
+{{/each}}
+
+<li {{action 'nextPage'}} {{bind-attr class="hasNext::disabled"}}>
+  <i class="icon-angle-right"></i>
+</li>

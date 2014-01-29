@@ -1,8 +1,6 @@
 <div class="videos-region">
 
-  <div class="pagination">
-    <ul class="video-paginator" class="video-paginator"></ul>
-  </div>
+  {{item-paginator currentPage=currentPage totalPages=totalPages onPageSelect="didSelectPage"}}
 
   <div class="videos">
     {{#each}}

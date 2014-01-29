@@ -24,7 +24,8 @@ a.btn {
 // Main
 
 body {
-  background: #f8f8f8 image-url("body-bg.png") repeat-y;
+  background: #f8f8f8 image-url("body-bg.png") -40px 0 repeat-y;
+  min-width: 820px;
 }
 
 .now-playing {
@@ -145,12 +146,14 @@ body {
   position: relative;
 }
 
+$sidebar-width: 250px;
+
 .sidebar {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 290px;
+  width: $sidebar-width;
 
   h2 {
     color: #d3d3d3;
@@ -419,8 +422,55 @@ body {
       }
 
 .content {
-  margin-left: 290px;
+  margin-left: $sidebar-width;
 }
+
+  .paginator {
+    @extend .clearfix;
+    margin: 10px;
+    text-align: center;
+
+    &.no-paging {
+      display: none;
+    }
+
+    $border: solid 1px #d3d3d3;
+
+    li {
+      border: $border;
+      cursor: pointer;
+      display: inline-block;
+      padding: 4px 8px;
+      min-width: 20px;
+      text-align: center;
+
+      &:first-of-type {
+        border-left: $border;
+        border-radius: 3px 0 0 3px;
+      }
+
+      &:last-of-type {
+        border-radius: 0 3px 3px 0;
+      }
+
+      &.current {
+        background: #e3e3e3;
+        cursor: default;
+      }
+
+      &.disabled {
+        cursor: default;
+        opacity: 0.2;
+      }
+
+      &.ellipsis {
+        border: none;
+        color: #929292;
+        cursor: default;
+        padding: 5px;
+      }
+    }
+  }
 
   .video {
     border-top: solid 1px #d3d3d3;

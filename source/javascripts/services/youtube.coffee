@@ -20,7 +20,7 @@ playlistVideoId = (video)->
   video.media$group.yt$videoid.$t
 
 mapChannelDetails = (result)->
-  result.feed.entry.map (channel)->
+  _.map result.feed.entry, (channel)->
     id: channel.yt$channelId.$t
     title: channel.title.$t
     author: channel.author[0].name.$t
@@ -50,11 +50,14 @@ parsePlaylistVideoDetails = (result)->
   parseVideoDetails result.entry, 'playlist'
 
 mapChannelVideoDetails = (result)->
-  result.feed.entry.map (video)->
+  videos = _.map result.feed.entry, (video)->
     parseVideoDetails video, 'channel'
 
+  videos: videos
+  totalPages: Math.ceil(result.feed.openSearch$totalResults.$t / RESULTS_PER_PAGE)
+
 mapPlaylistVideoDetails = (result)->
-  result.feed.entry.map (video)->
+  _.map result.feed.entry, (video)->
     mapPlaylistVideoDetails video
 
 getVideoCount = (results)->

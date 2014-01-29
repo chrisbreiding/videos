@@ -1,5 +1,7 @@
 App.VideosController = Ember.ArrayController.extend
 
+  currentPage: 1
+
   needs: 'application'
 
   setVideoWatched: (video, watched)->
@@ -35,3 +37,7 @@ App.VideosController = Ember.ArrayController.extend
 
     toggleWatched: (video)->
       @setVideoWatched video, !video.get('watched')
+
+    didSelectPage: (page)->
+      @set 'currentPage', page
+      @send 'updateVideos', page
