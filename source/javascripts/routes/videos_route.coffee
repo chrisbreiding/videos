@@ -23,6 +23,7 @@ App.VideosRoute = Ember.Route.extend
 
   actions:
 
-    updateVideos: (page)->
+    updateVideos: (page, callback)->
       @getVideosForPage(page).then (videos)=>
         @set 'controller.model', videos
+        callback() if callback
