@@ -13,8 +13,9 @@
     border: $border;
     cursor: pointer;
     display: inline-block;
+    font-size: .9em;
     padding: 4px 8px;
-    min-width: 20px;
+    min-width: 18px;
     text-align: center;
 
     &:first-of-type {
@@ -41,6 +42,25 @@
       color: #929292;
       cursor: default;
       padding: 5px;
+    }
+
+    &.jump-to {
+      border: none;
+      cursor: default;
+      padding: 0 0 0 10px;
+
+      label {
+        color: #929292;
+        font-size: .8em;
+        margin-right: 3px;
+      }
+
+      input {
+        border: $border;
+        border-radius: 3px;
+        padding: 4px 8px;
+        width: 36px;
+      }
     }
   }
 }

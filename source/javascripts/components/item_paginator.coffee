@@ -65,3 +65,9 @@ App.ItemPaginatorComponent = Ember.Component.extend
     nextPage: ->
       if @get 'hasNext'
         @send 'selectPage', label: @get('currentPage') + 1
+
+    jumpTo: ->
+      pageNum = parseInt @get('jumpTo'), 10
+      unless pageNum is @get 'currentPage'
+        @send 'selectPage', label: pageNum
+        @set 'jumpTo', ''

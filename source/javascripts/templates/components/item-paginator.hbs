@@ -15,3 +15,10 @@
 <li {{action 'nextPage'}} {{bind-attr class="hasNext::disabled"}}>
   <i class="icon-angle-right"></i>
 </li>
+
+<li class="jump-to">
+  <form {{action 'jumpTo' on="submit"}}>
+    <label for="jumpTo">Jump to</label>
+    {{input value=jumpTo type="number" name="jumpTo" min="1" max=totalPages}}
+  </form>
+</li>
