@@ -66,11 +66,11 @@ a.play-video {
     background: rgba(0,0,0,0);
     display: block;
     font-size: 4em;
-    @include opacity(0.7);
+    opacity: 0.7;
     position: absolute;
     top: 0;
     text-align: center;
-    @include transition(all .25s ease-in-out);
+    transition: all 0.25s ease-in-out;
     width: 150px;
     height: 112px;
     line-height: 112px;
@@ -79,6 +79,6 @@ a.play-video {
   &:hover i,
   &:focus i {
     background: rgba(0,0,0,0.5);
-    @include opacity(1);
+    opacity: 1.0;
   }
 }

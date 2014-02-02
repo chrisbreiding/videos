@@ -1,0 +1,26 @@
+{
+  "scripts": [
+    "lib/jquery",
+    "lib/handlebars",
+    "lib/ember",
+    "lib/ember-data",
+    "lib/underscore",
+    "lib/moment",
+    "app",
+    "data/local_storage",
+    "data/version_assistant",
+    "data/migrator",
+    "data/migrations/*",
+    "data/store",
+    "services/*",
+    "models/*",
+    "controllers/*",
+    "components/*",
+    "lib/youtube-iframe-api",
+    "views/*",
+    "helpers/*",
+    "templates/*",
+    "routes/*",
+    "router"
+  ]
+}

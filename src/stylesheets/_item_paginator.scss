@@ -1,5 +1,5 @@
 .paginator {
-  @extend .clearfix;
+  @include clearfix;
   margin: 10px;
   text-align: center;
 

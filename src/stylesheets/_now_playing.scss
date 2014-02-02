@@ -4,7 +4,7 @@ $player-border-color: #434343;
 
 .now-playing {
   background: #000;
-  @include background(linear-gradient(top, #222, #000));
+  background: linear-gradient(to bottom, #222 0%,#000 100%);
   padding: 20px 0;
   position: relative;
 }
