@@ -76,6 +76,7 @@ App.youTube =
 
   getVideosByChannel: (channelId, page = 1)->
     queryYouTube "users/#{channelId}/uploads", mapChannelVideoDetails,
+      orderby: 'published'
       'start-index': (page - 1) * RESULTS_PER_PAGE + 1
       'max-results': RESULTS_PER_PAGE
 
