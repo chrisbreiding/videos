@@ -22,7 +22,9 @@ App.SubsController = Ember.ArrayController.extend
 
     add: (sub)->
       @get('subSearchResults').removeObject sub
-      @store.createRecord('sub', sub).save()
+      App.youTube.playlistIdForChannelId(sub.id).then (playlistId)=>
+        sub.id = playlistId
+        @store.createRecord('sub', sub).save()
 
     delete: (sub)->
       @removeObject sub
