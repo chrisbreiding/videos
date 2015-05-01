@@ -4,7 +4,7 @@ App.migrator.registerMigration '0.1.0', ->
   newLs = App.ls
 
   new Ember.RSVP.Promise (resolve)->
-    oldLs.fetch('byt').then (data)->
+    oldLs.fetch('videos').then (data)->
       operations = []
 
       # subs
@@ -34,13 +34,13 @@ App.migrator.registerMigration '0.1.0', ->
         operations.push newLs.save('App.WatchedVideo', records: watchedVideos)
 
       # cleanup
-      operations.push oldLs.remove('byt')
+      operations.push oldLs.remove('videos')
 
       Ember.RSVP.all(operations).then -> resolve()
 
 ###
 
-'byt'
+'videos'
   sub: {
     records: {
       '<id>': { id, title, author, thumb, videos, default }
@@ -59,17 +59,17 @@ App.migrator.registerMigration '0.1.0', ->
   * * *
     *
 
-'byt.App.Sub'
+'videos.App.Sub'
   records: {
     '<id>': { id, title, author, thumb, default }
   }
 
-'byt.App.NowPlaying'
+'videos.App.NowPlaying'
   records: {
     '1': { id ('1'), videoId, title, time }
   }
 
-'byt.App.WatchedVideo'
+'videos.App.WatchedVideo'
   records: {
     '<id>': { id }
   }

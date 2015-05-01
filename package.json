@@ -1,5 +1,6 @@
 {
-  "name": "BetterYouTube",
+  "name": "videos",
+  "private": true,
   "version": "0.1.0",
   "devDependencies": {
     "coffee-script": "^1.9.2",
