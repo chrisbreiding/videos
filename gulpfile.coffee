@@ -30,38 +30,34 @@ gulp.task 'devIndex', ->
     .pipe(gulp.dest('./_dev/'))
 
 gulp.task 'devCopy', ->
-  gulp.src('src/fonts/**/*').pipe(gulp.dest('./_dev/fonts/'))
-  gulp.src('src/images/**/*').pipe(gulp.dest('./_dev/images/'))
-  gulp.src('src/scripts/lib/*').pipe(gulp.dest('./_dev/scripts/lib/'))
+  gulp.src('src/fonts/**/*').pipe gulp.dest('./_dev/fonts/')
+  gulp.src('src/images/**/*').pipe gulp.dest('./_dev/images/')
+  gulp.src('src/scripts/lib/*').pipe gulp.dest('./_dev/scripts/lib/')
 
 gulp.task 'watchCoffee', ->
-  watchCoffee = watch glob: 'src/scripts/**/*.coffee'
-  watchCoffee
-    .pipe(plumber())
-    .pipe(coffee().on('error', gutil.log))
-    .pipe(gulp.dest('./_dev/scripts/'))
-
-  watchCoffee.gaze.on 'all', (event)->
-    if event is 'added' or event is 'deleted'
-      gulp.run 'devIndex'
+  gulp.src 'src/scripts/**/*.coffee'
+    .pipe plumber()
+    .pipe watch 'src/scripts/**/*.coffee'
+    .pipe coffee().on('error', gutil.log)
+    .pipe gulp.dest('./_dev/scripts/')
 
 gulp.task 'watchHandlebars', ->
-  watch(glob: 'src/scripts/**/*.hbs')
-    .pipe(plumber())
-    .pipe(emberHandlebars().on('error', gutil.log))
-    .pipe(gulp.dest('./_dev/scripts/'))
-
-gulp.task 'devSass', ->
-  gulp.src('src/stylesheets/!(_)*.scss')
-    .pipe(sass())
-    .pipe(gulp.dest('./_dev/stylesheets/'))
+  gulp.src 'src/scripts/**/*.hbs'
+    .pipe plumber()
+    .pipe watch 'src/scripts/**/*.hbs'
+    .pipe emberHandlebars().on('error', gutil.log)
+    .pipe gulp.dest('./_dev/scripts/')
 
 gulp.task 'watchSass', ->
-  gulp.watch 'src/stylesheets/*.scss', ['devSass']
+  gulp.src('src/stylesheets/!(_)*.scss')
+    .pipe plumber()
+    .pipe watch 'src/stylesheets/*.scss'
+    .pipe sass()
+    .pipe gulp.dest('./_dev/stylesheets/')
 
 gulp.task 'watch', ['watchCoffee', 'watchHandlebars', 'watchSass']
 
-gulp.task 'devServer', -> server '_dev', 8080
+gulp.task 'devServer', -> server '_dev'
 
 gulp.task 'dev', ['devIndex', 'devCopy', 'watch', 'devServer']
 
@@ -102,7 +98,7 @@ gulp.task 'build', ['buildCopy', 'buildJs', 'buildSass'], ->
     .pipe(gulp.dest('./_build/'))
 
 gulp.task 'prod', ['build'], ->
-  server '_build', 8081
+  server '_build'
 
 
 # Deploy
