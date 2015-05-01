@@ -15,7 +15,7 @@ App.VideosRoute = Ember.Route.extend
 
   getVideosForPage: (pageToken)->
     id = @modelFor('sub').get 'id'
-    App.youTube.getVideosByChannel(id, pageToken).then (result)=>
+    App.youTube.getVideosByPlaylistId(id, pageToken).then (result)=>
       @store.metaForType 'video',
         prevPageToken: result.prevPageToken
         nextPageToken: result.nextPageToken

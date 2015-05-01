@@ -16,19 +16,33 @@ mapChannelDetails = (result)->
     author: item.snippet.title
     thumb: item.snippet.thumbnails.medium.url
 
-parseVideoDetails = (video)->
-  # TODO: determine actual duration
+parseVideoDetails = (video, duration)->
   id: video.contentDetails.videoId
   title: video.snippet.title
   description: video.snippet.description
   published: video.snippet.publishedAt
   thumb: video.snippet.thumbnails.medium.url
-  duration: 100
+  duration: duration
 
-mapChannelVideoDetails = (result)->
-  videos: _.map result.items, parseVideoDetails
-  prevPageToken: result.prevPageToken
-  nextPageToken: result.nextPageToken
+mapVideos = (videos, durationResults)->
+  durations = _.pluck _.pluck(durationResults, 'contentDetails'), 'duration'
+  zipped = _.zip videos, durations
+  _.map zipped, (video)->
+    parseVideoDetails video[0], video[1]
+
+videoIds = (videos)->
+  _.pluck _.pluck(videos, 'contentDetails'), 'videoId'
+
+mapVideoDurations = (extras)->
+  (result)->
+    videos: mapVideos extras.items, result.items
+    prevPageToken: extras.prevPageToken
+    nextPageToken: extras.nextPageToken
+
+mapVideoDetails = (result)->
+  queryYouTube 'videos', mapVideoDurations(result),
+    id: videoIds(result.items).join()
+    part: 'contentDetails'
 
 mapPlaylistVideoDetails = (result)->
   _.map result.feed.entry, (video)->
@@ -51,11 +65,11 @@ App.youTube =
       id: channelId
       part: 'contentDetails'
 
-  getVideosByChannel: (channelId, pageToken)->
+  getVideosByPlaylistId: (playlistId, pageToken)->
     params =
-      playlistId: channelId
+      playlistId: playlistId
       part: 'snippet,contentDetails'
       maxResults: RESULTS_PER_PAGE
     params.pageToken = pageToken if pageToken
 
-    queryYouTube 'playlistItems', mapChannelVideoDetails, params
+    queryYouTube 'playlistItems', mapVideoDetails, params
