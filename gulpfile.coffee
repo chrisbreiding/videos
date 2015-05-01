@@ -48,12 +48,14 @@ gulp.task 'watchHandlebars', ->
     .pipe emberHandlebars().on('error', gutil.log)
     .pipe gulp.dest('./_dev/scripts/')
 
-gulp.task 'watchSass', ->
+processSass = ->
   gulp.src('src/stylesheets/!(_)*.scss')
-    .pipe plumber()
-    .pipe watch 'src/stylesheets/*.scss'
     .pipe sass()
     .pipe gulp.dest('./_dev/stylesheets/')
+
+gulp.task 'watchSass', ->
+  watch 'src/stylesheets/*.scss', processSass
+  processSass()
 
 gulp.task 'watch', ['watchCoffee', 'watchHandlebars', 'watchSass']
 
