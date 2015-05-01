@@ -1,11 +1,13 @@
 <div class="videos-region">
 
-  {{item-paginator currentPage=currentPage totalPages=totalPages onPageSelect="didSelectPage"}}
+  {{item-paginator prevToken=prevPageToken nextToken=nextPageToken onSelect="didSelectPage"}}
 
   <div class="videos">
     {{#each}}
       {{partial 'video'}}
     {{/each}}
   </div>
+
+  {{item-paginator prevToken=prevPageToken nextToken=nextPageToken onSelect="didSelectPage"}}
 
 </div>

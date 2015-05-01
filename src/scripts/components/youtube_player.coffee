@@ -37,14 +37,6 @@ App.YoutubePlayerComponent = Ember.Component.extend
     this.$('.youtube-player-info').slideToggle()
   ).observes 'showingInfo'
 
-  hasPrevious: (->
-    @get 'video.hasPrevious'
-  ).property 'video.hasPrevious'
-
-  hasNext: (->
-    @get 'video.hasNext'
-  ).property 'video.hasNext'
-
   playerStateChanged: (e)->
     switch e.data
       when YT.PlayerState.PLAYING
@@ -84,12 +76,6 @@ App.YoutubePlayerComponent = Ember.Component.extend
     toggleInfo: ->
       @toggleProperty 'showingInfo'
       return
-
-    previous: ->
-      @sendAction 'onPrevious'
-
-    next: ->
-      @sendAction 'onNext'
 
     close: ->
       @stopMonitoringTime()

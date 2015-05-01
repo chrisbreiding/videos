@@ -27,7 +27,8 @@ parseVideoDetails = (video)->
 
 mapChannelVideoDetails = (result)->
   videos: _.map result.items, parseVideoDetails
-  totalPages: Math.ceil(result.pageInfo.totalResults / RESULTS_PER_PAGE)
+  prevPageToken: result.prevPageToken
+  nextPageToken: result.nextPageToken
 
 mapPlaylistVideoDetails = (result)->
   _.map result.feed.entry, (video)->
@@ -50,9 +51,11 @@ App.youTube =
       id: channelId
       part: 'contentDetails'
 
-  getVideosByChannel: (channelId, page = 1)->
-    # TODO: add ordering by published date and pageToken
-    queryYouTube 'playlistItems', mapChannelVideoDetails,
+  getVideosByChannel: (channelId, pageToken)->
+    params =
       playlistId: channelId
       part: 'snippet,contentDetails'
       maxResults: RESULTS_PER_PAGE
+    params.pageToken = pageToken if pageToken
+
+    queryYouTube 'playlistItems', mapChannelVideoDetails, params
