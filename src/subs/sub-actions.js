@@ -1,5 +1,5 @@
-import dispatcher from '../lib/dispatcher';
-import subService from './sub-service';
+import { createActions } from '../lib/dispatcher';
+import { list } from './sub-service';
 
 class SubActions {
   updateSubs (subs) {
@@ -7,11 +7,11 @@ class SubActions {
   }
 
   listSubs () {
-    subService.list()
+    list()
       .then((subs) => {
         this.actions.updateSubs(subs);
       });
   }
 }
 
-export default dispatcher.createActions(SubActions);
+export default createActions(SubActions);

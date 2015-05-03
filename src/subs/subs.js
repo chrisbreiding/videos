@@ -1,12 +1,10 @@
 import _ from 'lodash';
-import React from 'react';
+import { createClass, DOM } from 'react';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubStore from './sub-store';
-import SubActions from './sub-actions';
+import { listSubs } from './sub-actions';
 
-const RD = React.DOM;
-
-export default React.createClass({
+export default createClass({
   mixins: [ReactStateMagicMixin],
 
   statics: {
@@ -14,13 +12,13 @@ export default React.createClass({
   },
 
   componentDidMount () {
-    SubActions.listSubs();
+    listSubs();
   },
 
   render () {
-    return RD.ul(null,
+    return DOM.ul(null,
       _.map(this.state.subs, (sub) => {
-        return RD.li(null, sub.title);
+        return DOM.li(null, sub.title);
       })
     );
   }

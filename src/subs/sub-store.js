@@ -1,12 +1,12 @@
-import dispatcher from '../lib/dispatcher';
-import SubActions from './sub-actions'
+import { createStore } from '../lib/dispatcher';
+import { UPDATE_SUBS } from './sub-actions'
 
 class SubStore {
   constructor () {
     this.subs = [];
 
     this.bindListeners({
-      onSubsUpdate: SubActions.UPDATE_SUBS
+      onSubsUpdate: UPDATE_SUBS
     });
   }
 
@@ -15,4 +15,4 @@ class SubStore {
   }
 }
 
-export default dispatcher.createStore(SubStore, 'SubStore');
+export default createStore(SubStore, 'SubStore');

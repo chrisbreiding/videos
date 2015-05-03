@@ -1,17 +1,19 @@
-require('./lib/base.styl');
+require('./main.styl');
 
-import React from 'react';
+import { render, createFactory } from 'react';
 import Router from 'react-router';
 import AppComponent from './app/app';
 import SubsComponent from './subs/subs';
+import LoginComponent from './login/login';
 
-const Route = React.createFactory(Router.Route);
-const DefaultRoute = React.createFactory(Router.DefaultRoute);
+const Route = createFactory(Router.Route);
+const DefaultRoute = createFactory(Router.DefaultRoute);
 
 const routes = Route({ handler: AppComponent, path: '/' },
-  DefaultRoute({ handler: SubsComponent })
+  DefaultRoute({ name: 'default', handler: SubsComponent }),
+  Route({ name: 'login', handler: LoginComponent })
 );
 
 Router.run(routes, (Handler)=> {
-  React.render(React.createFactory(Handler)(), document.getElementById('app'));
+  render(createFactory(Handler)(), document.getElementById('app'));
 });
