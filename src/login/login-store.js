@@ -1,4 +1,4 @@
-import { createStore } from '../lib/dispatcher';
+import dispatcher from '../lib/dispatcher';
 import { UPDATE_API_KEY } from './login-actions'
 
 class LoginStore {
@@ -16,4 +16,4 @@ class LoginStore {
   }
 }
 
-export default createStore(LoginStore, 'LoginStore');
+export default dispatcher.createStore(LoginStore, 'LoginStore');

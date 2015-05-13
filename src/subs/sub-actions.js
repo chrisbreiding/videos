@@ -1,17 +1,16 @@
-import { createActions } from '../lib/dispatcher';
-import { list } from './sub-service';
+import dispatcher from '../lib/dispatcher';
+import subService from './sub-service';
 
 class SubActions {
-  updateSubs (subs) {
+  didUpdateSubs (subs) {
     this.dispatch(subs);
   }
 
-  listSubs () {
-    list()
-      .then((subs) => {
-        this.actions.updateSubs(subs);
-      });
+  fetch () {
+    subService.fetch().then((subs) => {
+      this.actions.didUpdateSubs(subs);
+    });
   }
 }
 
-export default createActions(SubActions);
+export default dispatcher.createActions(SubActions);

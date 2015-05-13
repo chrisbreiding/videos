@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { createClass, DOM } from 'react';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubStore from './sub-store';
-import { listSubs } from './sub-actions';
+import { fetch } from './sub-actions';
 
 export default createClass({
   mixins: [ReactStateMagicMixin],
@@ -12,13 +12,13 @@ export default createClass({
   },
 
   componentDidMount () {
-    listSubs();
+    fetch();
   },
 
   render () {
     return DOM.ul(null,
       _.map(this.state.subs, (sub) => {
-        return DOM.li(null, sub.title);
+        return DOM.li({ key: sub.id }, sub.title);
       })
     );
   }

@@ -1,14 +1,8 @@
-const fixtures = [
-  { title: 'Sub 1' },
-  { title: 'Sub 2' },
-  { title: 'Sub 3' },
-  { title: 'Sub 4' }
-];
+import { SUBS_KEY } from '../lib/constants';
+import localData from '../lib/local-data';
 
 export default {
-  list () {
-    return new Promise((resolve) => {
-      setTimeout(() => { resolve(fixtures); }, 250);
-    });
+  fetch () {
+    return localData.getItem(SUBS_KEY);
   }
 };

@@ -1,18 +1,18 @@
-import { createStore } from '../lib/dispatcher';
-import { UPDATE_SUBS } from './sub-actions'
+import dispatcher from '../lib/dispatcher';
+import actions from './sub-actions'
 
 class SubStore {
   constructor () {
     this.subs = [];
 
     this.bindListeners({
-      onSubsUpdate: UPDATE_SUBS
+      updateSubs: actions.DID_UPDATE_SUBS
     });
   }
 
-  onSubsUpdate (subs) {
+  updateSubs (subs) {
     this.subs = subs;
   }
 }
 
-export default createStore(SubStore, 'SubStore');
+export default dispatcher.createStore(SubStore, 'SubStore');

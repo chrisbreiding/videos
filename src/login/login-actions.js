@@ -1,4 +1,4 @@
-import { createActions } from '../lib/dispatcher';
+import dispatcher from '../lib/dispatcher';
 
 class LoginActions {
   updateApiKey (apiKey) {
@@ -8,4 +8,4 @@ class LoginActions {
   }
 }
 
-export default createActions(LoginActions);
+export default dispatcher.createActions(LoginActions);
