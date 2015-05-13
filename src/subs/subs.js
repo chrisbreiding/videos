@@ -16,10 +16,15 @@ export default createClass({
   },
 
   render () {
-    return DOM.ul(null,
-      _.map(this.state.subs, (sub) => {
-        return DOM.li({ key: sub.id }, sub.title);
-      })
+    return DOM.div(null,
+      DOM.ul(null,
+        _.map(this.state.subs, (sub) => {
+          return DOM.li({ key: sub.id }, sub.title);
+        })
+      ),
+      DOM.div(null,
+        DOM.a(null, DOM.i({ className: 'fa fa-plus' }), 'Add')
+      )
     );
   }
 });
