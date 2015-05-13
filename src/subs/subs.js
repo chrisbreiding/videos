@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import { createClass, DOM } from 'react';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
-import SubStore from './sub-store';
-import { fetch } from './sub-actions';
+import SubStore from './subs-store';
+import { fetch } from './subs-actions';
 
 export default createClass({
   mixins: [ReactStateMagicMixin],

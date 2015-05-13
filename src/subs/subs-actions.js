@@ -1,5 +1,5 @@
 import dispatcher from '../lib/dispatcher';
-import subService from './sub-service';
+import subService from './subs-service';
 
 class SubActions {
   didUpdateSubs (subs) {
