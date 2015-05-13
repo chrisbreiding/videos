@@ -1,3 +1,5 @@
+import { Promise } from 'rsvp';
+
 export default {
   getItem (key) {
     return new Promise((resolve) => {

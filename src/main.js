@@ -1,19 +1,16 @@
 require('./main.styl');
 
 import { render, createFactory } from 'react';
-import Router from 'react-router';
-import AppComponent from './app/app';
-import SubsComponent from './subs/subs';
-import LoginComponent from './login/login';
+import { run } from 'react-router';
+import RSVP from 'rsvp';
+import routes from './routes';
 
-const Route = createFactory(Router.Route);
-const DefaultRoute = createFactory(Router.DefaultRoute);
+RSVP.on('error', (e) => {
+  console.error('Error caught by RSVP:');
+  console.error(e.message);
+  console.error(e.stack);
+});
 
-const routes = Route({ handler: AppComponent, path: '/' },
-  DefaultRoute({ name: 'default', handler: SubsComponent }),
-  Route({ name: 'login', handler: LoginComponent })
-);
-
-Router.run(routes, (Handler)=> {
+run(routes, (Handler) => {
   render(createFactory(Handler)(), document.getElementById('app'));
 });

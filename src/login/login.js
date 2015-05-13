@@ -17,7 +17,7 @@ export default createClass({
 
   componentDidUpdate () {
     if (this.state.isApiKeyValid) {
-      this.transitionTo('default');
+      this.transitionTo('subs');
     }
   },
 
