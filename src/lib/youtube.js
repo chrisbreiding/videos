@@ -1,12 +1,16 @@
 import _ from 'lodash';
 import req from 'reqwest';
+import { getItem } from './local-data';
+import { getApiKey } from '../login/login-actions';
 
 const baseUrl = 'https://www.googleapis.com/youtube/v3/';
 
 function queryYouTube (url, data) {
-  return req({
-    url: `${baseUrl}${url}`,
-    data: _.extend(data, { key: localStorage.apiKey })
+  return getApiKey().then((apiKey) => {
+    return req({
+      url: `${baseUrl}${url}`,
+      data: _.extend({ key: apiKey }, data)
+    });
   });
 }
 
@@ -22,6 +26,13 @@ function mapChannelDetails (result) {
 }
 
 export default {
+  checkApiKey (apiKey) {
+    const data = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' };
+    return queryYouTube('activities', data)
+      .then(() => true)
+      .catch(() => false);
+  },
+
   searchChannels (query) {
     return queryYouTube('search', {
       q: query,

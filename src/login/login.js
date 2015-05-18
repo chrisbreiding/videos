@@ -1,8 +1,8 @@
 import { createClass, DOM } from 'react';
-import { Navigation } from 'react-router'
+import { Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import LoginStore from './login-store';
-import { updateApiKey } from './login-actions'
+import { getApiKey, checkApiKey, updateApiKey } from './login-actions';
 
 export default createClass({
   mixins: [ReactStateMagicMixin, Navigation],
@@ -12,13 +12,18 @@ export default createClass({
   },
 
   componentDidMount () {
+    getApiKey().then(this._checkApiKey);
     this.refs.apiKey.getDOMNode().focus();
   },
 
   componentDidUpdate () {
-    if (this.state.isApiKeyValid) {
-      this.transitionTo('subs');
-    }
+    this._checkApiKey(this.state.apiKey);
+  },
+
+  _checkApiKey (apiKey) {
+    checkApiKey(apiKey).then((isValid) => {
+      if (isValid) this.transitionTo('subs');
+    });
   },
 
   render () {
