@@ -1,0 +1,151 @@
+sidebar-width = 250px;
+sub-height = 70px;
+
+.subs {
+  aside {
+    background: dark-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: sidebar-width;
+
+    h2 {
+      color: #d3d3d3;
+      float: left;
+      font-size: 1.1em;
+    }
+  }
+
+  main {
+    margin-left: sidebar-width;
+  }
+}
+
+.subs-header,
+.sub-search-header {
+  padding: 5px 10px;
+}
+
+a.edit-subs,
+a.search-subs {
+  color: #c7c7c7;
+  float: right;
+  margin-top: 10px;
+
+  &:hover,
+  &:focus {
+    color: #b4b4b4;
+  }
+}
+
+.no-subs {
+  color: #c7c7c7;
+  border: dashed 1px #c7c7c7;
+  margin: 0 10px;
+  padding: 15px 10px;
+  text-align: center;
+}
+
+.sub {
+  background: #e3e3e3;
+  border-top: solid 1px #c7c7c7;
+  font-size: .9em;
+  height: sub-height;
+  position: relative;
+
+  &:first-of-type {
+    border-top: none;
+  }
+
+  img {
+    border-radius: 50%;
+    float: left;
+    height: 70px;
+    width: 70px;
+  }
+
+  h3 {
+    font-size: 1.1em;
+    margin: 10px 40px 0 80px;
+  }
+}
+
+a.view-sub,
+a.delete-sub,
+a.add-sub {
+  display: block;
+  position: absolute;
+  text-align: center;
+  text-decoration: none;
+
+  i {
+    display: block;
+  }
+}
+
+a.view-sub {
+  background: #e3e3e3;
+  border-left: solid 1px #d3d3d3;
+  color: #797979;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 30px;
+
+  &:hover,
+  &:focus,
+  &.active {
+    background: #f8f8f8;
+  }
+
+  .editing & {
+    display: none;
+  }
+
+  i {
+    width: 30px;
+    height: sub-height;
+    line-height: sub-height;
+  }
+}
+
+a.delete-sub,
+a.add-sub {
+  font-size: 1.5em;
+  top: 15px;
+  right: 5px;
+  bottom: 15px;
+}
+
+a.delete-sub {
+  color: warning-color;
+  display: none;
+
+  &:hover,
+  &:focus {
+    color: darken(warning-color, 10%);
+  }
+
+  .editing & {
+    display: block;
+  }
+
+  i {
+    height: sub-height - 30px;
+    line-height: sub-height - 30px;
+  }
+}
+
+a.make-sub-default {
+  display: none;
+  position: absolute;
+  top: 5px;
+  right: 35px;
+  text-decoration: none;
+
+  .sub:hover &,
+  .default & {
+    display: inline;
+  }
+}

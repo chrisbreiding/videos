@@ -1,0 +1,84 @@
+.add-sub {
+  header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.8em;
+  }
+
+  form {
+    display: flex;
+    padding: 0 0.6em;
+
+    input {
+      background: #121212;
+      border: solid 1px #121212;
+      border-radius: 3px 0 0 3px;
+      box-sizing: border-box;
+      color: #f8f8f8;
+      display: block;
+      font-size: 1em;
+      outline: none;
+      padding: 0.4em 0.6em;
+
+      &:hover {
+        border-color: lighten(action-color, 10%);
+      }
+
+      &:focus {
+        border-color: action-color;
+      }
+    }
+
+    button {
+      background: action-color;
+      border: none;
+      border-radius: 0 3px 3px 0;
+      color: #f8f8f8;
+      cursor: pointer;
+      display: block;
+      font-size: 1.1em;
+      outline: none;
+      padding: 0.4em 1.2em;
+
+      &:hover,
+      &:focus,
+      &:active {
+        background: lighten(action-color, 10%);
+      }
+    }
+  }
+}
+
+.sub-search-results {
+  margin-top: 0.6em;
+
+  li {
+    background: darken(dark-color, 30%);
+    border-top: solid 1px dark-color;
+    display: flex;
+    justify-content: space-between;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    img {
+      flex-shrink: 0;
+      width: 4em;
+      height: 4em;
+    }
+
+    h3 {
+      color: #f8f8f8;
+      flex-grow: 2;
+      overflow: hidden;
+      padding: 0 0.6em;
+      text-overflow: ellipsis;
+    }
+
+    button {
+      flex-shrink: 0;
+      width: 2em;
+    }
+  }
+}

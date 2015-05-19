@@ -1,8 +1,8 @@
 import { createClass, DOM } from 'react';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
-import SubsStore from './subs-store';
-import { search, add } from './subs-actions';
-import { icon } from '../lib/util';
+import SubsStore from '../subs-store';
+import { search, add } from '../subs-actions';
+import { icon } from '../../lib/util';
 
 export default createClass({
   mixins: [ReactStateMagicMixin],
@@ -18,19 +18,25 @@ export default createClass({
   },
 
   _add () {
-    return DOM.button({ onClick: () => { this.setState({ searching: true }); }},
-      icon('plus', 'Add')
+    return DOM.header(null,
+      DOM.button({ onClick: () => { this.setState({ searching: true }); }},
+        icon('plus', 'Add')
+      )
     );
   },
 
   _search () {
     return DOM.div(null,
-      DOM.button({ onClick: () => { this.setState({ searching: false }); }}, 'Done'),
+      DOM.header(null,
+        DOM.button({ onClick: () => { this.setState({ searching: false }); }}, 'Done')
+      ),
       DOM.form({ onSubmit: this._searchSubs },
         DOM.input({ ref: 'query', placeholder: 'Search...' }),
         DOM.button(null, icon('search'))
       ),
-      this._results()
+      DOM.ul({ className: 'sub-search-results' },
+        this._results()
+      )
     );
   },
 
@@ -41,8 +47,9 @@ export default createClass({
 
   _results () {
     return _.map(this.state.searchResults, (channel) => {
-      return DOM.div({ key: channel.id },
-        channel.title || channel.author,
+      return DOM.li({ key: channel.id },
+        DOM.img({ src: channel.thumb }),
+        DOM.h3(null, channel.title || channel.author),
         DOM.button({ onClick: _.partial(this._addChannel, channel) }, icon('plus'))
       );
     });

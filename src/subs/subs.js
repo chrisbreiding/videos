@@ -4,8 +4,9 @@ import { Link as LinkComponent, RouteHandler as RouteHandlerComponent, Navigatio
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubsStore from './subs-store';
 import { fetch } from './subs-actions';
-import AddSubComponent from './add-sub';
+import AddSubComponent from './add-sub/add-sub';
 import { getApiKey, checkApiKey } from '../login/login-actions';
+import { icon } from '../lib/util';
 
 const AddSub = createFactory(AddSubComponent);
 const Link = createFactory(LinkComponent);
@@ -28,12 +29,14 @@ export default createClass({
   },
 
   render () {
-    return DOM.div(null,
+    return DOM.div({ className: 'subs' },
       DOM.aside(null,
         DOM.ul(null,
           _.map(this.state.subs, (sub) => {
-            return DOM.li({ key: sub.id },
-              Link({ to: 'sub', params: { id: sub.id } }, sub.title || sub.author)
+            return DOM.li({ key: sub.id, className: 'sub' },
+              DOM.img({ src: sub.thumb }),
+              DOM.h3(null, sub.title || sub.author),
+              Link({ className: 'view-sub', to: 'sub', params: { id: sub.id } }, icon('chevron-right'))
             );
           })
         ),
