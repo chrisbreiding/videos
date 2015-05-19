@@ -1,5 +1,5 @@
 import dispatcher from '../lib/dispatcher';
-import actions from './subs-actions'
+import actions from './subs-actions';
 
 class SubStore {
   constructor () {

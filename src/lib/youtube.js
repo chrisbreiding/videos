@@ -4,6 +4,7 @@ import { getItem } from './local-data';
 import { getApiKey } from '../login/login-actions';
 
 const baseUrl = 'https://www.googleapis.com/youtube/v3/';
+const RESULTS_PER_PAGE = 25;
 
 function queryYouTube (url, data) {
   return getApiKey().then((apiKey) => {
@@ -25,10 +26,58 @@ function mapChannelDetails (result) {
   });
 }
 
+function getPlaylistIdForChannel (channelId) {
+  return queryYouTube('channels', {
+    id: channelId,
+    part: 'contentDetails'
+  }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads );
+}
+
+function parseVideoDetails (duration, video) {
+  return {
+    id: video.contentDetails.videoId,
+    title: video.snippet.title,
+    description: video.snippet.description,
+    published: video.snippet.publishedAt,
+    thumb: video.snippet.thumbnails.medium.url,
+    duration: duration
+  };
+}
+
+function mapVideos (videos, durationResults) {
+  return _(durationResults)
+    .pluck('contentDetails')
+    .pluck('duration')
+    .zip(videos)
+    .map(_.spread(parseVideoDetails))
+    .value()
+}
+
+function videoIds (videos) {
+  return _(videos).pluck('contentDetails').pluck('videoId').value();
+}
+
+function mapVideoDurations (extras) {
+  return (result) => {
+    return {
+      videos: mapVideos(extras.items, result.items),
+      prevPageToken: extras.prevPageToken,
+      nextPageToken: extras.nextPageToken
+    };
+  };
+}
+
+function mapVideoDetails (result) {
+  return queryYouTube('videos', {
+    id: videoIds(result.items).join(),
+    part: 'contentDetails'
+  }).then(mapVideoDurations(result));
+}
+
 export default {
   checkApiKey (apiKey) {
-    const data = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' };
-    return queryYouTube('activities', data)
+    const params = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' };
+    return queryYouTube('activities', params)
       .then(() => true)
       .catch(() => false);
   },
@@ -40,5 +89,18 @@ export default {
       type: 'channel',
       maxResults: 10
     }).then(mapChannelDetails);
+  },
+
+  getVideosForChannel (channelId, pageToken) {
+    return getPlaylistIdForChannel(channelId).then((playlistId) => {
+      let params = {
+        playlistId: playlistId,
+        part: 'snippet,contentDetails',
+        maxResults: RESULTS_PER_PAGE
+      };
+      if (pageToken) params.pageToken = pageToken;
+
+      return queryYouTube('playlistItems', params).then(mapVideoDetails);
+    });
   }
 };
