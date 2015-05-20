@@ -22,6 +22,10 @@ class SubActions {
     })
   }
 
+  clearSearch () {
+    this.actions.didUpdateSearchResults([]);
+  }
+
   add (channel) {
     subService.addChannel(channel).then((subs) => {
       this.actions.didUpdateSubs(subs);
