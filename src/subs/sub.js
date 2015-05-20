@@ -1,9 +1,12 @@
 import _ from 'lodash';
-import { createClass, DOM } from 'react';
+import { createFactory, createClass, DOM } from 'react';
 import { State } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import VideosStore from '../videos/videos-store';
 import { getVideosForChannel } from '../videos/videos-actions';
+import VideoComponent from '../videos/video';
+
+const Video = createFactory(VideoComponent);
 
 export default createClass({
   mixins: [ReactStateMagicMixin, State],
@@ -29,7 +32,7 @@ export default createClass({
 
   render () {
     return DOM.div(null, _.map(this.state.videos, (video) => {
-      return DOM.div(null, video.title);
+      return Video(_.extend({ key: video.id }, video));
     }));
   }
 });
