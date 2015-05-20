@@ -10,7 +10,10 @@ class LoginActions {
   }
 
   getApiKey () {
-    return getItem(API_KEY_KEY);
+    return getItem(API_KEY_KEY).then((apiKey) => {
+      this.actions.didUpdateApiKey(apiKey);
+      return apiKey;
+    });
   }
 
   updateApiKey (apiKey) {

@@ -16,7 +16,12 @@ export default createClass({
     this.refs.apiKey.getDOMNode().focus();
   },
 
+  shouldComponentUpdate (__, nextState) {
+    return this.state.apiKey !== nextState.apiKey;
+  },
+
   componentDidUpdate () {
+    this.refs.apiKey.getDOMNode().value = this.state.apiKey;
     this._checkApiKey(this.state.apiKey);
   },
 
@@ -30,7 +35,7 @@ export default createClass({
     return DOM.div({ className: 'login' },
       DOM.form({ onSubmit: this._onFormSubmit },
         DOM.h2(null, 'Please enter your API Key'),
-        DOM.input({ ref: 'apiKey', initialValue: this.state.apiKey })
+        DOM.input({ ref: 'apiKey', defaulValue: this.state.apiKey })
       )
     );
   },
