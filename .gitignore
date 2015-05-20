@@ -8,6 +8,7 @@ doc/
 .DS_Store
 *.sublime-*
 .sass-cache
+dist
 _build
 _dev
 node_modules

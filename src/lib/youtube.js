@@ -2,17 +2,24 @@ import _ from 'lodash';
 import req from 'reqwest';
 import { getItem } from './local-data';
 import { getApiKey } from '../login/login-actions';
+import { Promise } from 'rsvp';
 
-const baseUrl = 'https://www.googleapis.com/youtube/v3/';
+// const baseUrl = localStorage.youtubeBaseUrl || 'https://www.googleapis.com/youtube/v3/';
 const RESULTS_PER_PAGE = 25;
 
+function getBaseUrl () {
+  return getItem('youtubeBaseUrl').then((baseUrl) => {
+    return baseUrl || 'https://www.googleapis.com/youtube/v3/';
+  })
+}
+
 function queryYouTube (url, data) {
-  return getApiKey().then((apiKey) => {
+  return Promise.all([getBaseUrl(), getApiKey()]).then(_.spread((baseUrl, apiKey) => {
     return req({
       url: `${baseUrl}${url}`,
       data: _.extend({ key: apiKey }, data)
     });
-  });
+  }));
 }
 
 function mapChannelDetails (result) {
