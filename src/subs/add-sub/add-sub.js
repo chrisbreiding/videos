@@ -23,7 +23,9 @@ export default createClass({
 
   _search () {
     const q = this.getQuery().q;
-    if (q) search(q);
+    if (!q || q === this.q) return;
+    this.q = q;
+    search(q);
   },
 
   render () {
