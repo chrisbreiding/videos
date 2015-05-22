@@ -4,7 +4,6 @@ import { getItem } from './local-data';
 import { getApiKey } from '../login/login-actions';
 import { Promise } from 'rsvp';
 
-// const baseUrl = localStorage.youtubeBaseUrl || 'https://www.googleapis.com/youtube/v3/';
 const RESULTS_PER_PAGE = 25;
 
 function getBaseUrl () {

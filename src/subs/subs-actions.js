@@ -6,6 +6,14 @@ class SubActions {
     this.dispatch(subs);
   }
 
+  didAddSub (sub) {
+    this.dispatch(sub);
+  }
+
+  didRemoveSub (sub) {
+    this.dispatch(sub);
+  }
+
   didUpdateSearchResults (searchResults) {
     this.dispatch(searchResults);
   }
@@ -27,8 +35,14 @@ class SubActions {
   }
 
   add (channel) {
-    subService.addChannel(channel).then((subs) => {
-      this.actions.didUpdateSubs(subs);
+    subService.addChannel(channel).then(() => {
+      this.actions.didAddSub(channel);
+    });
+  }
+
+  remove (channel) {
+    subService.removeChannel(channel).then(() => {
+      this.actions.didRemoveSub(channel);
     });
   }
 }

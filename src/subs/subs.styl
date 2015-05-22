@@ -1,5 +1,4 @@
 sidebar-width = 250px;
-sub-height = 70px;
 
 .subs {
   aside {
@@ -11,32 +10,15 @@ sub-height = 70px;
     top: 0;
     width: sidebar-width;
 
-    h2 {
-      color: #d3d3d3;
-      float: left;
-      font-size: 1.1em;
+    header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.6em 0.8em;
     }
   }
 
   main {
     margin-left: sidebar-width;
-  }
-}
-
-.subs-header,
-.sub-search-header {
-  padding: 5px 10px;
-}
-
-a.edit-subs,
-a.search-subs {
-  color: #c7c7c7;
-  float: right;
-  margin-top: 10px;
-
-  &:hover,
-  &:focus {
-    color: #b4b4b4;
   }
 }
 
@@ -51,9 +33,7 @@ a.search-subs {
 .sub {
   background: #e3e3e3;
   border-top: solid 1px #c7c7c7;
-  font-size: .9em;
-  height: sub-height;
-  position: relative;
+  display: flex;
 
   &:first-of-type {
     border-top: none;
@@ -61,38 +41,32 @@ a.search-subs {
 
   img {
     border-radius: 50%;
-    float: left;
+    flex-shrink: 0;
     height: 70px;
     width: 70px;
   }
 
   h3 {
+    flex-grow: 2;
     font-size: 1.1em;
-    margin: 10px 40px 0 80px;
+    padding: 0.6em;
   }
 }
 
-a.view-sub,
-a.delete-sub,
-a.add-sub {
-  display: block;
-  position: absolute;
-  text-align: center;
+.view-sub,
+.remove-sub {
+  align-items: center;
+  border-left: solid 1px #d3d3d3;
+  display: flex;
+  justify-content: center;
   text-decoration: none;
-
-  i {
-    display: block;
-  }
+  transition: all 0.5s ease;
+  width: 2em;
 }
 
 a.view-sub {
   background: #e3e3e3;
-  border-left: solid 1px #d3d3d3;
   color: #797979;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 30px;
 
   &:hover,
   &:focus,
@@ -103,29 +77,15 @@ a.view-sub {
   .editing & {
     display: none;
   }
-
-  i {
-    width: 30px;
-    height: sub-height;
-    line-height: sub-height;
-  }
 }
 
-a.delete-sub,
-a.add-sub {
-  font-size: 1.5em;
-  top: 15px;
-  right: 5px;
-  bottom: 15px;
-}
-
-a.delete-sub {
+.remove-sub {
   color: warning-color;
   display: none;
 
   &:hover,
   &:focus {
-    color: darken(warning-color, 10%);
+    color: darken(warning-color, 20%);
   }
 
   .editing & {
@@ -133,12 +93,11 @@ a.delete-sub {
   }
 
   i {
-    height: sub-height - 30px;
-    line-height: sub-height - 30px;
+    font-size: 1.2em;
   }
 }
 
-a.make-sub-default {
+.make-sub-default {
   display: none;
   position: absolute;
   top: 5px;
