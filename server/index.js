@@ -8,6 +8,7 @@ var constants = require('./constants');
 var app = express();
 
 app.use(express.static(process.cwd() + '/dist'));
+app.use('/static', express.static(__dirname + '/static'));
 app.use(morgan('dev'));
 
 var router = express.Router();
