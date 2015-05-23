@@ -19,13 +19,18 @@ export default createClass({
 
   componentDidUpdate () {
     this._search();
+    if (this.refs.query) {
+      this.refs.query.getDOMNode().focus();
+    }
   },
 
   _search () {
-    const q = this.getQuery().q;
-    if (!q || q === this.q) return;
-    this.q = q;
-    search(q);
+    const query = this.getQuery().q;
+    const oldQuery = this.query;
+    this.query = query;
+    if (!query || query === oldQuery) return;
+    this.refs.query.getDOMNode().value = query;
+    search(query);
   },
 
   render () {
