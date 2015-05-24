@@ -1,11 +1,11 @@
-module.exports = function(express, app) {
+module.exports = (express, app) => {
   var router = express.Router();
 
-  router.get('/activities', function (req, res) {
+  router.get('/activities', (req, res) => {
     res.send({ ok: true });
   });
 
-  router.get('/search', function (req, res) {
+  router.get('/search', (req, res) => {
     res.send({
       items: [
         {
@@ -22,18 +22,25 @@ module.exports = function(express, app) {
             title: 'Bar',
             thumbnails: { medium: { url: '/static/user-thumb.jpg' } }
           }
+        },{
+          id: { channelId: 'channel-id-3' },
+          snippet: {
+            channelTitle: 'Qux',
+            title: 'Qux',
+            thumbnails: { medium: { url: '/static/user-thumb.jpg' } }
+          }
         }
       ]
     });
   });
 
-  router.get('/channels', function (req, res) {
+  router.get('/channels', (req, res) => {
     res.send({
       items: [{ contentDetails: { relatedPlaylists: 'some-id' } }]
     });
   });
 
-  router.get('/playlistItems', function (req, res) {
+  router.get('/playlistItems', (req, res) => {
     res.send({
       items: [
         {
@@ -49,7 +56,7 @@ module.exports = function(express, app) {
     });
   });
 
-  router.get('/videos', function (req, res) {
+  router.get('/videos', (req, res) => {
     res.send({
       items: [
         { contentDetails: { duration: 'PT13M19S' } }
@@ -57,7 +64,7 @@ module.exports = function(express, app) {
     });
   });
 
-  router.get('/thumb', function (req, res) {
+  router.get('/thumb', (req, res) => {
     res.send({
       ok: true
     });

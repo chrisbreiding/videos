@@ -1,3 +1,5 @@
+const args = require('yargs').argv;
+
 module.exports = {
-  API_KEY: process.env.apikey || 'apikey'
+  API_KEY: args.apikey || 'apikey'
 };

@@ -1,18 +1,19 @@
-var express = require('express');
-var globSync = require('glob').sync;
-var mocks = globSync('./mocks/**/*.js', { cwd: __dirname }).map(require);
-var morgan = require('morgan');
+const args = require('yargs').argv;
+const express = require('express');
+const globSync = require('glob').sync;
+const mocks = globSync('./mocks/**/*.js', { cwd: __dirname }).map(require);
+const morgan = require('morgan');
 
-var constants = require('./constants');
+const constants = require('./constants');
 
-var app = express();
+const app = express();
 
 app.use(express.static(process.cwd() + '/dist'));
 app.use('/static', express.static(__dirname + '/static'));
 app.use(morgan('dev'));
 
-var router = express.Router();
-router.use(function (req, res, next) {
+const router = express.Router();
+router.use((req, res, next) => {
   if (req.query.key !== constants.API_KEY) {
     return res.status(401).end();
   }
@@ -20,9 +21,9 @@ router.use(function (req, res, next) {
 });
 app.use('/api', router);
 
-mocks.forEach(function(route) { route(express, app); });
+mocks.forEach((route) => route(express, app));
 
-var port = 8080;
-app.listen(port, function () {
-  console.log('listening on http://localhost:' + port + '...');
+const port = args.port || 8080;
+app.listen(port, () => {
+  console.log(`listening on http://localhost:${port}...`);
 });
