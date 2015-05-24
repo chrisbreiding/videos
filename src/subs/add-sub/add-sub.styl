@@ -29,55 +29,48 @@
     }
 
     button {
-      background: action-color;
-      border: none;
       border-radius: 0 3px 3px 0;
-      color: #f8f8f8;
-      cursor: pointer;
       display: block;
-      font-size: 1.1em;
-      outline: none;
-      padding: 0.4em 1.2em;
+      padding: 0.4em 1em;
 
-      &:hover,
-      &:focus,
-      &:active {
-        background: lighten(action-color, 10%);
+      i {
+        font-size: 1.1em;
       }
     }
   }
 }
 
 .sub-search-results {
-  margin-top: 0.6em;
-
   li {
-    background: darken(dark-color, 30%);
-    border-top: solid 1px dark-color;
+    background: light-color;
     display: flex;
     justify-content: space-between;
-
-    &:first-child {
-      border-top: none;
-    }
+    margin: 0.6em 0.6em;
 
     img {
       flex-shrink: 0;
-      width: 4em;
-      height: 4em;
+      margin: 0.25em;
+      height: 3.5em;
+      width: 3.5em;
     }
 
     h3 {
-      color: #f8f8f8;
       flex-grow: 2;
       overflow: hidden;
-      padding: 0 0.6em;
+      padding: 0.6em;
       text-overflow: ellipsis;
     }
 
     button {
+      background: none;
+      color: action-color;
       flex-shrink: 0;
       width: 2em;
+
+      &:hover,
+      &:focus {
+        color: darken(action-color, 20%);
+      }
     }
   }
 }

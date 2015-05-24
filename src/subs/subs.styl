@@ -1,13 +1,15 @@
 sidebar-width = 250px;
 
 .subs {
+  display: flex;
+  overflow-y: hidden;
+  height: 100%;
+
   aside {
-    background: dark-color;
-    bottom: 0;
-    left: 0;
+    background: darken(light-color, 40%);
+    box-shadow: inset -0.5em 0 4em rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
     overflow-y: scroll;
-    position: fixed;
-    top: 0;
     width: sidebar-width;
 
     header {
@@ -18,7 +20,9 @@ sidebar-width = 250px;
   }
 
   main {
-    margin-left: sidebar-width;
+    flex-grow: 2;
+    min-width: 30em;
+    overflow-y: scroll;
   }
 }
 
@@ -30,20 +34,21 @@ sidebar-width = 250px;
   text-align: center;
 }
 
+thumb-size = 70px;
+
 .sub {
   background: #e3e3e3;
-  border-top: solid 1px #c7c7c7;
+  margin-bottom: 0.4em;
+  margin-left: (thumb-size / 2) + 4px;
   display: flex;
 
-  &:first-of-type {
-    border-top: none;
-  }
-
   img {
+    background: light-color;
     border-radius: 50%;
     flex-shrink: 0;
-    height: 70px;
-    width: 70px;
+    margin-left: -(thumb-size / 2);
+    height: thumb-size;
+    width: thumb-size;
   }
 
   h3 {
@@ -56,7 +61,6 @@ sidebar-width = 250px;
 .view-sub,
 .remove-sub {
   align-items: center;
-  border-left: solid 1px #d3d3d3;
   display: flex;
   justify-content: center;
   text-decoration: none;
@@ -64,7 +68,8 @@ sidebar-width = 250px;
   width: 2em;
 }
 
-a.view-sub {
+a.view-sub,
+.remove-sub {
   background: #e3e3e3;
   color: #797979;
 
