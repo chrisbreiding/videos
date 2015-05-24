@@ -1,0 +1,27 @@
+.now-playing {
+  align-items: center;
+  background: #000;
+  background: linear-gradient(to bottom, #222 0%, #000 100%);
+  display: flex;
+  padding: 1em;
+  position: relative;
+  justify-content: center;
+
+  button {
+    background: #000;
+    border-radius: 0 0 0 3px;
+    color: darken(light-color, 20%);
+    top: 0;
+    position: absolute;
+    right: 0;
+
+    &:hover,
+    &:focus {
+      color: #FFF;
+    }
+
+    i {
+      font-size: 1.4em;
+    }
+  }
+}

@@ -4,7 +4,7 @@ import { icon, duration, date } from '../lib/util';
 export default createClass({
   render () {
     return DOM.div({ className: 'video' },
-      DOM.button({ className: 'play-video', onClick: this._playVideo },
+      DOM.button({ className: 'play-video', onClick: this.props.onPlay },
         DOM.img({ src: this.props.thumb }),
         icon('youtube-play')
       ),
@@ -16,9 +16,5 @@ export default createClass({
         )
       )
     );
-  },
-
-  _playVideo () {
-
   }
 });

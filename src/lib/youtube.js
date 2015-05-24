@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import req from 'reqwest';
 import { getItem } from './local-data';
-import { getApiKey } from '../login/login-actions';
+import loginActions from '../login/login-actions';
 import { Promise } from 'rsvp';
 
 const RESULTS_PER_PAGE = 25;
@@ -13,7 +13,7 @@ function getBaseUrl () {
 }
 
 function queryYouTube (url, data) {
-  return Promise.all([getBaseUrl(), getApiKey()]).then(_.spread((baseUrl, apiKey) => {
+  return Promise.all([getBaseUrl(), loginActions.getApiKey()]).then(_.spread((baseUrl, apiKey) => {
     return req({
       url: `${baseUrl}${url}`,
       data: _.extend({ key: apiKey }, data)

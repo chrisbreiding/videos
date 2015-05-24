@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
-import { State } from 'react-router';
+import { State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import VideosStore from '../videos/videos-store';
 import { getVideosForChannel } from '../videos/videos-actions';
@@ -9,7 +9,7 @@ import VideoComponent from '../videos/video';
 const Video = createFactory(VideoComponent);
 
 export default createClass({
-  mixins: [ReactStateMagicMixin, State],
+  mixins: [ReactStateMagicMixin, State, Navigation],
 
   statics: {
     registerStore: VideosStore
@@ -32,7 +32,14 @@ export default createClass({
 
   render () {
     return DOM.div(null, _.map(this.state.videos, (video) => {
-      return Video(_.extend({ key: video.id }, video));
+      return Video(_.extend({
+        key: video.id, onPlay: _.partial(this._playVideo, video.id)
+      }, video));
     }));
+  },
+
+  _playVideo (id) {
+    const query = _.extend(this.getQuery(), { nowPlaying: id });
+    this.transitionTo(this.getPathname(), this.getParams(), query);
   }
 });

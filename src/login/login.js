@@ -27,7 +27,7 @@ export default createClass({
 
   _checkApiKey (apiKey) {
     checkApiKey(apiKey).then((isValid) => {
-      if (isValid) this.transitionTo('subs');
+      if (isValid) this.transitionTo('app');
     });
   },
 

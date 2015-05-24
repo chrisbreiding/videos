@@ -1,19 +1,18 @@
 import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
-import { Link as LinkComponent, RouteHandler as RouteHandlerComponent, Navigation } from 'react-router'
+import { Link as LinkComponent, RouteHandler as RouteHandlerComponent } from 'react-router'
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubsStore from './subs-store';
 import { fetch, remove } from './subs-actions';
-import AddSubComponent from './add-sub/add-sub';
-import { getApiKey, checkApiKey } from '../login/login-actions';
 import { icon } from '../lib/util';
+import AddSubComponent from './add-sub/add-sub';
 
 const AddSub = createFactory(AddSubComponent);
 const Link = createFactory(LinkComponent);
 const RouteHandler = createFactory(RouteHandlerComponent);
 
 export default createClass({
-  mixins: [ReactStateMagicMixin, Navigation],
+  mixins: [ReactStateMagicMixin],
 
   statics: {
     registerStore: SubsStore
@@ -21,11 +20,6 @@ export default createClass({
 
   componentDidMount () {
     fetch();
-    getApiKey().then((apiKey) => {
-      return checkApiKey(apiKey);
-    }).then((isValid) => {
-      if (!isValid) this.transitionTo('login');
-    });
   },
 
   render () {

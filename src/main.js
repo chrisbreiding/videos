@@ -12,5 +12,5 @@ RSVP.on('error', (e) => {
 });
 
 run(routes, (Handler) => {
-  render(createFactory(Handler)(), document.getElementById('app'));
+  render(createFactory(Handler)(), document.getElementById('app-container'));
 });
