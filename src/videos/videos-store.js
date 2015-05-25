@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import dispatcher from '../lib/dispatcher';
 import actions from './videos-actions';
 
@@ -10,9 +11,8 @@ class VideosStore {
     });
   }
 
-  updateVideosData ({ channelId, videos }) {
-    this.channelId = channelId;
-    this.videos = videos;
+  updateVideosData (data) {
+    _.extend(this, data);
   }
 }
 

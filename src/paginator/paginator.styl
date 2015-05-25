@@ -1,0 +1,36 @@
+.paginator {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.8em;
+
+  &.no-paging {
+    display: none;
+  }
+
+  li {
+    a {
+      border: solid 1px darken(light-color, 20%);
+      display: inline-block;
+      font-size: .9em;
+      padding: 0.4em 0.6em;
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        background: darken(light-color, 10%);
+      }
+    }
+
+    &:first-child a {
+      border-radius: 3px 0 0 3px;
+    }
+
+    &:last-child a {
+      border-radius: 0 3px 3px 0;
+    }
+
+    &.disabled {
+      visibility: hidden;
+    }
+  }
+}

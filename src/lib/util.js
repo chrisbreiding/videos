@@ -23,10 +23,11 @@ function toTwoDigits (num) {
 }
 
 export default {
-  icon (iconName, text) {
-    return DOM.span({ className: `icon${text ? ' with-text' : ''}` },
+  icon (iconName, rightText, leftText) {
+    return DOM.span({ className: `icon${rightText || leftText ? ' with-text' : ''}` },
+      leftText ? leftText : null,
       DOM.i({ className: `fa fa-${iconName}` }),
-      text ? text : null
+      rightText ? rightText : null
     );
   },
 

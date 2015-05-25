@@ -6,8 +6,8 @@ class VideosActions {
     this.dispatch(videosData);
   }
 
-  getVideosForChannel (channelId) {
-    videosService.getVideosForChannel(channelId).then((videosData) => {
+  getVideosForChannel (channelId, pageToken) {
+    videosService.getVideosForChannel(channelId, pageToken).then((videosData) => {
       videosData.channelId = channelId;
       this.actions.didUpdateVideosData(videosData);
     });

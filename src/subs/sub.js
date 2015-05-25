@@ -4,8 +4,10 @@ import { State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import VideosStore from '../videos/videos-store';
 import { getVideosForChannel } from '../videos/videos-actions';
+import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
 
+const Paginator = createFactory(PaginatorComponent);
 const Video = createFactory(VideoComponent);
 
 export default createClass({
@@ -20,26 +22,41 @@ export default createClass({
   },
 
   componentDidUpdate (__, prevState) {
-    const id = this._getId();
-    if (!prevState.channelId || prevState.channelId === id) return;
+    const newId = this._getId();
+    const oldId = prevState.channelId;
 
-    getVideosForChannel(id);
+    const newToken = this._getPageToken();
+    const oldToken = this.pageToken;
+    this.pageToken = newToken;
+
+    if (oldId !== newId || oldToken !== newToken) {
+      getVideosForChannel(newId, newToken);
+    }
   },
 
   _getId () {
     return this.getParams().id;
   },
 
+  _getPageToken () {
+    return this.getQuery().pageToken;
+  },
+
   render () {
-    return DOM.div(null, _.map(this.state.videos, (video) => {
-      return Video(_.extend({
-        key: video.id, onPlay: _.partial(this._playVideo, video.id)
-      }, video));
-    }));
+    const { prevPageToken, nextPageToken } = this.state;
+
+    return DOM.div(null,
+      Paginator({ prevPageToken, nextPageToken }),
+      _.map(this.state.videos, (video) => {
+        return Video(_.extend({
+          key: video.id, onPlay: _.partial(this._playVideo, video.id)
+        }, video));
+      })
+    );
   },
 
   _playVideo (id) {
-    const query = _.extend(this.getQuery(), { nowPlaying: id });
+    const query = _.extend({}, this.getQuery(), { nowPlaying: id });
     this.transitionTo(this.getPathname(), this.getParams(), query);
   }
 });
