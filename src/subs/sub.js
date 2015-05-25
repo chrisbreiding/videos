@@ -6,6 +6,7 @@ import VideosStore from '../videos/videos-store';
 import { getVideosForChannel } from '../videos/videos-actions';
 import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
+import { icon } from '../lib/util';
 
 const Paginator = createFactory(PaginatorComponent);
 const Video = createFactory(VideoComponent);
@@ -47,11 +48,23 @@ export default createClass({
 
     return DOM.div(null,
       Paginator({ prevPageToken, nextPageToken }),
-      _.map(this.state.videos, (video) => {
-        return Video(_.extend({
-          key: video.id, onPlay: _.partial(this._playVideo, video.id)
-        }, video));
-      })
+      this.state.videos.length ? this._videos() : this._loader()
+    );
+  },
+
+  _videos () {
+    return _.map(this.state.videos, (video) => {
+      return Video(_.extend({
+        key: video.id, onPlay: _.partial(this._playVideo, video.id)
+      }, video));
+    });
+  },
+
+  _loader () {
+    return DOM.div({ className: 'loader' },
+      icon('spin fa-play-circle'),
+      icon('spin fa-play-circle'),
+      icon('spin fa-play-circle')
     );
   },
 

@@ -4,11 +4,17 @@ import actions from './videos-actions';
 
 class VideosStore {
   constructor () {
-    this.videos = [];
+    this.clearVideos();
 
     this.bindListeners({
+      clearVideos: actions.GET_VIDEOS_FOR_CHANNEL,
       updateVideosData: actions.DID_UPDATE_VIDEOS_DATA
     });
+  }
+
+  clearVideos (channelId) {
+    this.channelId = channelId;
+    this.videos = [];
   }
 
   updateVideosData (data) {
