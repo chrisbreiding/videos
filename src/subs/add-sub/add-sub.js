@@ -66,7 +66,7 @@ export default createClass({
   },
 
   _updateSearch (search) {
-    const query = search === false ? undefined : { q: search };
+    const query = _.extend({}, this.getQuery(), { q: search === false ? undefined : search });
     this.transitionTo(this.getPathname(), this.getParams(), query);
   },
 
