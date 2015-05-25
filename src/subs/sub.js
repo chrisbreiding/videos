@@ -44,15 +44,19 @@ export default createClass({
   },
 
   render () {
-    const { prevPageToken, nextPageToken } = this.state;
+    return this.state.videos.length ? this._sub() : this._loader();
+  },
 
+  _sub () {
+    const { prevPageToken, nextPageToken } = this.state;
     return DOM.div(null,
       Paginator({ prevPageToken, nextPageToken }),
-      this.state.videos.length ? this._videos() : this._loader()
+      this._videos(),
+      Paginator({ prevPageToken, nextPageToken })
     );
   },
 
-  _videos () {
+  _videos() {
     return _.map(this.state.videos, (video) => {
       return Video(_.extend({
         key: video.id, onPlay: _.partial(this._playVideo, video.id)
