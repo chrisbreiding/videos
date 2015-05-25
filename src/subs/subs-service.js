@@ -1,6 +1,8 @@
+import { spread } from 'lodash';
+import { Promise } from 'rsvp';
 import { SUBS_KEY } from '../lib/constants';
 import { getItem, setItem } from '../lib/local-data';
-import { searchChannels } from '../lib/youtube';
+import { searchChannels, getPlaylistIdForChannel } from '../lib/youtube';
 
 export default {
   fetch () {
@@ -12,11 +14,13 @@ export default {
   },
 
   addChannel (channel) {
-    return getItem(SUBS_KEY).then((subs = {}) => {
-      channel.order = this._newOrder(subs);
-      subs[channel.id] = channel;
-      return setItem(SUBS_KEY, subs);
-    });
+    return Promise.all([getPlaylistIdForChannel(channel.id), getItem(SUBS_KEY)])
+      .then(spread((playlistId, subs = {}) => {
+        channel.playlistId = playlistId;
+        channel.order = this._newOrder(subs);
+        subs[channel.id] = channel;
+        return setItem(SUBS_KEY, subs);
+      }));
   },
 
   removeChannel (channel) {

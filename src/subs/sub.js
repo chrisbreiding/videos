@@ -3,7 +3,7 @@ import { createFactory, createClass, DOM } from 'react';
 import { State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import VideosStore from '../videos/videos-store';
-import { getVideosForChannel } from '../videos/videos-actions';
+import { getVideosForPlaylist } from '../videos/videos-actions';
 import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
 import { icon } from '../lib/util';
@@ -19,7 +19,7 @@ export default createClass({
   },
 
   componentDidMount () {
-    getVideosForChannel(this._getId());
+    getVideosForPlaylist(this._getId());
   },
 
   componentDidUpdate (__, prevState) {
@@ -31,7 +31,7 @@ export default createClass({
     this.pageToken = newToken;
 
     if (oldId !== newId || oldToken !== newToken) {
-      getVideosForChannel(newId, newToken);
+      getVideosForPlaylist(newId, newToken);
     }
   },
 

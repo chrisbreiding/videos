@@ -1,7 +1,7 @@
-import { getVideosForChannel } from '../lib/youtube';
+import { getVideosForPlaylist } from '../lib/youtube';
 
 export default {
-  getVideosForChannel (channelId, pageToken) {
-    return getVideosForChannel(channelId, pageToken);
+  getVideosForPlaylist (playlistId, pageToken) {
+    return getVideosForPlaylist(playlistId, pageToken);
   }
 };

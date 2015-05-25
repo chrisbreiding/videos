@@ -7,7 +7,7 @@ class VideosStore {
     this.clearVideos();
 
     this.bindListeners({
-      clearVideos: actions.GET_VIDEOS_FOR_CHANNEL,
+      clearVideos: actions.GET_VIDEOS_FOR_PLAYLIST,
       updateVideosData: actions.DID_UPDATE_VIDEOS_DATA
     });
   }

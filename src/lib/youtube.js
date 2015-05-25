@@ -32,13 +32,6 @@ function mapChannelDetails (result) {
   });
 }
 
-function getPlaylistIdForChannel (channelId) {
-  return queryYouTube('channels', {
-    id: channelId,
-    part: 'contentDetails'
-  }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads );
-}
-
 function parseVideoDetails (duration, video) {
   return {
     id: video.contentDetails.videoId,
@@ -97,16 +90,21 @@ export default {
     }).then(mapChannelDetails);
   },
 
-  getVideosForChannel (channelId, pageToken) {
-    return getPlaylistIdForChannel(channelId).then((playlistId) => {
-      let params = {
-        playlistId: playlistId,
-        part: 'snippet,contentDetails',
-        maxResults: RESULTS_PER_PAGE
-      };
-      if (pageToken) params.pageToken = pageToken;
+  getVideosForPlaylist (playlistId, pageToken) {
+    const params = {
+      playlistId: playlistId,
+      part: 'snippet,contentDetails',
+      maxResults: RESULTS_PER_PAGE
+    };
+    if (pageToken) params.pageToken = pageToken;
 
-      return queryYouTube('playlistItems', params).then(mapVideoDetails);
-    });
+    return queryYouTube('playlistItems', params).then(mapVideoDetails);
+  },
+
+  getPlaylistIdForChannel (channelId) {
+    return queryYouTube('channels', {
+      id: channelId,
+      part: 'contentDetails'
+    }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads );
   }
 };
