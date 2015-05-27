@@ -1,75 +1,33 @@
 .add-sub {
-  header {
+  > header {
     display: flex;
-    justify-content: flex-end;
-    padding: 0.8em;
-  }
+    margin: 1em 0;
+    padding-right: 0.4em;
 
-  form {
-    display: flex;
-    padding: 0 0.6em;
-
-    input {
-      background: #121212;
-      border: solid 1px #121212;
-      border-radius: 3px 0 0 3px;
-      color: #f8f8f8;
+    a {
+      @extends .button;
       display: block;
-      font-size: 1em;
-      outline: none;
-      padding: 0.4em 0.6em;
-
-      &:hover {
-        border-color: lighten(action-color, 10%);
-      }
-
-      &:focus {
-        border-color: action-color;
-      }
-    }
-
-    button {
-      border-radius: 0 3px 3px 0;
-      display: block;
-      padding: 0.4em 1em;
-
-      i {
-        font-size: 1.1em;
-      }
-    }
-  }
-}
-
-.sub-search-results {
-  li {
-    background: light-color;
-    display: flex;
-    justify-content: space-between;
-    margin: 0.6em 0.6em;
-
-    img {
-      flex-shrink: 0;
-      margin: 0.25em;
-      height: 3.5em;
-      width: 3.5em;
-    }
-
-    h3 {
       flex-grow: 2;
-      overflow: hidden;
-      padding: 0.6em;
-      text-overflow: ellipsis;
+      margin-left: 0.4em;
+      text-align: center;
+      text-decoration: none;
     }
 
-    button {
-      background: none;
-      color: action-color;
-      flex-shrink: 0;
-      width: 2em;
+    .icon {
+      font-size: 0.8em;
+    }
+  }
 
-      &:hover,
-      &:focus {
-        color: darken(action-color, 20%);
+  main {
+    margin: 0.8em;
+
+    header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.8em;
+
+      a {
+        color: dark-color;
       }
     }
   }

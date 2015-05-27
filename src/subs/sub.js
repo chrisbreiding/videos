@@ -24,7 +24,7 @@ export default createClass({
 
   componentDidUpdate (__, prevState) {
     const newId = this._getId();
-    const oldId = prevState.channelId;
+    const oldId = prevState.playlistId;
 
     const newToken = this._getPageToken();
     const oldToken = this.pageToken;
@@ -36,7 +36,7 @@ export default createClass({
   },
 
   _getId () {
-    return this.getParams().id;
+    return this.getParams().playlistId;
   },
 
   _getPageToken () {

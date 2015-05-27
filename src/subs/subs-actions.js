@@ -10,8 +10,8 @@ class SubActions {
     this.dispatch(sub);
   }
 
-  didRemoveSub (sub) {
-    this.dispatch(sub);
+  didRemoveSub (id) {
+    this.dispatch(id);
   }
 
   didUpdateSearchResults (searchResults) {
@@ -34,15 +34,21 @@ class SubActions {
     this.actions.didUpdateSearchResults([]);
   }
 
-  add (channel) {
-    subService.addChannel(channel).then(() => {
+  addChannel (channel) {
+    subService.addChannel(channel).then((channel) => {
       this.actions.didAddSub(channel);
     });
   }
 
-  remove (channel) {
-    subService.removeChannel(channel).then(() => {
-      this.actions.didRemoveSub(channel);
+  addCustomPlaylist (sub) {
+    subService.addCustomPlaylist(sub).then(() => {
+      this.actions.didAddSub(sub);
+    });
+  }
+
+  remove (id) {
+    subService.remove(id).then(() => {
+      this.actions.didRemoveSub(id);
     });
   }
 }

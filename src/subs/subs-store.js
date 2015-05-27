@@ -26,8 +26,8 @@ class SubStore {
     this._updateSubs();
   }
 
-  removeSub (sub) {
-    delete this._subs[sub.id];
+  removeSub (id) {
+    delete this._subs[id];
     this._updateSubs();
   }
 

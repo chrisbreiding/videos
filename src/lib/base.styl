@@ -34,12 +34,30 @@ a:active {
   text-decoration: underline;
 }
 
-input,
-textarea {
-  font-size: 1em;
+label {
+  font-size: 0.9em;
 }
 
-button {
+input,
+textarea {
+  backround: #FFF;
+  border: solid 1px darken(light-color, 20%);
+  border-radius: 3px;
+  font-size: 1em;
+  outline: none;
+  padding: 0.4em 0.6em;
+
+  &:focus {
+    border-color: dark-color;
+  }
+}
+
+input {
+  display: inline-block;
+}
+
+button,
+.button {
   background: action-color;
   border: none;
   border-radius: 3px;

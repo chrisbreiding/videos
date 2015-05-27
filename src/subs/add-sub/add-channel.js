@@ -2,7 +2,7 @@ import { createClass, DOM } from 'react';
 import { Navigation, State } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubsStore from '../subs-store';
-import { search, clearSearch, add } from '../subs-actions';
+import { search, clearSearch, addChannel } from '../subs-actions';
 import { icon } from '../../lib/util';
 
 export default createClass({
@@ -36,12 +36,12 @@ export default createClass({
   },
 
   render () {
-    return DOM.div(null,
+    return DOM.div({ className: 'add-channel' },
       DOM.form({ onSubmit: this._searchSubs },
         DOM.input({ ref: 'query', placeholder: 'Search...', defaultValue: this.getQuery().q }),
         DOM.button(null, icon('search'))
       ),
-      DOM.ul({ className: 'sub-search-results' }, this._results())
+      DOM.ul(null, this._results())
     );
   },
 
@@ -60,12 +60,8 @@ export default createClass({
       return DOM.li({ key: channel.id },
         DOM.img({ src: channel.thumb }),
         DOM.h3(null, channel.title || channel.author),
-        DOM.button({ onClick: _.partial(this._addChannel, channel) }, icon('plus'))
+        DOM.button({ onClick: _.partial(addChannel, channel) }, icon('plus'))
       );
     });
-  },
-
-  _addChannel (channel) {
-    add(channel);
   }
 });

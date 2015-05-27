@@ -12,7 +12,7 @@ const RootComponent = createClass({ render () { return RouteHandler(); } });
 
 export default Route({ handler: RootComponent, path: '/' },
   Route({ name: 'app', handler: AppComponent, path: '/' },
-    Route({ name: 'sub', handler: SubComponent, path: 'subs/:id' })
+    Route({ name: 'sub', handler: SubComponent, path: 'subs/:playlistId' })
   ),
   Route({ name: 'login', handler: LoginComponent })
 );

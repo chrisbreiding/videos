@@ -1,12 +1,11 @@
-import { spread } from 'lodash';
-import { Promise } from 'rsvp';
+import _ from 'lodash';
 import { SUBS_KEY } from '../lib/constants';
 import { getItem, setItem } from '../lib/local-data';
 import { searchChannels, getPlaylistIdForChannel } from '../lib/youtube';
 
 export default {
   fetch () {
-    return getItem(SUBS_KEY);
+    return this._getSubs();
   },
 
   search (query) {
@@ -14,25 +13,59 @@ export default {
   },
 
   addChannel (channel) {
-    return Promise.all([getPlaylistIdForChannel(channel.id), getItem(SUBS_KEY)])
-      .then(spread((playlistId, subs = {}) => {
-        channel.playlistId = playlistId;
-        channel.order = this._newOrder(subs);
-        subs[channel.id] = channel;
-        return setItem(SUBS_KEY, subs);
-      }));
-  },
-
-  removeChannel (channel) {
-    return getItem(SUBS_KEY).then((subs = {}) => {
-      delete subs[channel.id];
-      return setItem(SUBS_KEY, subs);
+    return getPlaylistIdForChannel(channel.id).then((playlistId) => {
+      return this._addSub(_.extend(channel, { playlistId }));
     });
   },
 
+  addCustomPlaylist (playlist) {
+    return this._addSub(playlist, (subs) => {
+      const id = this._newId(subs);
+      return _.extend(playlist, {
+        custom: true,
+        id: `custom-${id}`,
+        playlistId: `playlist-${id}`
+      })
+    });
+  },
+
+  _addSub (sub, transform) {
+    return this._getSubs().then((subs = {}) => {
+      if (transform) sub = transform(subs);
+      subs[sub.id] = _.extend(sub, { order: this._newOrder(subs) });
+      return this._setSubs(subs).then(() => subs[sub.id] );
+    });
+  },
+
+  remove (id) {
+    return this._getSubs().then((subs = {}) => {
+      delete subs[id];
+      return this._setSubs(subs);
+    });
+  },
+
+  _getSubs () {
+    return getItem(SUBS_KEY);
+  },
+
+  _setSubs (subs) {
+    return setItem(SUBS_KEY, subs);
+  },
+
   _newOrder (subs) {
-    var orders = _.map(subs, (sub) => sub.order || 0);
-    if (!orders.length) return 0;
-    return Math.max.apply(Math, orders) + 1;
+    return this._next(_.map(subs, (sub) => sub.order || 0));
+  },
+
+  _newId (subs) {
+    const customIds = _(subs)
+      .filter((sub) => sub.custom)
+      .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
+      .value();
+    return this._next(customIds);
+  },
+
+  _next (items) {
+    if (!items.length) return 0;
+    return Math.max.apply(Math, items) + 1;
   }
 };

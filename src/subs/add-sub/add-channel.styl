@@ -1,0 +1,62 @@
+.add-channel {
+  form {
+    display: flex;
+
+    input {
+      border-radius: 3px 0 0 3px;
+
+      &:hover {
+        border-color: lighten(action-color, 10%);
+      }
+
+      &:focus {
+        border-color: action-color;
+      }
+    }
+
+    button {
+      border-radius: 0 3px 3px 0;
+      display: block;
+      padding: 0.4em 1em;
+
+      i {
+        font-size: 1.1em;
+      }
+    }
+  }
+
+  ul {
+    li {
+      background: light-color;
+      display: flex;
+      justify-content: space-between;
+      margin: 0.6em 0;
+
+      img {
+        flex-shrink: 0;
+        margin: 0.25em;
+        height: 3.5em;
+        width: 3.5em;
+      }
+
+      h3 {
+        flex-grow: 2;
+        overflow: hidden;
+        padding: 0.6em;
+        text-overflow: ellipsis;
+      }
+
+      button {
+        background: none;
+        color: action-color;
+        flex-shrink: 0;
+        width: 2em;
+
+        &:hover,
+        &:focus {
+          color: darken(action-color, 20%);
+        }
+      }
+    }
+  }
+}

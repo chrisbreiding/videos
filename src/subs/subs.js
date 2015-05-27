@@ -6,8 +6,10 @@ import SubsStore from './subs-store';
 import { fetch, remove } from './subs-actions';
 import { icon } from '../lib/util';
 import AddSubComponent from './add-sub/add-sub';
+import IconThumbComponent from '../icon-thumb/icon-thumb';
 
 const AddSub = createFactory(AddSubComponent);
+const IconThumb = createFactory(IconThumbComponent);
 const Link = createFactory(LinkComponent);
 const RouteHandler = createFactory(RouteHandlerComponent);
 
@@ -39,10 +41,10 @@ export default createClass({
     return DOM.ul(null,
       _.map(this.state.subs, (sub) => {
         return DOM.li({ key: sub.id, className: 'sub' },
-          DOM.img({ src: sub.thumb }),
+          sub.thumb ? DOM.img({ src: sub.thumb }) : IconThumb(sub.icon),
           DOM.h3(null, sub.title || sub.author),
-          Link({ className: 'view-sub', to: 'sub', params: { id: sub.playlistId } }, icon('chevron-right')),
-          DOM.button({ className: 'remove-sub', onClick: _.partial(this._removeSub, sub) }, icon('minus-circle'))
+          Link({ className: 'view-sub', to: 'sub', params: { playlistId: sub.playlistId } }, icon('chevron-right')),
+          DOM.button({ className: 'remove-sub', onClick: _.partial(this._removeSub, sub.id) }, icon('minus-circle'))
         );
       })
     );
@@ -52,7 +54,7 @@ export default createClass({
     this.setState({ editing: !this.state.editing });
   },
 
-  _removeSub (sub) {
-    remove(sub);
+  _removeSub (id) {
+    remove(id);
   }
 });
