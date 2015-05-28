@@ -8,6 +8,10 @@ export default {
     return this._getSubs();
   },
 
+  getSub (id) {
+    return this._getSubs().then((subs) => subs[id] );
+  },
+
   search (query) {
     return searchChannels(query);
   },

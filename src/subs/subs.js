@@ -43,7 +43,7 @@ export default createClass({
         return DOM.li({ key: sub.id, className: 'sub' },
           sub.thumb ? DOM.img({ src: sub.thumb }) : IconThumb(sub.icon),
           DOM.h3(null, sub.title || sub.author),
-          Link({ className: 'view-sub', to: 'sub', params: { playlistId: sub.playlistId } }, icon('chevron-right')),
+          Link({ className: 'view-sub', to: 'sub', params: { id: sub.id } }, icon('chevron-right')),
           DOM.button({ className: 'remove-sub', onClick: _.partial(this._removeSub, sub.id) }, icon('minus-circle'))
         );
       })

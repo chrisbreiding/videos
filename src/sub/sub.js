@@ -3,7 +3,9 @@ import { createFactory, createClass, DOM } from 'react';
 import { State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import VideosStore from '../videos/videos-store';
-import { getVideosForPlaylist } from '../videos/videos-actions';
+import { getVideosForPlaylist, clearVideos } from '../videos/videos-actions';
+import SubStore from '../sub/sub-store';
+import { getSub } from '../sub/sub-actions';
 import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
 import { icon } from '../lib/util';
@@ -15,28 +17,36 @@ export default createClass({
   mixins: [ReactStateMagicMixin, State, Navigation],
 
   statics: {
-    registerStore: VideosStore
+    registerStores: {
+      sub: SubStore,
+      videos: VideosStore
+    }
   },
 
   componentDidMount () {
-    getVideosForPlaylist(this._getId());
+    getSub(this._getId());
   },
 
   componentDidUpdate (__, prevState) {
     const newId = this._getId();
-    const oldId = prevState.playlistId;
+    const oldId = prevState.sub.id;
+
+    const newPlaylistId = this.state.sub.sub.playlistId;
+    const oldPlaylistId = prevState.sub.sub.playlistId;
 
     const newToken = this._getPageToken();
     const oldToken = this.pageToken;
     this.pageToken = newToken;
 
-    if (oldId !== newId || oldToken !== newToken) {
-      getVideosForPlaylist(newId, newToken);
+    if (oldId !== newId) {
+      getSub(newId);
+    } else if (oldPlaylistId !== newPlaylistId || oldToken !== newToken) {
+      setTimeout(() => getVideosForPlaylist(newPlaylistId, newToken) );
     }
   },
 
   _getId () {
-    return this.getParams().playlistId;
+    return this.getParams().id;
   },
 
   _getPageToken () {
@@ -44,11 +54,11 @@ export default createClass({
   },
 
   render () {
-    return this.state.videos.length ? this._sub() : this._loader();
+    return this.state.videos.videos.length ? this._sub() : this._loader();
   },
 
   _sub () {
-    const { prevPageToken, nextPageToken } = this.state;
+    const { prevPageToken, nextPageToken } = this.state.videos;
     return DOM.div(null,
       Paginator({ prevPageToken, nextPageToken }),
       this._videos(),
@@ -57,7 +67,7 @@ export default createClass({
   },
 
   _videos() {
-    return _.map(this.state.videos, (video) => {
+    return _.map(this.state.videos.videos, (video) => {
       return Video(_.extend({
         key: video.id, onPlay: _.partial(this._playVideo, video.id)
       }, video));

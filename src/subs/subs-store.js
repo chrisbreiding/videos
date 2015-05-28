@@ -2,7 +2,7 @@ import _ from 'lodash';
 import dispatcher from '../lib/dispatcher';
 import actions from './subs-actions';
 
-class SubStore {
+class SubsStore {
   constructor () {
     this._subs = {};
     this.subs = [];
@@ -43,4 +43,4 @@ class SubStore {
   }
 }
 
-export default dispatcher.createStore(SubStore, 'SubStore');
+export default dispatcher.createStore(SubsStore, 'SubsStore');

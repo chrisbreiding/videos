@@ -1,7 +1,7 @@
 import dispatcher from '../lib/dispatcher';
 import subService from './subs-service';
 
-class SubActions {
+class SubsActions {
   didUpdateSubs (subs) {
     this.dispatch(subs);
   }
@@ -53,4 +53,4 @@ class SubActions {
   }
 }
 
-export default dispatcher.createActions(SubActions);
+export default dispatcher.createActions(SubsActions);

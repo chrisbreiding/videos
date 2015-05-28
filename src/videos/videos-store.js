@@ -12,8 +12,7 @@ class VideosStore {
     });
   }
 
-  clearVideos (playlistId) {
-    this.playlistId = playlistId;
+  clearVideos () {
     this.videos = [];
   }
 

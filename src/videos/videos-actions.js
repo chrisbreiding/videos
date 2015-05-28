@@ -7,7 +7,7 @@ class VideosActions {
   }
 
   getVideosForPlaylist (playlistId, pageToken) {
-    this.dispatch(playlistId);
+    this.dispatch();
 
     videosService.getVideosForPlaylist(playlistId, pageToken).then((videosData) => {
       this.actions.didUpdateVideosData(videosData);
