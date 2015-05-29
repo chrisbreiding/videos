@@ -90,7 +90,7 @@ export default {
     }).then(mapChannelDetails);
   },
 
-  getVideosForPlaylist (playlistId, pageToken) {
+  getVideosDataForPlaylist (playlistId, pageToken) {
     const params = {
       playlistId: playlistId,
       part: 'snippet,contentDetails',
@@ -106,5 +106,23 @@ export default {
       id: channelId,
       part: 'contentDetails'
     }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads );
+  },
+
+  getVideos (ids) {
+    return queryYouTube('videos', {
+      id: ids.join(),
+      part: 'snippet,contentDetails'
+    }).then((result) => {
+      return _.map(result.items, (video) => {
+        return {
+          id: video.id,
+          title: video.snippet.title,
+          description: video.snippet.description,
+          published: video.snippet.publishedAt,
+          thumb: video.snippet.thumbnails.medium.url,
+          duration: video.contentDetails.duration
+        };
+      });
+    });
   }
 };

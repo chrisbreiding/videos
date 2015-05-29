@@ -1,7 +1,14 @@
-import { getVideosForPlaylist } from '../lib/youtube';
+import { getVideosDataForPlaylist, getVideos } from '../lib/youtube';
+import subsService from '../subs/subs-service';
 
 export default {
-  getVideosForPlaylist (playlistId, pageToken) {
-    return getVideosForPlaylist(playlistId, pageToken);
+  getVideosDataForPlaylist (playlistId, pageToken) {
+    return getVideosDataForPlaylist(playlistId, pageToken);
+  },
+
+  getVideosDataForCustomPlaylist (id) {
+    return subsService.getSub(id).then(({ videos: ids }) => {
+      return getVideos(ids);
+    });
   }
 };

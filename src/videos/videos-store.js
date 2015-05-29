@@ -7,7 +7,10 @@ class VideosStore {
     this.clearVideos();
 
     this.bindListeners({
-      clearVideos: actions.GET_VIDEOS_FOR_PLAYLIST,
+      clearVideos: [
+        actions.GET_VIDEOS_DATA_FOR_PLAYLIST,
+        actions.GET_VIDEOS_DATA_FOR_CUSTOM_PLAYLIST
+      ],
       updateVideosData: actions.DID_UPDATE_VIDEOS_DATA
     });
   }

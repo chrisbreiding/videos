@@ -3,7 +3,7 @@ import { createFactory, createClass, DOM } from 'react';
 import { State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import VideosStore from '../videos/videos-store';
-import { getVideosForPlaylist, clearVideos } from '../videos/videos-actions';
+import { getVideosDataForPlaylist, getVideosDataForCustomPlaylist, clearVideos } from '../videos/videos-actions';
 import SubStore from '../sub/sub-store';
 import { getSub } from '../sub/sub-actions';
 import PaginatorComponent from '../paginator/paginator';
@@ -41,7 +41,13 @@ export default createClass({
     if (oldId !== newId) {
       getSub(newId);
     } else if (oldPlaylistId !== newPlaylistId || oldToken !== newToken) {
-      setTimeout(() => getVideosForPlaylist(newPlaylistId, newToken) );
+      setTimeout(() => {
+        if (this.state.sub.sub.custom) {
+          getVideosDataForCustomPlaylist(newId);
+        } else {
+          getVideosDataForPlaylist(newPlaylistId, newToken);
+        }
+      });
     }
   },
 

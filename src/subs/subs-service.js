@@ -28,7 +28,8 @@ export default {
       return _.extend(playlist, {
         custom: true,
         id: `custom-${id}`,
-        playlistId: `playlist-${id}`
+        playlistId: `playlist-${id}`,
+        videos: []
       })
     });
   },

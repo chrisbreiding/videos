@@ -6,11 +6,19 @@ class VideosActions {
     this.dispatch(videosData);
   }
 
-  getVideosForPlaylist (playlistId, pageToken) {
+  getVideosDataForPlaylist (playlistId, pageToken) {
     this.dispatch();
 
-    videosService.getVideosForPlaylist(playlistId, pageToken).then((videosData) => {
+    videosService.getVideosDataForPlaylist(playlistId, pageToken).then((videosData) => {
       this.actions.didUpdateVideosData(videosData);
+    });
+  }
+
+  getVideosDataForCustomPlaylist (id) {
+    this.dispatch();
+
+    videosService.getVideosDataForCustomPlaylist(id).then((videos) => {
+      this.actions.didUpdateVideosData({ videos: videos, prevPageToken: null, nextPageToken: null });
     });
   }
 }
