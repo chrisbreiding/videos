@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
-import { Link as LinkComponent, RouteHandler as RouteHandlerComponent } from 'react-router'
+import { Link as LinkComponent, RouteHandler as RouteHandlerComponent, State, Navigation } from 'react-router'
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubsStore from './subs-store';
 import { fetch, remove } from './subs-actions';
@@ -14,7 +14,7 @@ const Link = createFactory(LinkComponent);
 const RouteHandler = createFactory(RouteHandlerComponent);
 
 export default createClass({
-  mixins: [ReactStateMagicMixin],
+  mixins: [ReactStateMagicMixin, State, Navigation],
 
   statics: {
     registerStore: SubsStore
@@ -30,7 +30,7 @@ export default createClass({
         DOM.header(null,
           DOM.button({ onClick: this._toggleEditing }, this.state.editing ? 'Done' : 'Edit')
         ),
-        this.state.subs.length ? this._subs() : DOM.div({ className: 'no-subs' }, 'No subs...'),
+        this._subs(),
         AddSub()
       ),
       DOM.main(null, RouteHandler())
@@ -41,10 +41,9 @@ export default createClass({
     return DOM.ul(null,
       _.map(this.state.subs, (sub) => {
         return DOM.li({ key: sub.id, className: 'sub' },
-          sub.thumb ? DOM.img({ src: sub.thumb }) : IconThumb(sub.icon),
-          DOM.h3(null, sub.title || sub.author),
-          Link({ className: 'view-sub', to: 'sub', params: { id: sub.id } }, icon('chevron-right')),
-          DOM.button({ className: 'remove-sub', onClick: _.partial(this._removeSub, sub.id) }, icon('minus-circle'))
+          Link({ to: 'sub', params: { id: sub.id } }, DOM.h3(null, sub.title || sub.author)),
+          DOM.button({ className: 'remove', onClick: _.partial(this._removeSub, sub.id) }, icon('minus-circle')),
+          sub.thumb ? DOM.img({ src: sub.thumb }) : IconThumb(sub.icon)
         );
       })
     );
@@ -55,6 +54,8 @@ export default createClass({
   },
 
   _removeSub (id) {
+    const routeId = this.getParams().id;
     remove(id);
+    if (routeId === id) this.transitionTo('app');
   }
 });

@@ -1,15 +1,10 @@
 .video {
-  border-top: solid 1px darken(light-color, 20%);
   display: flex;
   padding: 0.6em;
 
   &.watched {
     background: darken(light-color, 30%);
     opacity: 0.4;
-  }
-
-  &:first-of-type {
-    border-top: none;
   }
 
   > div {
@@ -57,6 +52,8 @@ thumb-width = 160px;
 
 .play-video {
   background: none;
+  border: none;
+  border-radius: 0;
   color: #FFF;
   display: block;
   flex-shrink: 0;

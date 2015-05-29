@@ -21,6 +21,10 @@ p {
   margin: 0.8em 0;
 }
 
+a {
+  transition: all 0.5s ease;
+}
+
 a:link,
 a:visited {
   color: action-color;
@@ -48,7 +52,7 @@ textarea {
   padding: 0.4em 0.6em;
 
   &:focus {
-    border-color: dark-color;
+    border-color: action-color;
   }
 }
 
@@ -58,16 +62,18 @@ input {
 
 button,
 .button {
-  background: action-color;
-  border: none;
+  background: none;
+  border: solid 1px darken(light-color, 20%);
   border-radius: 3px;
-  color: light-color;
+  color: action-color;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 0.9em;
   padding: 0.4em 0.6em;
+  transition: all 0.5s ease;
 
   &:hover,
   &:focus {
-    background: darken(action-color, 20%);
+    background: darken(light-color, 10%);
+    color: darken(action-color, 20%);
   }
 }

@@ -6,16 +6,15 @@ sidebar-width = 250px;
   height: 100%;
 
   > aside {
-    background: darken(light-color, 40%);
-    box-shadow: inset -0.5em 0 4em rgba(0, 0, 0, 0.2);
     flex-shrink: 0;
     overflow-y: scroll;
+    padding-right: 1em;
     width: sidebar-width;
 
     > header {
       display: flex;
       justify-content: flex-end;
-      padding: 0.6em 0.8em;
+      padding: 0.6em 0.6em 1.2em;
     }
   }
 
@@ -37,24 +36,42 @@ sidebar-width = 250px;
   }
 }
 
-.no-subs {
-  color: #c7c7c7;
-  border: dashed 1px #c7c7c7;
-  margin: 0 10px;
-  padding: 15px 10px;
-  text-align: center;
-}
-
 .sub {
-  background: #e3e3e3;
-  margin-bottom: 0.4em;
-  margin-left: (thumb-size / 2) + 4px;
   display: flex;
+  margin-bottom: 0.4em;
+
+  a {
+    background: darken(light-color, 10%);
+    color: dark-color;
+    text-decoration: none;
+    width: sidebar-width - (thumb-size / 2);
+
+    &:hover,
+    &:focus,
+    &.active {
+      background: darken(light-color, 20%);
+    }
+  }
+
+  h3 {
+    font-size: 1.1em;
+    font-weight: 400;
+    height: thumb-size;
+    padding: 0.6em;
+  }
+
+  .icon-thumb,
+  img,
+  .remove {
+    flex-shrink: 0;
+    margin-left: -(thumb-size / 2);
+  }
 
   .icon-thumb,
   img {
-    flex-shrink: 0;
-    margin-left: -(thumb-size / 2);
+    .editing & {
+      display: none;
+    }
   }
 
   img {
@@ -64,66 +81,29 @@ sidebar-width = 250px;
     width: thumb-size;
   }
 
-  h3 {
-    flex-grow: 2;
-    font-size: 1.1em;
-    padding: 0.6em;
-  }
-}
-
-.view-sub,
-.remove-sub {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  text-decoration: none;
-  transition: all 0.5s ease;
-  width: 2em;
-}
-
-a.view-sub,
-.remove-sub {
-  background: #e3e3e3;
-  color: #797979;
-
-  &:hover,
-  &:focus,
-  &.active {
-    background: #f8f8f8;
-  }
-
-  .editing & {
+  .remove {
+    align-items: center;
+    background: darken(light-color, 10%);
+    border-radius: 50%;
+    color: warning-color;
     display: none;
-  }
-}
+    height: thumb-size;
+    justify-content: center;
+    text-decoration: none;
+    width: thumb-size;
 
-.remove-sub {
-  color: warning-color;
-  display: none;
+    &:hover,
+    &:focus {
+      background: light-color;
+      color: darken(warning-color, 20%);
+    }
 
-  &:hover,
-  &:focus {
-    color: darken(warning-color, 20%);
-  }
+    .editing & {
+      display: flex;
+    }
 
-  .editing & {
-    display: block;
-  }
-
-  i {
-    font-size: 1.2em;
-  }
-}
-
-.make-sub-default {
-  display: none;
-  position: absolute;
-  top: 5px;
-  right: 35px;
-  text-decoration: none;
-
-  .sub:hover &,
-  .default & {
-    display: inline;
+    i {
+      font-size: 1.4em;
+    }
   }
 }
