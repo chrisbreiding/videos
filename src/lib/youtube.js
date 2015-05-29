@@ -73,13 +73,13 @@ function mapVideoDetails (result) {
   }).then(mapVideoDurations(result));
 }
 
-export default {
+class Youtube {
   checkApiKey (apiKey) {
     const params = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' };
     return queryYouTube('activities', params)
       .then(() => true)
       .catch(() => false);
-  },
+  }
 
   searchChannels (query) {
     return queryYouTube('search', {
@@ -88,7 +88,7 @@ export default {
       type: 'channel',
       maxResults: 10
     }).then(mapChannelDetails);
-  },
+  }
 
   getVideosDataForPlaylist (playlistId, pageToken) {
     const params = {
@@ -99,14 +99,14 @@ export default {
     if (pageToken) params.pageToken = pageToken;
 
     return queryYouTube('playlistItems', params).then(mapVideoDetails);
-  },
+  }
 
   getPlaylistIdForChannel (channelId) {
     return queryYouTube('channels', {
       id: channelId,
       part: 'contentDetails'
     }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads );
-  },
+  }
 
   getVideos (ids) {
     return queryYouTube('videos', {
@@ -125,4 +125,6 @@ export default {
       });
     });
   }
-};
+}
+
+export default new Youtube();

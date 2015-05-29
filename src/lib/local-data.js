@@ -1,11 +1,11 @@
 import { Promise } from 'rsvp';
 
-export default {
+class LocalData {
   getItem (key) {
     return new Promise((resolve) => {
       resolve(localStorage[key] ? JSON.parse(localStorage[key]) : undefined);
     });
-  },
+  }
 
   setItem (key, value) {
     return new Promise((resolve) => {
@@ -13,4 +13,6 @@ export default {
       resolve(value);
     });
   }
-};
+}
+
+export default new LocalData();

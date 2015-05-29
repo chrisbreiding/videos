@@ -1,10 +1,10 @@
 import { getVideosDataForPlaylist, getVideos } from '../lib/youtube';
 import subsService from '../subs/subs-service';
 
-export default {
+class VideosService {
   getVideosDataForPlaylist (playlistId, pageToken) {
     return getVideosDataForPlaylist(playlistId, pageToken);
-  },
+  }
 
   getVideosDataForCustomPlaylist (id) {
     return subsService.getSub(id).then(({ videos: ids }) => {
@@ -12,3 +12,5 @@ export default {
     });
   }
 };
+
+export default new VideosService();

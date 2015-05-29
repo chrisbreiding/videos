@@ -22,21 +22,21 @@ function toTwoDigits (num) {
   return num.length === 2 ? num : '0' + num;
 }
 
-export default {
+class Util {
   icon (iconName, rightText, leftText) {
     return DOM.span({ className: `icon${rightText || leftText ? ' with-text' : ''}` },
       leftText ? leftText : null,
       DOM.i({ className: `fa fa-${iconName}` }),
       rightText ? rightText : null
     );
-  },
+  }
 
   duration (duration) {
     const parsed = parseIso8601Duration(duration);
     let parts = _.map(parsed.slice(1), toTwoDigits);
     parts.unshift(parsed[0]);
     return parts.join(':');
-  },
+  }
 
   date (date) {
     const mDate = moment(date);
@@ -47,3 +47,5 @@ export default {
     );
   }
 }
+
+export default new Util();
