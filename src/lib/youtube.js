@@ -32,45 +32,28 @@ function mapChannelDetails (result) {
   });
 }
 
-function parseVideoDetails (duration, video) {
-  return {
-    id: video.contentDetails.videoId,
-    title: video.snippet.title,
-    description: video.snippet.description,
-    published: video.snippet.publishedAt,
-    thumb: video.snippet.thumbnails.medium.url,
-    duration: duration
-  };
-}
-
-function mapVideos (videos, durationResults) {
-  return _(durationResults)
-    .pluck('contentDetails')
-    .pluck('duration')
-    .zip(videos)
-    .map(_.spread(parseVideoDetails))
-    .value()
-}
-
 function videoIds (videos) {
   return _(videos).pluck('contentDetails').pluck('videoId').value();
 }
 
-function mapVideoDurations (extras) {
-  return (result) => {
+function mapVideoDetails (result) {
+  return _.map(result.items, (video) => {
     return {
-      videos: mapVideos(extras.items, result.items),
-      prevPageToken: extras.prevPageToken,
-      nextPageToken: extras.nextPageToken
+      id: video.id,
+      title: video.snippet.title,
+      description: video.snippet.description,
+      published: video.snippet.publishedAt,
+      thumb: video.snippet.thumbnails.medium.url,
+      duration: video.contentDetails.duration
     };
-  };
+  });
 }
 
-function mapVideoDetails (result) {
+function getVideos (ids) {
   return queryYouTube('videos', {
-    id: videoIds(result.items).join(),
-    part: 'contentDetails'
-  }).then(mapVideoDurations(result));
+    id: ids.join(),
+    part: 'snippet,contentDetails'
+  }).then(mapVideoDetails);
 }
 
 class Youtube {
@@ -98,7 +81,11 @@ class Youtube {
     };
     if (pageToken) params.pageToken = pageToken;
 
-    return queryYouTube('playlistItems', params).then(mapVideoDetails);
+    return queryYouTube('playlistItems', params).then(({ items, prevPageToken, nextPageToken }) => {
+      return getVideos(videoIds(items)).then((videos) => {
+        return { videos, prevPageToken, nextPageToken };
+      });
+    });
   }
 
   getPlaylistIdForChannel (channelId) {
@@ -109,21 +96,7 @@ class Youtube {
   }
 
   getVideos (ids) {
-    return queryYouTube('videos', {
-      id: ids.join(),
-      part: 'snippet,contentDetails'
-    }).then((result) => {
-      return _.map(result.items, (video) => {
-        return {
-          id: video.id,
-          title: video.snippet.title,
-          description: video.snippet.description,
-          published: video.snippet.publishedAt,
-          thumb: video.snippet.thumbnails.medium.url,
-          duration: video.contentDetails.duration
-        };
-      });
-    });
+    return getVideos(ids);
   }
 }
 
