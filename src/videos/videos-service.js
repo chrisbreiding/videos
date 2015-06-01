@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { getVideosDataForPlaylist, getVideos } from '../lib/youtube';
 import subsService from '../subs/subs-service';
 
@@ -7,7 +8,12 @@ class VideosService {
   }
 
   getVideosDataForCustomPlaylist (id) {
-    return subsService.getSub(id).then(({ videos: ids }) => {
+    return subsService.getSub(id).then(({ videos }) => {
+      const ids = _(videos)
+        .values()
+        .sortBy('order')
+        .pluck('id')
+        .value();
       return getVideos(ids);
     });
   }

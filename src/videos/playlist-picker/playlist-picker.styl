@@ -1,0 +1,53 @@
+.playlist-picker {
+  position: relative;
+
+  > button {
+    background: light-color;
+    margin-top: 0.4em;
+    outline: none;
+    position: relative;
+    z-index: 11;
+  }
+
+  ul {
+    background: light-color;
+    border: solid 1px darken(light-color, 20%);
+    border-radius: 0 3px 3px 3px;
+    display: none;
+    left: 0;
+    margin-top: -1px;
+    min-width: 100%;
+    padding: 0.2em;
+    position: absolute
+    top: 100%;
+    z-index: 10;
+
+    li {
+      button {
+        background: none;
+        border: none;
+        display: flex;
+
+        i {
+          flex-shrink: 0;
+          margin-right: 0.4em;
+        }
+
+        span {
+          flex-grow: 2;
+        }
+      }
+    }
+  }
+
+  &.picking {
+    button {
+      border-bottom: none;
+      border-radius: 3px 3px 0 0;
+    }
+
+    ul {
+      display: block;
+    }
+  }
+}

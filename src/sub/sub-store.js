@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import dispatcher from '../lib/dispatcher';
 import actions from './sub-actions';
 
@@ -17,6 +18,12 @@ class SubStore {
 
   updateSub (sub) {
     this.sub = sub;
+    if (sub.custom) {
+      this.sub.videos = _(sub.videos)
+        .values()
+        .sortBy('order')
+        .value();
+    }
   }
 }
 

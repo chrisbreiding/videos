@@ -46,6 +46,18 @@ class SubsActions {
     });
   }
 
+  addVideoToPlaylist (playlist, videoId) {
+    subService.addVideoToPlaylist(playlist, videoId).then((subs) => {
+      this.actions.didUpdateSubs(subs);
+    });
+  }
+
+  removeVideoFromPlaylist (playlist, videoId) {
+    subService.removeVideoFromPlaylist(playlist, videoId).then((subs) => {
+      this.actions.didUpdateSubs(subs);
+    });
+  }
+
   remove (id) {
     subService.remove(id).then(() => {
       this.actions.didRemoveSub(id);

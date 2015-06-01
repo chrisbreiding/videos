@@ -1,14 +1,22 @@
-import { createClass, DOM } from 'react';
+import { createFactory, createClass, DOM } from 'react';
 import { icon, duration, date } from '../lib/util';
+import PlaylistPickerComponent from './playlist-picker/playlist-picker';
+
+const PlaylistPicker = createFactory(PlaylistPickerComponent);
 
 export default createClass({
   render () {
+    const playlists = _.filter(this.props.subs, (sub) => sub.custom );
+
     return DOM.div({ className: 'video' },
-      DOM.button({ className: 'play-video', onClick: this.props.onPlay },
-        DOM.img({ src: this.props.thumb }),
-        icon('youtube-play')
+      DOM.aside(null,
+        DOM.button({ className: 'play-video', onClick: this.props.onPlay },
+          DOM.img({ src: this.props.thumb }),
+          icon('youtube-play')
+        ),
+        playlists.length ? this._playlistPicker(playlists) : null
       ),
-      DOM.div(null,
+      DOM.main(null,
         DOM.h4(null, this.props.title),
         DOM.div(null,
           DOM.p({ className: 'duration' }, icon('clock-o', duration(this.props.duration))),
@@ -16,5 +24,14 @@ export default createClass({
         )
       )
     );
+  },
+
+  _playlistPicker (playlists) {
+    return PlaylistPicker({
+      videoId: this.props.id,
+      playlists: playlists,
+      addedToPlaylist: this.props.addedToPlaylist,
+      removedFromPlaylist: this.props.removedFromPlaylist,
+    });
   }
 });

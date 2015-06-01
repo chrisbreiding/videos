@@ -29,8 +29,26 @@ class SubsService {
         custom: true,
         id: `custom-${id}`,
         playlistId: `playlist-${id}`,
-        videos: []
+        videos: {}
       })
+    });
+  }
+
+  addVideoToPlaylist (playlist, videoId) {
+    return this._getSubs().then((subs = {}) => {
+      const sub = subs[playlist.id];
+      sub.videos[videoId] = {
+        id: videoId,
+        order: this._newOrder(sub.videos)
+      };
+      return this._setSubs(subs);
+    });
+  }
+
+  removeVideoFromPlaylist (playlist, videoId) {
+    return this._getSubs().then((subs = {}) => {
+      delete subs[playlist.id].videos[videoId];
+      return this._setSubs(subs);
     });
   }
 
@@ -57,8 +75,8 @@ class SubsService {
     return setItem(SUBS_KEY, subs);
   }
 
-  _newOrder (subs) {
-    return this._next(_.map(subs, (sub) => sub.order || 0));
+  _newOrder (items) {
+    return this._next(_.map(items, (item) => item.order || 0));
   }
 
   _newId (subs) {

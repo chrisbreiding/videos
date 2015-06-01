@@ -2,10 +2,12 @@ import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
 import { State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
+import SubStore from './sub-store';
+import subActions from './sub-actions';
+import SubsStore from '../subs/subs-store';
+import subsActions from '../subs/subs-actions';
 import VideosStore from '../videos/videos-store';
-import { getVideosDataForPlaylist, getVideosDataForCustomPlaylist, clearVideos } from '../videos/videos-actions';
-import SubStore from '../sub/sub-store';
-import { getSub } from '../sub/sub-actions';
+import videosActions from '../videos/videos-actions';
 import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
 import { icon } from '../lib/util';
@@ -19,12 +21,14 @@ export default createClass({
   statics: {
     registerStores: {
       sub: SubStore,
+      subs: SubsStore,
       videos: VideosStore
     }
   },
 
   componentDidMount () {
-    getSub(this._getId());
+    subActions.getSub(this._getId());
+    subsActions.fetch();
   },
 
   componentDidUpdate (__, prevState) {
@@ -39,13 +43,13 @@ export default createClass({
     this.pageToken = newToken;
 
     if (oldId !== newId) {
-      getSub(newId);
+      subActions.getSub(newId);
     } else if (oldPlaylistId !== newPlaylistId || oldToken !== newToken) {
       setTimeout(() => {
         if (this.state.sub.sub.custom) {
-          getVideosDataForCustomPlaylist(newId);
+          videosActions.getVideosDataForCustomPlaylist(newId);
         } else {
-          getVideosDataForPlaylist(newPlaylistId, newToken);
+          videosActions.getVideosDataForPlaylist(newPlaylistId, newToken);
         }
       });
     }
@@ -75,7 +79,11 @@ export default createClass({
   _videos() {
     return _.map(this.state.videos.videos, (video) => {
       return Video(_.extend({
-        key: video.id, onPlay: _.partial(this._playVideo, video.id)
+        key: video.id,
+        onPlay: _.partial(this._playVideo, video.id),
+        subs: this.state.subs.subs,
+        addedToPlaylist: (playlist) => { subsActions.addVideoToPlaylist(playlist, video.id) },
+        removedFromPlaylist: (playlist) => { subsActions.removeVideoFromPlaylist(playlist, video.id) }
       }, video));
     });
   },
