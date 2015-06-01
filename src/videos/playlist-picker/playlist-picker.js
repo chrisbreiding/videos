@@ -9,7 +9,7 @@ export default createClass({
   },
 
   render () {
-    const iconName = this.state.pickingPlaylist ? 'chevron-up' : 'chevron-down';
+    const iconName = this.state.picking ? 'chevron-up' : 'chevron-down';
 
     return DOM.div({ className: cs('playlist-picker', { picking: this.state.picking }) },
       DOM.button({ onClick: this._togglePicking }, icon(iconName, null, 'Playlists')),
