@@ -1,17 +1,20 @@
+import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
 import { Link as LinkComponent } from 'react-router';
 import { icon } from '../../lib/util';
-import IconThumbComponent from '../../icon-thumb/icon-thumb';
+import ChannelComponent from './channel';
+import CustomPlaylistComponent from './custom-playlist';
 
-const IconThumb = createFactory(IconThumbComponent);
+const Channel = createFactory(ChannelComponent);
+const CustomPlaylist = createFactory(CustomPlaylistComponent);
 const Link = createFactory(LinkComponent);
 
 export default createClass({
   render () {
+    const props = _.extend({}, this.props, { onRemove: this._remove });
     return DOM.li({ className: 'sub-item' },
-      DOM.button({ className: 'remove', onClick: this._remove }, icon('minus-circle')),
-      Link({ to: 'sub', params: { id: this.props.id } }, DOM.h3(null, this.props.title || this.props.author)),
-      this.props.thumb ? DOM.img({ src: this.props.thumb }) : IconThumb(this.props.icon)
+      DOM.button({ className: 'remove', onClick: this.props.onRemove }, icon('minus-circle')),
+      this.props.custom ? CustomPlaylist(props) : Channel(props)
     );
   },
 
