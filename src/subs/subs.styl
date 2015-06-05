@@ -1,5 +1,3 @@
-sidebar-width = 250px;
-
 .subs {
   display: flex;
   overflow-y: hidden;
@@ -13,8 +11,7 @@ sidebar-width = 250px;
 
     > header {
       display: flex;
-      justify-content: flex-end;
-      padding: 0.6em 0.6em 1.2em;
+      padding: 0.6em;
     }
   }
 
@@ -32,78 +29,6 @@ sidebar-width = 250px;
     i {
       font-size: 2em;
       margin: 0 0.2em;
-    }
-  }
-}
-
-.sub {
-  display: flex;
-  margin-bottom: 0.4em;
-
-  a {
-    background: darken(light-color, 10%);
-    color: dark-color;
-    text-decoration: none;
-    width: sidebar-width - (thumb-size / 2);
-
-    &:hover,
-    &:focus,
-    &.active {
-      background: darken(light-color, 20%);
-    }
-  }
-
-  h3 {
-    font-size: 1.1em;
-    font-weight: 400;
-    height: thumb-size;
-    padding: 0.6em;
-  }
-
-  .icon-thumb,
-  img,
-  .remove {
-    flex-shrink: 0;
-    margin-left: -(thumb-size / 2);
-  }
-
-  .icon-thumb,
-  img {
-    .editing & {
-      display: none;
-    }
-  }
-
-  img {
-    background: light-color;
-    border-radius: 50%;
-    height: thumb-size;
-    width: thumb-size;
-  }
-
-  .remove {
-    align-items: center;
-    background: darken(light-color, 10%);
-    border-radius: 50%;
-    color: warning-color;
-    display: none;
-    height: thumb-size;
-    justify-content: center;
-    text-decoration: none;
-    width: thumb-size;
-
-    &:hover,
-    &:focus {
-      background: light-color;
-      color: darken(warning-color, 20%);
-    }
-
-    .editing & {
-      display: flex;
-    }
-
-    i {
-      font-size: 1.4em;
     }
   }
 }

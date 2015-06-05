@@ -2,11 +2,12 @@ import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
 import { RouteHandler as RouteHandlerComponent, State, Navigation } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
+import cs from 'classnames';
 import SubsStore from './subs-store';
 import { fetch, remove } from './subs-actions';
 import { icon } from '../lib/util';
 import AddSubComponent from './add-sub/add-sub';
-import SubItemComponent from './sub-item';
+import SubItemComponent from './sub-item/sub-item';
 
 const AddSub = createFactory(AddSubComponent);
 const SubItem = createFactory(SubItemComponent);
@@ -24,7 +25,7 @@ export default createClass({
   },
 
   render () {
-    return DOM.div({ className: `subs${this.state.editing ? ' editing' : ''}` },
+    return DOM.div({ className: cs('subs', { editing: this.state.editing }) },
       DOM.aside(null,
         DOM.header(null,
           DOM.button({ onClick: this._toggleEditing }, this.state.editing ? 'Done' : 'Edit')
