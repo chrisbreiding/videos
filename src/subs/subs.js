@@ -4,7 +4,7 @@ import { RouteHandler as RouteHandlerComponent, State, Navigation } from 'react-
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import cs from 'classnames';
 import SubsStore from './subs-store';
-import { fetch, remove } from './subs-actions';
+import { fetch, update, remove } from './subs-actions';
 import { icon } from '../lib/util';
 import AddSubComponent from './add-sub/add-sub';
 import SubItemComponent from './sub-item/sub-item';
@@ -25,7 +25,7 @@ export default createClass({
   },
 
   render () {
-    return DOM.div({ className: cs('subs', { editing: this.state.editing }) },
+    return DOM.div({ className: 'subs' },
       DOM.aside(null,
         DOM.header(null,
           DOM.button({ onClick: this._toggleEditing }, this.state.editing ? 'Done' : 'Edit')
@@ -38,12 +38,14 @@ export default createClass({
   },
 
   _subs () {
-    return DOM.ul(null,
+    return DOM.ul({ className: cs({ editing: this.state.editing }) },
       _.map(this.state.subs, (sub) => {
-        return SubItem(_.extend({
+        return SubItem({
           key: sub.id,
+          sub: sub,
+          onUpdate: this._updateSub,
           onRemove: _.partial(this._removeSub, sub.id)
-        }, sub));
+        });
       })
     );
   },
@@ -52,9 +54,12 @@ export default createClass({
     this.setState({ editing: !this.state.editing });
   },
 
+  _updateSub (sub) {
+    update(sub);
+  },
+
   _removeSub (id) {
-    const routeId = this.getParams().id;
     remove(id);
-    if (routeId === id) this.transitionTo('app');
+    if (this.getParams().id === id) this.transitionTo('app');
   }
 });

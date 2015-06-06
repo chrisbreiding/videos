@@ -58,6 +58,12 @@ class SubsActions {
     });
   }
 
+  update (sub) {
+    subService.update(sub).then((subs) => {
+      this.actions.didUpdateSubs(subs);
+    });
+  }
+
   remove (id) {
     subService.remove(id).then(() => {
       this.actions.didRemoveSub(id);

@@ -60,6 +60,13 @@ class SubsService {
     });
   }
 
+  update (sub) {
+    return this._getSubs().then((subs = {}) => {
+      subs[sub.id] = sub;
+      return this._setSubs(subs);
+    });
+  }
+
   remove (id) {
     return this._getSubs().then((subs = {}) => {
       delete subs[id];

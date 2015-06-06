@@ -2,7 +2,7 @@
   display: flex;
   margin-bottom: 0.4em;
 
-  span {
+  > span {
     display: flex;
   }
 
@@ -24,9 +24,40 @@
     font-weight: 400;
     height: thumb-size;
     padding: 0.6em;
+
+    .editing & {
+      border-left: solid 1px darken(light-color, 20%);
+    }
   }
 
-  .icon-thumb,
+  .editing & .custom-sub-item {
+    a,
+    .sub-item-icon {
+      display: none;
+    }
+  }
+
+  input {
+    border-radius: 0;
+  }
+
+  input,
+  .sub-item-icon.editable {
+    display: none;
+
+    .editing & {
+      display: block;
+    }
+  }
+
+  .sub-item-icon.editable {
+    background: none;
+    border: none;
+    font-size: 1em;
+    padding: 0;
+  }
+
+  .sub-item-icon,
   img {
     flex-shrink: 0;
     margin-left: -(thumb-size / 2);
@@ -42,8 +73,8 @@
   .remove {
     align-items: center;
     background: darken(light-color, 10%);
+    border-radius: 0;
     border: none;
-    border-right: solid 1px darken(light-color, 20%);
     color: warning-color;
     display: none;
     flex-shrink: 0;

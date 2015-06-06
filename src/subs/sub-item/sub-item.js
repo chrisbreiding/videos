@@ -11,15 +11,14 @@ const Link = createFactory(LinkComponent);
 
 export default createClass({
   render () {
-    const props = _.extend({}, this.props, { onRemove: this._remove });
     return DOM.li({ className: 'sub-item' },
-      DOM.button({ className: 'remove', onClick: this.props.onRemove }, icon('minus-circle')),
-      this.props.custom ? CustomPlaylist(props) : Channel(props)
+      DOM.button({ className: 'remove', onClick: this._remove }, icon('minus-circle')),
+      this.props.sub.custom ? CustomPlaylist(this.props) : Channel(this.props)
     );
   },
 
   _remove () {
-    if (confirm(`Remove ${this.props.title || this.props.author}?`)) {
+    if (confirm(`Remove ${this.props.sub.title || this.props.sub.author}?`)) {
       this.props.onRemove();
     }
   }
