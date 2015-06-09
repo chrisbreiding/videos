@@ -13,12 +13,12 @@ export default createClass({
   render () {
     return DOM.li({ className: 'sub-item' },
       DOM.button({ className: 'remove', onClick: this._remove }, icon('minus-circle')),
-      this.props.sub.custom ? CustomPlaylist(this.props) : Channel(this.props)
+      this.props.sub.get('custom') ? CustomPlaylist(this.props) : Channel(this.props)
     );
   },
 
   _remove () {
-    if (confirm(`Remove ${this.props.sub.title || this.props.sub.author}?`)) {
+    if (confirm(`Remove ${this.props.sub.get('title') || this.props.sub.get('author')}?`)) {
       this.props.onRemove();
     }
   }

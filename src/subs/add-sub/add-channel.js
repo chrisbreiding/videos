@@ -56,10 +56,10 @@ export default createClass({
   },
 
   _results () {
-    return _.map(this.state.searchResults, (channel) => {
-      return DOM.li({ key: channel.id },
-        DOM.img({ src: channel.thumb }),
-        DOM.h3(null, channel.title || channel.author),
+    return this.state.searchResults.map((channel) => {
+      return DOM.li({ key: channel.get('id') },
+        DOM.img({ src: channel.get('thumb') }),
+        DOM.h3(null, channel.get('title') || channel.get('author')),
         DOM.button({ onClick: _.partial(addChannel, channel) }, icon('plus'))
       );
     });

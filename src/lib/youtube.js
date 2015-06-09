@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import req from 'reqwest';
 import { getItem } from './local-data';
 import loginActions from '../login/login-actions';
@@ -13,12 +14,13 @@ function getBaseUrl () {
 }
 
 function queryYouTube (url, data) {
-  return Promise.all([getBaseUrl(), loginActions.getApiKey()]).then(_.spread((baseUrl, apiKey) => {
-    return req({
-      url: `${baseUrl}${url}`,
-      data: _.extend({ key: apiKey }, data)
-    });
-  }));
+  return Promise.all([getBaseUrl(), loginActions.getApiKey()])
+    .then(_.spread((baseUrl, apiKey) => {
+      return req({
+        url: `${baseUrl}${url}`,
+        data: _.extend({ key: apiKey }, data)
+      });
+    }));
 }
 
 function mapChannelDetails (result) {
@@ -70,7 +72,7 @@ class Youtube {
       part: 'snippet',
       type: 'channel',
       maxResults: 10
-    }).then(mapChannelDetails);
+    }).then(mapChannelDetails).then(Immutable.fromJS);
   }
 
   getVideosDataForPlaylist (playlistId, pageToken) {

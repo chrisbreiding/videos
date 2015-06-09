@@ -7,10 +7,10 @@ const Link = createFactory(LinkComponent);
 export default createClass({
   render () {
     return DOM.span(null,
-      Link({ to: 'sub', params: { id: this.props.sub.id } },
-        DOM.h3(null, this.props.sub.title || this.props.sub.author)
+      Link({ to: 'sub', params: { id: this.props.sub.get('id') } },
+        DOM.h3(null, this.props.sub.get('title') || this.props.sub.get('author'))
       ),
-      DOM.img({ src: this.props.sub.thumb })
+      DOM.img({ src: this.props.sub.get('thumb') })
     );
   }
 });

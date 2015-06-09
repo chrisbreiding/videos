@@ -1,12 +1,13 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import dispatcher from '../lib/dispatcher';
 import actions from './subs-actions';
 
 class SubsStore {
   constructor () {
-    this._subs = {};
-    this.subs = [];
-    this.searchResults = [];
+    this._subs = Immutable.Map();
+    this.subs = Immutable.List();
+    this.searchResults = Immutable.List();
 
     this.bindListeners({
       updateSubs: actions.DID_UPDATE_SUBS,
@@ -16,26 +17,25 @@ class SubsStore {
     });
   }
 
-  updateSubs (subs = {}) {
+  updateSubs (subs = Immutable.Map()) {
     this._subs = subs;
     this._updateSubs();
   }
 
   addSub (sub) {
-    this._subs[sub.id] = sub;
+    this._subs = this._subs.set(sub.get('id'), sub);
     this._updateSubs();
   }
 
   removeSub (id) {
-    delete this._subs[id];
+    this._subs = this._subs.remove(id);
     this._updateSubs();
   }
 
   _updateSubs () {
-    this.subs = _(this._subs)
-      .values()
-      .sortBy('order')
-      .value();
+    this.subs = this._subs
+      .toList()
+      .sortBy(sub => sub.get('order'))
   }
 
   updateSeachResults (searchResults) {

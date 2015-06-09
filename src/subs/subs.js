@@ -39,12 +39,12 @@ export default createClass({
 
   _subs () {
     return DOM.ul({ className: cs({ editing: this.state.editing }) },
-      _.map(this.state.subs, (sub) => {
+      this.state.subs.map((sub) => {
         return SubItem({
-          key: sub.id,
+          key: sub.get('id'),
           sub: sub,
           onUpdate: this._updateSub,
-          onRemove: _.partial(this._removeSub, sub.id)
+          onRemove: _.partial(this._removeSub, sub.get('id'))
         });
       })
     );

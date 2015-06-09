@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import { SUBS_KEY } from '../lib/constants';
 import { getItem, setItem } from '../lib/local-data';
 import { searchChannels, getPlaylistIdForChannel } from '../lib/youtube';
@@ -17,8 +18,8 @@ class SubsService {
   }
 
   addChannel (channel) {
-    return getPlaylistIdForChannel(channel.id).then((playlistId) => {
-      return this._addSub(_.extend(channel, { playlistId }));
+    return getPlaylistIdForChannel(channel.get('id')).then((playlistId) => {
+      return this._addSub(channel.set('playlistId', playlistId));
     });
   }
 
@@ -35,7 +36,7 @@ class SubsService {
   }
 
   addVideoToPlaylist (playlist, videoId) {
-    return this._getSubs().then((subs = {}) => {
+    return this._getSubs().then((subs = Immutable.Map()) => {
       const sub = subs[playlist.id];
       sub.videos[videoId] = {
         id: videoId,
@@ -46,31 +47,31 @@ class SubsService {
   }
 
   removeVideoFromPlaylist (playlist, videoId) {
-    return this._getSubs().then((subs = {}) => {
+    return this._getSubs().then((subs = Immutable.Map()) => {
       delete subs[playlist.id].videos[videoId];
       return this._setSubs(subs);
     });
   }
 
   _addSub (sub, transform) {
-    return this._getSubs().then((subs = {}) => {
+    return this._getSubs().then((subs = Immutable.Map()) => {
+      const id = sub.get('id');
       if (transform) sub = transform(subs);
-      subs[sub.id] = _.extend(sub, { order: this._newOrder(subs) });
-      return this._setSubs(subs).then(() => subs[sub.id] );
+      subs = subs.set(id, sub.set('order', this._newOrder(subs)));
+      return this._setSubs(subs).then(() => subs.get(id) );
     });
   }
 
   update (sub) {
-    return this._getSubs().then((subs = {}) => {
+    return this._getSubs().then((subs = Immutable.Map()) => {
       subs[sub.id] = sub;
       return this._setSubs(subs);
     });
   }
 
   remove (id) {
-    return this._getSubs().then((subs = {}) => {
-      delete subs[id];
-      return this._setSubs(subs);
+    return this._getSubs().then((subs = Immutable.Map()) => {
+      return this._setSubs(subs.remove(id));
     });
   }
 
@@ -83,7 +84,7 @@ class SubsService {
   }
 
   _newOrder (items) {
-    return this._next(_.map(items, (item) => item.order || 0));
+    return this._next(items.map(item => item.order || 0));
   }
 
   _newId (subs) {
@@ -95,8 +96,8 @@ class SubsService {
   }
 
   _next (items) {
-    if (!items.length) return 0;
-    return Math.max.apply(Math, items) + 1;
+    if (!items.size) return 0;
+    return Math.max.apply(Math, items.toArray()) + 1;
   }
 }
 
