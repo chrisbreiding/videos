@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import { createFactory, createClass, DOM } from 'react';
 import { Link as LinkComponent } from 'react-router';
 import { icon } from '../../lib/util';
@@ -19,19 +20,19 @@ export default createClass({
   render () {
     const iconPicker = this.state.pickingIcon ?
       Modal({ className: 'icon-picker-modal', onClose: _.partial(this._setPickingIcon, false) },
-        IconPicker(_.extend({ ref: 'iconPicker', onUpdate: this._iconUpdated }, this.props.sub.icon))
+        IconPicker(_.extend({ ref: 'iconPicker', onUpdate: this._iconUpdated }, this.props.sub.get('icon')))
       ) : null;
 
     return DOM.span({ className: 'custom-sub-item' },
-      Link({ to: 'sub', params: { id: this.props.sub.id } },
-        DOM.h3(null, this.props.sub.title)
+      Link({ to: 'sub', params: { id: this.props.sub.get('id') } },
+        DOM.h3(null, this.props.sub.get('title'))
       ),
-      DOM.input({ ref: 'title', onChange: this._onChange, value: this.props.sub.title }),
+      DOM.input({ ref: 'title', onChange: this._onChange, value: this.props.sub.get('title') }),
       DOM.span({ className: 'sub-item-icon' },
-        IconThumb(this.props.sub.icon)
+        IconThumb(this.props.sub.get('icon').toObject())
       ),
       DOM.button({ className: 'sub-item-icon editable', onClick: _.partial(this._setPickingIcon, true) },
-        IconThumb(this.props.sub.icon)
+        IconThumb(this.props.sub.get('icon').toObject())
       ),
       iconPicker
     );
@@ -42,11 +43,11 @@ export default createClass({
   },
 
   _iconUpdated (key, value) {
-    this._update({ icon: _.extend({}, this.props.sub.icon, { [key]: value }) });
+    this._update({ icon: this.props.sub.get('icon').set(key, value) });
   },
 
   _update (props) {
-    this.props.onUpdate(_.extend({}, this.props.sub, props));
+    this.props.onUpdate(this.props.sub.merge(Immutable.Map(props)));
   },
 
   _setPickingIcon (pickingIcon) {

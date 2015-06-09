@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import { createFactory, createClass, DOM } from 'react';
 import { addCustomPlaylist } from '../subs-actions';
 import { icon } from '../../lib/util';
@@ -14,11 +15,11 @@ const Modal = createFactory(ModalComponent);
 export default createClass({
   getInitialState () {
     return {
-      icon: {
+      icon: Immutable.Map({
         icon: icons[0],
         foregroundColor: '#FFF',
         backgroundColor: '#333'
-      }
+      })
     }
   },
 
@@ -28,8 +29,14 @@ export default createClass({
 
   render () {
     const iconPicker = this.state.pickingIcon ?
-      Modal({ className: 'icon-picker-modal', onClose: _.partial(this._setPickingIcon, false) },
-        IconPicker(_.extend({ ref: 'iconPicker', onUpdate: this._iconUpdated }, this.state.icon))
+      Modal({
+        className: 'icon-picker-modal',
+        onClose: _.partial(this._setPickingIcon, false)
+      },
+        IconPicker(_.extend({
+          ref: 'iconPicker',
+          onUpdate: this._iconUpdated
+        }, this.state.icon.toObject()))
       ) : null;
 
     return DOM.form({ className: 'add-custom-playlist', onSubmit: (e) => { e.preventDefault() } },
@@ -41,7 +48,7 @@ export default createClass({
         DOM.label(null, 'Thumbnail'),
         DOM.button({ className: 'submit', onClick: this._add }, icon('plus', 'Add')),
         DOM.button({ className: 'pick-icon', onClick: this._toggleIconPicker },
-          IconThumb(this.state.icon)
+          IconThumb(this.state.icon.toObject())
         )
       ),
       iconPicker
@@ -49,7 +56,7 @@ export default createClass({
   },
 
   _iconUpdated(prop, value) {
-    this.setState({ icon: _.extend({}, this.state.icon, { [prop]: value }) });
+    this.setState({ icon: this.state.icon.set(prop, value) });
   },
 
   _toggleIconPicker (e) {
@@ -64,7 +71,7 @@ export default createClass({
     const title = this.refs.title.getDOMNode().value;
     if (!title) return;
 
-    addCustomPlaylist({ title: title, icon: this.state.icon });
+    addCustomPlaylist(Immutable.Map({ title: title, icon: this.state.icon }));
     this.props.onAdd();
   }
 });

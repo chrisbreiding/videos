@@ -26,12 +26,12 @@ class SubsService {
   addCustomPlaylist (playlist) {
     return this._addSub(playlist, (subs) => {
       const id = this._newId(subs);
-      return _.extend(playlist, {
+      return playlist.merge(Immutable.Map({
         custom: true,
         id: `custom-${id}`,
         playlistId: `playlist-${id}`,
-        videos: {}
-      })
+        videos: Immutable.Map()
+      }))
     });
   }
 
@@ -55,8 +55,8 @@ class SubsService {
 
   _addSub (sub, transform) {
     return this._getSubs().then((subs = Immutable.Map()) => {
-      const id = sub.get('id');
       if (transform) sub = transform(subs);
+      const id = sub.get('id');
       subs = subs.set(id, sub.set('order', this._newOrder(subs)));
       return this._setSubs(subs).then(() => subs.get(id) );
     });
@@ -64,8 +64,7 @@ class SubsService {
 
   update (sub) {
     return this._getSubs().then((subs = Immutable.Map()) => {
-      subs[sub.id] = sub;
-      return this._setSubs(subs);
+      return this._setSubs(subs.set(sub.id, sub));
     });
   }
 
@@ -88,16 +87,16 @@ class SubsService {
   }
 
   _newId (subs) {
-    const customIds = _(subs)
-      .filter((sub) => sub.custom)
-      .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
-      .value();
+    const customIds = subs
+      .toList()
+      .filter(sub => sub.get('custom'))
+      .map(playlist => parseInt(playlist.get('id').match(/\d+/)[0], 10));
     return this._next(customIds);
   }
 
   _next (items) {
     if (!items.size) return 0;
-    return Math.max.apply(Math, items.toArray()) + 1;
+    return items.max() + 1;
   }
 }
 
