@@ -20,7 +20,11 @@ export default createClass({
   render () {
     const iconPicker = this.state.pickingIcon ?
       Modal({ className: 'icon-picker-modal', onClose: _.partial(this._setPickingIcon, false) },
-        IconPicker(_.extend({ ref: 'iconPicker', onUpdate: this._iconUpdated }, this.props.sub.get('icon').toObject()))
+        IconPicker({
+          ref: 'iconPicker',
+          onUpdate: this._iconUpdated,
+          icon: this.props.sub.get('icon')
+        })
       ) : null;
 
     return DOM.span({ className: 'custom-sub-item' },
@@ -29,10 +33,10 @@ export default createClass({
       ),
       DOM.input({ ref: 'title', onChange: this._onChange, value: this.props.sub.get('title') }),
       DOM.span({ className: 'sub-item-icon' },
-        IconThumb(this.props.sub.get('icon').toObject())
+        IconThumb({ icon: this.props.sub.get('icon') })
       ),
       DOM.button({ className: 'sub-item-icon editable', onClick: _.partial(this._setPickingIcon, true) },
-        IconThumb(this.props.sub.get('icon').toObject())
+        IconThumb({ icon: this.props.sub.get('icon') })
       ),
       iconPicker
     );

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import { createFactory, createClass, DOM } from 'react';
 import cs from 'classnames';
 import { icon } from '../lib/util';
@@ -15,19 +16,17 @@ export default createClass({
           DOM.label(null, 'Foreground Color'),
           DOM.input({
             ref: 'foregroundColor',
-            value: this.props.foregroundColor,
+            value: this.props.icon.get('foregroundColor'),
             onChange: _.partial(this._updateColor, 'foregroundColor')
-          }),
-          DOM.figure({ style: { backgroundColor: this.props.foregroundColor } })
+          })
         ),
         DOM.fieldset(null,
           DOM.label(null, 'Background Color'),
           DOM.input({
             ref: 'backgroundColor',
-            value: this.props.backgroundColor,
+            value: this.props.icon.get('backgroundColor'),
             onChange: _.partial(this._updateColor, 'backgroundColor')
-          }),
-          DOM.figure({ style: { backgroundColor: this.props.backgroundColor } })
+          })
         )
       ),
       DOM.div({ className: 'icons' },
@@ -35,8 +34,8 @@ export default createClass({
           return DOM.button({
             key: icon,
             onClick: _.partial(this._updateProp, 'icon', icon),
-            className: cs('picker-icon', { chosen: this.props.icon === icon })
-          }, IconThumb(_.extend({}, this.props, { icon: icon })));
+            className: cs('picker-icon', { chosen: this.props.icon.get('icon') === icon })
+          }, IconThumb(_.extend({}, this.props, { icon: this.props.icon.set('icon', icon) })));
         })
       )
     );

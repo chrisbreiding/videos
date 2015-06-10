@@ -33,10 +33,11 @@ export default createClass({
         className: 'icon-picker-modal',
         onClose: _.partial(this._setPickingIcon, false)
       },
-        IconPicker(_.extend({
+        IconPicker({
           ref: 'iconPicker',
-          onUpdate: this._iconUpdated
-        }, this.state.icon.toObject()))
+          onUpdate: this._iconUpdated,
+          icon: this.state.icon
+        })
       ) : null;
 
     return DOM.form({ className: 'add-custom-playlist', onSubmit: (e) => { e.preventDefault() } },
@@ -48,7 +49,7 @@ export default createClass({
         DOM.label(null, 'Thumbnail'),
         DOM.button({ className: 'submit', onClick: this._add }, icon('plus', 'Add')),
         DOM.button({ className: 'pick-icon', onClick: this._toggleIconPicker },
-          IconThumb(this.state.icon.toObject())
+          IconThumb({ icon: this.state.icon })
         )
       ),
       iconPicker

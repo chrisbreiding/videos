@@ -6,9 +6,9 @@ export default createClass({
     return DOM.span(_.extend({
       className: 'icon-thumb',
       style: {
-        backgroundColor: this.props.backgroundColor,
-        color: this.props.foregroundColor
-      }}, this.props), DOM.i({ className: `fa fa-${this.props.icon}` })
+        backgroundColor: this.props.icon.get('backgroundColor'),
+        color: this.props.icon.get('foregroundColor')
+      }}, this.props), DOM.i({ className: `fa fa-${this.props.icon.get('icon')}` })
     );
   }
 })
