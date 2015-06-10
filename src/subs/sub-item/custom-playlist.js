@@ -20,7 +20,7 @@ export default createClass({
   render () {
     const iconPicker = this.state.pickingIcon ?
       Modal({ className: 'icon-picker-modal', onClose: _.partial(this._setPickingIcon, false) },
-        IconPicker(_.extend({ ref: 'iconPicker', onUpdate: this._iconUpdated }, this.props.sub.get('icon')))
+        IconPicker(_.extend({ ref: 'iconPicker', onUpdate: this._iconUpdated }, this.props.sub.get('icon').toObject()))
       ) : null;
 
     return DOM.span({ className: 'custom-sub-item' },

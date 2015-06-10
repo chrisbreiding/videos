@@ -64,7 +64,7 @@ class SubsService {
 
   update (sub) {
     return this._getSubs().then((subs = Immutable.Map()) => {
-      return this._setSubs(subs.set(sub.id, sub));
+      return this._setSubs(subs.set(sub.get('id'), sub));
     });
   }
 
