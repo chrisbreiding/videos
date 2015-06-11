@@ -24,14 +24,14 @@ function queryYouTube (url, data) {
 }
 
 function mapChannelDetails (result) {
-  return _.map(result.items, (item) => {
-    return {
+  return Immutable.List(_.map(result.items, (item) => {
+    return Immutable.Map({
       id: item.id.channelId,
       title: item.snippet.channelTitle,
       author: item.snippet.title,
       thumb: item.snippet.thumbnails.medium.url
-    };
-  });
+    });
+  }));
 }
 
 function videoIds (videos) {
@@ -39,16 +39,16 @@ function videoIds (videos) {
 }
 
 function mapVideoDetails (result) {
-  return _.map(result.items, (video) => {
-    return {
+  return Immutable.List(_.map(result.items, (video) => {
+    return Immutable.Map({
       id: video.id,
       title: video.snippet.title,
       description: video.snippet.description,
       published: video.snippet.publishedAt,
       thumb: video.snippet.thumbnails.medium.url,
       duration: video.contentDetails.duration
-    };
-  });
+    });
+  }));
 }
 
 function getVideos (ids) {
@@ -72,7 +72,7 @@ class Youtube {
       part: 'snippet',
       type: 'channel',
       maxResults: 10
-    }).then(mapChannelDetails).then(Immutable.fromJS);
+    }).then(mapChannelDetails);
   }
 
   getVideosDataForPlaylist (playlistId, pageToken) {
@@ -83,11 +83,12 @@ class Youtube {
     };
     if (pageToken) params.pageToken = pageToken;
 
-    return queryYouTube('playlistItems', params).then(({ items, prevPageToken, nextPageToken }) => {
-      return getVideos(videoIds(items)).then((videos) => {
-        return { videos, prevPageToken, nextPageToken };
+    return queryYouTube('playlistItems', params)
+      .then(({ items, prevPageToken, nextPageToken }) => {
+        return getVideos(videoIds(items)).then((videos) => {
+          return { videos, prevPageToken, nextPageToken };
+        });
       });
-    });
   }
 
   getPlaylistIdForChannel (channelId) {

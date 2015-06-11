@@ -10,7 +10,7 @@ class SubsService {
   }
 
   getSub (id) {
-    return this._getSubs().then((subs) => subs[id] );
+    return this._getSubs().then(subs => subs.get(id));
   }
 
   search (query) {
@@ -37,11 +37,12 @@ class SubsService {
 
   addVideoToPlaylist (playlist, videoId) {
     return this._getSubs().then((subs = Immutable.Map()) => {
-      const sub = subs[playlist.id];
-      sub.videos[videoId] = {
-        id: videoId,
-        order: this._newOrder(sub.videos)
-      };
+      subs = subs.updateIn([playlist.get('id'), 'videos'], (videos) => {
+        return videos.set(videoId, Immutable.Map({
+          id: videoId,
+          order: this._newOrder(videos)
+        }));
+      });
       return this._setSubs(subs);
     });
   }

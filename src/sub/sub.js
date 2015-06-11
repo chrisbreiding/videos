@@ -35,8 +35,8 @@ export default createClass({
     const newId = this._getId();
     const oldId = prevState.sub.id;
 
-    const newPlaylistId = this.state.sub.sub.playlistId;
-    const oldPlaylistId = prevState.sub.sub.playlistId;
+    const newPlaylistId = this.state.sub.sub.get('playlistId');
+    const oldPlaylistId = prevState.sub.sub.get('playlistId');
 
     const newToken = this._getPageToken();
     const oldToken = this.pageToken;
@@ -46,7 +46,7 @@ export default createClass({
       subActions.getSub(newId);
     } else if (oldPlaylistId !== newPlaylistId || oldToken !== newToken) {
       setTimeout(() => {
-        if (this.state.sub.sub.custom) {
+        if (this.state.sub.sub.get('custom')) {
           videosActions.getVideosDataForCustomPlaylist(newId);
         } else {
           videosActions.getVideosDataForPlaylist(newPlaylistId, newToken);
@@ -64,7 +64,7 @@ export default createClass({
   },
 
   render () {
-    return this.state.videos.videos.length ? this._sub() : this._loader();
+    return this.state.videos.videos.size ? this._sub() : this._loader();
   },
 
   _sub () {
@@ -77,14 +77,17 @@ export default createClass({
   },
 
   _videos() {
-    return _.map(this.state.videos.videos, (video) => {
-      return Video(_.extend({
-        key: video.id,
-        onPlay: _.partial(this._playVideo, video.id),
+    return this.state.videos.videos.map((video) => {
+      const id = video.get('id');
+
+      return Video({
+        key: id,
+        onPlay: _.partial(this._playVideo, id),
         subs: this.state.subs.subs,
-        addedToPlaylist: (playlist) => { subsActions.addVideoToPlaylist(playlist, video.id) },
-        removedFromPlaylist: (playlist) => { subsActions.removeVideoFromPlaylist(playlist, video.id) }
-      }, video));
+        video: video,
+        addedToPlaylist: (playlist) => { subsActions.addVideoToPlaylist(playlist, id) },
+        removedFromPlaylist: (playlist) => { subsActions.removeVideoFromPlaylist(playlist, id) }
+      });
     });
   },
 

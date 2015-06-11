@@ -13,13 +13,13 @@ export default createClass({
 
     return DOM.div({ className: cs('playlist-picker', { picking: this.state.picking }) },
       DOM.button({ onClick: this._togglePicking }, icon(iconName, null, 'Playlists')),
-      DOM.ul(null, _.map(this.props.playlists, (playlist) => {
-        const inPlaylist = !!playlist.videos[this.props.videoId];
+      DOM.ul(null, this.props.playlists.map((playlist) => {
+        const inPlaylist = !!playlist.getIn(['videos', this.props.videoId]);
 
-        return DOM.li({ key: playlist.id },
+        return DOM.li({ key: playlist.get('id') },
           DOM.button({ onClick: _.partial(this._setPlaylist, playlist, !inPlaylist) },
             icon(inPlaylist ? 'check-square' : 'square-o'),
-            DOM.span(null, playlist.title)
+            DOM.span(null, playlist.get('title'))
           )
         );
       }))

@@ -8,12 +8,12 @@ class VideosService {
   }
 
   getVideosDataForCustomPlaylist (id) {
-    return subsService.getSub(id).then(({ videos }) => {
-      const ids = _(videos)
-        .values()
-        .sortBy('order')
-        .pluck('id')
-        .value();
+    return subsService.getSub(id).then((sub) => {
+      const ids = sub.get('videos')
+        .toList()
+        .sortBy(video => video.get('order'))
+        .map(video => video.get('id'))
+        .toArray();
       return getVideos(ids);
     });
   }
