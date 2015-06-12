@@ -18,7 +18,7 @@ class SubsStore {
   }
 
   updateSubs (subs = Immutable.Map()) {
-    this._subs = subs;
+    this._subs = this._subs.mergeDeep(subs);
     this._updateSubs();
   }
 

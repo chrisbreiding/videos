@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Immutable from 'immutable';
 import dispatcher from '../lib/dispatcher';
 import actions from './videos-actions';
 
@@ -16,7 +17,7 @@ class VideosStore {
   }
 
   clearVideos () {
-    this.videos = [];
+    this.videos = Immutable.List();
   }
 
   updateVideosData (data) {

@@ -19,7 +19,10 @@ class SubsService {
 
   addChannel (channel) {
     return getPlaylistIdForChannel(channel.get('id')).then((playlistId) => {
-      return this._addSub(channel.set('playlistId', playlistId));
+      return this._addSub(channel.merge(Immutable.Map({
+        playlistId: playlistId,
+        custom: false
+      })));
     });
   }
 
