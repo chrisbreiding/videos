@@ -49,8 +49,7 @@ class SubsService {
 
   removeVideoFromPlaylist (playlist, videoId) {
     return this._getSubs().then((subs = Immutable.Map()) => {
-      delete subs[playlist.id].videos[videoId];
-      return this._setSubs(subs);
+      return this._setSubs(subs.removeIn([playlist.get('id'), 'videos', videoId]));
     });
   }
 
