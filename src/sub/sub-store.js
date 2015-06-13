@@ -18,7 +18,7 @@ class SubStore {
   }
 
   updateSub (sub) {
-    this.sub = this.sub.merge(sub);
+    this.sub = sub;
     if (sub.get('custom')) {
       const videos = sub.get('videos')
         .toList()
