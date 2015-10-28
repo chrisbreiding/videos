@@ -1,11 +1,11 @@
 import { createClass, DOM } from 'react';
-import { Navigation } from 'react-router';
+import { History } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import LoginStore from './login-store';
 import { getApiKey, checkApiKey, updateApiKey } from './login-actions';
 
 export default createClass({
-  mixins: [ReactStateMagicMixin, Navigation],
+  mixins: [ReactStateMagicMixin, History],
 
   statics: {
     registerStore: LoginStore
@@ -13,7 +13,7 @@ export default createClass({
 
   componentDidMount () {
     getApiKey().then(this._checkApiKey);
-    this.refs.apiKey.getDOMNode().focus();
+    this.refs.apiKey.focus();
   },
 
   shouldComponentUpdate (__, nextState) {
@@ -21,13 +21,13 @@ export default createClass({
   },
 
   componentDidUpdate () {
-    this.refs.apiKey.getDOMNode().value = this.state.apiKey;
+    this.refs.apiKey.value = this.state.apiKey;
     this._checkApiKey(this.state.apiKey);
   },
 
   _checkApiKey (apiKey) {
     checkApiKey(apiKey).then((isValid) => {
-      if (isValid) this.transitionTo('app');
+      if (isValid) this.history.pushState(null, '/subs');
     });
   },
 
@@ -42,6 +42,6 @@ export default createClass({
 
   _onFormSubmit (e) {
     e.preventDefault();
-    updateApiKey(this.refs.apiKey.getDOMNode().value);
+    updateApiKey(this.refs.apiKey.value);
   }
 });

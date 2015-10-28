@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { render, createClass, DOM } from 'react';
+import { createClass, DOM } from 'react';
+import { render } from 'react-dom';
 import cs from 'classnames';
 import { icon } from '../lib/util';
 

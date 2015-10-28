@@ -16,7 +16,7 @@ gulp.task('webpack', function () {
 });
 
 gulp.task('watch-webpack', ['webpack'], function () {
-  return watch(['src/**/*.js', 'src/**/*.styl'], function (file) {
+  return watch(['src/**/*.js', 'src/**/*.jsx', 'src/**/*.styl'], function (file) {
     console.log(file.path, 'was changed');
     return gulp.src(webpackConfig.entry)
       .pipe(gulpWebpack(webpackConfig, webpack))

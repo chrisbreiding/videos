@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
-import { State, Navigation } from 'react-router';
+import { History } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
 import SubStore from './sub-store';
 import subActions from './sub-actions';
@@ -16,7 +16,9 @@ const Paginator = createFactory(PaginatorComponent);
 const Video = createFactory(VideoComponent);
 
 export default createClass({
-  mixins: [ReactStateMagicMixin, State, Navigation],
+  displayName: 'Sub',
+
+  mixins: [ReactStateMagicMixin, History],
 
   statics: {
     registerStores: {
@@ -56,11 +58,11 @@ export default createClass({
   },
 
   _getId () {
-    return this.getParams().id;
+    return this.props.params.id;
   },
 
   _getPageToken () {
-    return this.getQuery().pageToken;
+    return this.props.location.query.pageToken;
   },
 
   render () {
@@ -100,7 +102,7 @@ export default createClass({
   },
 
   _playVideo (id) {
-    const query = _.extend({}, this.getQuery(), { nowPlaying: id });
-    this.transitionTo(this.getPathname(), this.getParams(), query);
+    const query = _.extend({}, this.props.location.query, { nowPlaying: id });
+    this.history.pushState(null, this.props.location.pathname, query);
   }
 });

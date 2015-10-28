@@ -1,16 +1,22 @@
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const APP_PATH = path.resolve(__dirname, 'src');
+
 module.exports = {
-  entry: './src/main.js',
+  entry: `${APP_PATH}/main.jsx`,
   output: {
-    path: './dist',
+    path: path.resolve(__dirname, 'dist'),
     filename: 'app.js'
+  },
+  resolve: {
+    extensions: ['', '.js', '.jsx']
   },
   module: {
     loaders: [
-      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
-      { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' },
-      { test: /\.svg$|\.ttf$|\.eot$|\.woff$|\.woff2$/, loader: 'file-loader' }
+      { test: /\.js$|\.jsx$/, loaders: ['babel'], include: APP_PATH },
+      { test: /\.styl$/, loaders: ['style', 'css', 'stylus'], include: APP_PATH },
+      { test: /\.svg$|\.ttf$|\.eot$|\.woff$|\.woff2$/, loaders: ['file'], include: APP_PATH }
     ]
   },
   plugins: [

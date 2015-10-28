@@ -1,11 +1,15 @@
-import { createFactory, createClass, DOM } from 'react';
+import { createFactory, createClass, DOM, PropTypes } from 'react';
 import { Link as LinkComponent, State } from 'react-router';
 import { icon } from '../lib/util';
 
 const Link = createFactory(LinkComponent);
 
 export default createClass({
-  mixins: [State],
+  displayName: 'Paginator',
+
+  contextTypes: {
+    location: PropTypes.object
+  },
 
   render () {
     const prev = this.props.prevPageToken;
@@ -25,9 +29,8 @@ export default createClass({
 
   _linkTo (pageToken, children) {
     return Link({
-      to: this.getPathname(),
-      params: this.getParams(),
-      query: _.extend({}, this.getQuery(), { pageToken })
+      to: this.context.location.pathname,
+      query: _.extend({}, this.context.location.query, { pageToken })
     }, children);
   }
 });

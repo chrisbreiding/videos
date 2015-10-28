@@ -42,7 +42,7 @@ export default createClass({
   },
 
   _updateColor (type) {
-    this._updateProp(type, this.refs[type].getDOMNode().value);
+    this._updateProp(type, this.refs[type].value);
   },
 
   _updateProp (prop, value) {

@@ -1,7 +1,8 @@
 require('./main.styl');
 
-import { render, createFactory } from 'react';
-import { run } from 'react-router';
+import React from 'react';
+import { render } from 'react-dom';
+import { Router } from 'react-router';
 import RSVP from 'rsvp';
 import routes from './routes';
 
@@ -11,6 +12,4 @@ RSVP.on('error', (e) => {
   console.error(e.stack);
 });
 
-run(routes, (Handler) => {
-  render(createFactory(Handler)(), document.getElementById('app-container'));
-});
+render(<Router routes={routes} />, document.getElementById('app-container'));
