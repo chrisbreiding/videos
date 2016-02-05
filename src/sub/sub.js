@@ -12,9 +12,11 @@ import videosActions from '../videos/videos-actions';
 import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
 import { icon } from '../lib/util';
+import FilterComponent from '../filter/filter';
 
 const Paginator = createFactory(PaginatorComponent);
 const Video = createFactory(VideoComponent);
+const Filter = createFactory(FilterComponent);
 
 export default createClass({
   displayName: 'Sub',
@@ -27,6 +29,10 @@ export default createClass({
       subs: SubsStore,
       videos: VideosStore
     }
+  },
+
+  getInitialState () {
+    return { filter: '' };
   },
 
   componentDidMount () {
@@ -73,7 +79,9 @@ export default createClass({
   _sub () {
     const { prevPageToken, nextPageToken } = this.state.videos;
     return DOM.div(null,
-      Paginator({ prevPageToken, nextPageToken }),
+      Paginator({ prevPageToken, nextPageToken },
+        Filter({ filter: this.state.filter, onChange: this._onFilterUpdate })
+      ),
       this._videos(),
       Paginator({ prevPageToken, nextPageToken })
     );
@@ -81,10 +89,14 @@ export default createClass({
 
   _videos() {
     return this.state.videos.videos
+      .filter(video => {
+        if (!this.state.filter) { return true; }
+        return video.get('title').toLowerCase().indexOf(this.state.filter.toLowerCase()) > -1;
+      })
       .sort((video1, video2) => {
         return moment(video1.get('published')).isBefore(video2.get('published')) ? 1 : -1;
       })
-      .map((video) => {
+      .map(video => {
         const id = video.get('id');
 
         return Video({
@@ -109,5 +121,9 @@ export default createClass({
   _playVideo (id) {
     const query = _.extend({}, this.props.location.query, { nowPlaying: id });
     this.history.pushState(null, this.props.location.pathname, query);
+  },
+
+  _onFilterUpdate (filter) {
+    this.setState({ filter });
   }
 });
