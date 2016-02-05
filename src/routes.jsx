@@ -13,4 +13,4 @@ export default <Route component={Root}>
     <Route path=':id' component={Sub} />
   </Route>
   <Route path='/login' component={Login} />
-</Route>
+</Route>;

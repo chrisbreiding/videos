@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { createFactory, createClass, DOM } from 'react';
 import { History } from 'react-router';
 import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
+import moment from 'moment';
 import SubStore from './sub-store';
 import subActions from './sub-actions';
 import SubsStore from '../subs/subs-store';
@@ -79,18 +80,22 @@ export default createClass({
   },
 
   _videos() {
-    return this.state.videos.videos.map((video) => {
-      const id = video.get('id');
+    return this.state.videos.videos
+      .sort((video1, video2) => {
+        return moment(video1.get('published')).isBefore(video2.get('published')) ? 1 : -1;
+      })
+      .map((video) => {
+        const id = video.get('id');
 
-      return Video({
-        key: id,
-        onPlay: _.partial(this._playVideo, id),
-        subs: this.state.subs.subs,
-        video: video,
-        addedToPlaylist: (playlist) => { subsActions.addVideoToPlaylist(playlist, id) },
-        removedFromPlaylist: (playlist) => { subsActions.removeVideoFromPlaylist(playlist, id) }
+        return Video({
+          key: id,
+          onPlay: _.partial(this._playVideo, id),
+          subs: this.state.subs.subs,
+          video: video,
+          addedToPlaylist: (playlist) => subsActions.addVideoToPlaylist(playlist, id),
+          removedFromPlaylist: (playlist) => subsActions.removeVideoFromPlaylist(playlist, id)
+        });
       });
-    });
   },
 
   _loader () {

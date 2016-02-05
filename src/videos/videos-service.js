@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { getVideosDataForPlaylist, getVideos } from '../lib/youtube';
 import subsService from '../subs/subs-service';
 
@@ -17,6 +16,6 @@ class VideosService {
       return getVideos(ids);
     });
   }
-};
+}
 
 export default new VideosService();
