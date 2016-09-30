@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { DOM } from 'react';
 import moment from 'moment';
 
@@ -7,7 +8,7 @@ const MIN = 6;
 const S = 7;
 
 function parseIso8601Duration (text) {
-  var matches = text.match(re);
+  const matches = text.match(re);
   return _.reduce([HR, MIN, S], (memo, index) => {
     if (matches[index]) {
       memo.push(parseInt(matches[index], 10).toString());
@@ -19,7 +20,7 @@ function parseIso8601Duration (text) {
 }
 
 function toTwoDigits (num) {
-  return num.length === 2 ? num : '0' + num;
+  return num.length === 2 ? num : `0${num}`;
 }
 
 class Util {
