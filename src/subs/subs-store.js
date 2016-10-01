@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Immutable from 'immutable';
 import dispatcher from '../lib/dispatcher';
 import actions from './subs-actions';
@@ -35,7 +34,7 @@ class SubsStore {
   _updateSubs () {
     this.subs = this._subs
       .toList()
-      .sortBy(sub => sub.get('order'))
+      .sortBy((sub) => sub.get('order'))
   }
 
   updateSeachResults (searchResults) {

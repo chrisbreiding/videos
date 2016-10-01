@@ -85,6 +85,7 @@ class SubsService {
   }
 
   _newOrder (items) {
+    // TODO: this seems to be totally borked
     return this._next(items.map((item) => item.order || 0));
   }
 

@@ -21,7 +21,7 @@ class SubStore {
     if (sub.get('custom')) {
       const videos = sub.get('videos')
         .toList()
-        .sortBy((video) => video.get('order'));
+        // .sortBy((video) => video.get('order')); TODO: ordering is borked
       this.sub.set('videos', videos);
     }
   }

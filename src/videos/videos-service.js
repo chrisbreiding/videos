@@ -18,10 +18,10 @@ class VideosService {
     return subsService.getSub(id).then((sub) => {
       const ids = sub.get('videos')
         .toList()
-        .sortBy((video) => video.get('order'))
+        // .sortBy((video) => video.get('order')) TODO: ordering is borked
         .map((video) => video.get('id'))
         .toArray();
-      return getVideos(ids);
+      return getVideos(ids)
     });
   }
 }

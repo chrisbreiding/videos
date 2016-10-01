@@ -106,9 +106,12 @@ export default createClass({
       return DOM.div({ className: 'empty' }, 'No videos')
     }
 
+    const isCustom = this.state.sub.sub.get('custom')
+
     return this.state.videos.videos
       .sort((video1, video2) => {
-        return moment(video1.get('published')).isBefore(video2.get('published')) ? 1 : -1;
+        const method = isCustom ? 'isAfter' : 'isBefore'
+        return moment(video1.get('published'))[method](video2.get('published')) ? 1 : -1;
       })
       .map((video) => {
         const id = video.get('id');
