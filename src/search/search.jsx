@@ -3,8 +3,13 @@ import React from 'react';
 const Search = ({ query, onSearch }) => {
   let queryNode
 
+  function onSubmit (e) {
+    e.preventDefault()
+    onSearch(queryNode.value)
+  }
+
   return (
-    <form className="search" onSubmit={() => onSearch(queryNode.value)}>
+    <form className="search" onSubmit={onSubmit}>
       <input
         ref={(node) => queryNode = node}
         defaultValue={query}
