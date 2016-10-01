@@ -1,25 +1,31 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-const Search = ({ query, onSearch }) => {
-  let queryNode
-
-  function onSubmit (e) {
-    e.preventDefault()
-    onSearch(queryNode.value)
+class Search extends Component {
+  componentDidUpdate () {
+    if (!this.props.query) {
+      this.refs.query.value = ''
+    }
   }
 
-  return (
-    <form className="search" onSubmit={onSubmit}>
-      <input
-        ref={(node) => queryNode = node}
-        defaultValue={query}
-        placeholder="Search Channel"
-      />
-      <button>
-        <i className='fa fa-search' />
-      </button>
-    </form>
-  )
+  render () {
+    return (
+      <form className="search" onSubmit={this._onSubmit}>
+        <input
+          ref='query'
+          defaultValue={this.props.query}
+          placeholder="Search Channel"
+        />
+        <button>
+          <i className='fa fa-search' />
+        </button>
+      </form>
+    )
+  }
+
+  _onSubmit = (e) => {
+    e.preventDefault()
+    this.props.onSearch(this.refs.query.value)
+  }
 }
 
 export default Search
