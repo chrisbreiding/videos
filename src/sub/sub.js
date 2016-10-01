@@ -93,12 +93,16 @@ export default createClass({
       prevPageToken = undefined
     }
     return DOM.div(null,
-      Paginator({ prevPageToken, nextPageToken },
-        Search({ query: this._getSearchQuery(), onSearch: this._onSearchUpdate })
-      ),
+      Paginator({ prevPageToken, nextPageToken }, this._search()),
       isLoading ? this._loader() : this._videos(),
       Paginator({ prevPageToken, nextPageToken })
     );
+  },
+
+  _search () {
+    if (this.state.sub.sub.get('custom')) return null
+
+    return Search({ query: this._getSearchQuery(), onSearch: this._onSearchUpdate })
   },
 
   _videos () {
