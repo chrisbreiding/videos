@@ -1,18 +1,11 @@
 import _ from 'lodash';
 import { createClass, DOM } from 'react';
-import cs from 'classnames';
 import { icon } from '../../lib/util';
 
 export default createClass({
-  getInitialState () {
-    return { pickingPlaylist: false };
-  },
-
   render () {
-    const iconName = this.state.picking ? 'chevron-up' : 'chevron-down';
-
-    return DOM.div({ className: cs('playlist-picker', { picking: this.state.picking }) },
-      DOM.button({ onClick: this._togglePicking }, icon(iconName, null, 'Playlists')),
+    return DOM.div({ className: 'playlist-picker' },
+      DOM.span(null, 'Playlists:'),
       DOM.ul(null, this.props.playlists.map((playlist) => {
         const inPlaylist = !!playlist.getIn(['videos', this.props.videoId]);
 
@@ -24,10 +17,6 @@ export default createClass({
         );
       }))
     );
-  },
-
-  _togglePicking () {
-    this.setState({ picking: !this.state.picking });
   },
 
   _setPlaylist (playlist, inPlaylist) {
