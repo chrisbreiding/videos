@@ -1,4 +1,8 @@
-import { getVideosDataForPlaylist, getVideos } from '../lib/youtube';
+import {
+  getVideosDataForChannelSearch,
+  getVideosDataForPlaylist,
+  getVideos,
+} from '../lib/youtube';
 import subsService from '../subs/subs-service';
 
 class VideosService {
@@ -6,12 +10,16 @@ class VideosService {
     return getVideosDataForPlaylist(playlistId, pageToken);
   }
 
+  getVideosDataForChannelSearch (channelId, query, pageToken) {
+    return getVideosDataForChannelSearch(channelId, query, pageToken);
+  }
+
   getVideosDataForCustomPlaylist (id) {
     return subsService.getSub(id).then((sub) => {
       const ids = sub.get('videos')
         .toList()
-        .sortBy(video => video.get('order'))
-        .map(video => video.get('id'))
+        .sortBy((video) => video.get('order'))
+        .map((video) => video.get('id'))
         .toArray();
       return getVideos(ids);
     });

@@ -12,11 +12,11 @@ import videosActions from '../videos/videos-actions';
 import PaginatorComponent from '../paginator/paginator';
 import VideoComponent from '../videos/video';
 import { icon } from '../lib/util';
-import FilterComponent from '../filter/filter';
+import SearchComponent from '../search/search';
 
 const Paginator = createFactory(PaginatorComponent);
 const Video = createFactory(VideoComponent);
-const Filter = createFactory(FilterComponent);
+const Search = createFactory(SearchComponent);
 
 export default createClass({
   displayName: 'Sub',
@@ -31,10 +31,6 @@ export default createClass({
     }
   },
 
-  getInitialState () {
-    return { filter: '' };
-  },
-
   componentDidMount () {
     subActions.getSub(this._getId());
     subsActions.fetch();
@@ -47,15 +43,29 @@ export default createClass({
     const newPlaylistId = this.state.sub.sub.get('playlistId');
     const oldPlaylistId = prevState.sub.sub.get('playlistId');
 
+    const newSearchQuery = this._getSearchQuery();
+    const oldSearchQuery = this.searchQuery
+    this.searchQuery = newSearchQuery
+
     const newToken = this._getPageToken();
     const oldToken = this.pageToken;
     this.pageToken = newToken;
 
     if (oldId !== newId) {
       subActions.getSub(newId);
-    } else if (oldPlaylistId !== newPlaylistId || oldToken !== newToken) {
+    } else if (
+      oldPlaylistId !== newPlaylistId
+      || oldToken !== newToken
+      || oldSearchQuery !== newSearchQuery
+    ) {
       setTimeout(() => {
-        if (this.state.sub.sub.get('custom')) {
+        if (newSearchQuery) {
+          videosActions.getVideosDataForChannelSearch(
+            this.state.sub.sub.get('id'),
+            newSearchQuery,
+            newToken
+          )
+        } else if (this.state.sub.sub.get('custom')) {
           videosActions.getVideosDataForCustomPlaylist(newId);
         } else {
           videosActions.getVideosDataForPlaylist(newPlaylistId, newToken);
@@ -72,38 +82,42 @@ export default createClass({
     return this.props.location.query.pageToken;
   },
 
-  render () {
-    return this.state.videos.videos.size ? this._sub() : this._loader();
+  _getSearchQuery () {
+    return this.props.location.query.search
   },
 
-  _sub () {
-    const { prevPageToken, nextPageToken } = this.state.videos;
+  render () {
+    let { isLoading, prevPageToken, nextPageToken } = this.state.videos;
+    if (isLoading) {
+      nextPageToken = undefined
+      prevPageToken = undefined
+    }
     return DOM.div(null,
       Paginator({ prevPageToken, nextPageToken },
-        Filter({ filter: this.state.filter, onChange: this._onFilterUpdate })
+        Search({ query: this._getSearchQuery(), onSearch: this._onSearchUpdate })
       ),
-      this._videos(),
+      isLoading ? this._loader() : this._videos(),
       Paginator({ prevPageToken, nextPageToken })
     );
   },
 
-  _videos() {
+  _videos () {
+    if (!this.state.videos.videos.size) {
+      return DOM.div({ className: 'empty' }, 'No videos')
+    }
+
     return this.state.videos.videos
-      .filter(video => {
-        if (!this.state.filter) { return true; }
-        return video.get('title').toLowerCase().indexOf(this.state.filter.toLowerCase()) > -1;
-      })
       .sort((video1, video2) => {
         return moment(video1.get('published')).isBefore(video2.get('published')) ? 1 : -1;
       })
-      .map(video => {
+      .map((video) => {
         const id = video.get('id');
 
         return Video({
           key: id,
           onPlay: _.partial(this._playVideo, id),
           subs: this.state.subs.subs,
-          video: video,
+          video,
           addedToPlaylist: (playlist) => subsActions.addVideoToPlaylist(playlist, id),
           removedFromPlaylist: (playlist) => subsActions.removeVideoFromPlaylist(playlist, id)
         });
@@ -123,7 +137,11 @@ export default createClass({
     this.history.pushState(null, this.props.location.pathname, query);
   },
 
-  _onFilterUpdate (filter) {
-    this.setState({ filter });
-  }
+  _onSearchUpdate (search) {
+    const query = _.extend({}, this.props.location.query, {
+      search: search || undefined,
+      pageToken: undefined
+    });
+    this.history.pushState(null, this.props.location.pathname, query);
+  },
 });

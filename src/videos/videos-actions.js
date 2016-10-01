@@ -7,19 +7,38 @@ class VideosActions {
   }
 
   getVideosDataForPlaylist (playlistId, pageToken) {
-    this.dispatch();
+    this.actions.updateLoadingVideos(true)
 
     videosService.getVideosDataForPlaylist(playlistId, pageToken).then((videosData) => {
       this.actions.didUpdateVideosData(videosData);
+      this.actions.updateLoadingVideos(false)
+    });
+  }
+
+  getVideosDataForChannelSearch (channelId, query, pageToken) {
+    this.actions.updateLoadingVideos(true)
+
+    videosService.getVideosDataForChannelSearch(channelId, query, pageToken).then((videosData) => {
+      this.actions.didUpdateVideosData(videosData);
+      this.actions.updateLoadingVideos(false)
     });
   }
 
   getVideosDataForCustomPlaylist (id) {
-    this.dispatch();
+    this.actions.updateLoadingVideos(true)
 
     videosService.getVideosDataForCustomPlaylist(id).then((videos) => {
-      this.actions.didUpdateVideosData({ videos: videos, prevPageToken: null, nextPageToken: null });
+      this.actions.didUpdateVideosData({
+        videos,
+        prevPageToken: null,
+        nextPageToken: null,
+      });
+      this.actions.updateLoadingVideos(false)
     });
+  }
+
+  updateLoadingVideos (isLoading) {
+    this.dispatch(isLoading)
   }
 }
 

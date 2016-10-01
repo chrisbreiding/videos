@@ -34,8 +34,12 @@ function mapChannelDetails (result) {
   }));
 }
 
-function videoIds (videos) {
+function videoIdsFromContentDetails (videos) {
   return _(videos).pluck('contentDetails').pluck('videoId').value();
+}
+
+function videoIdsFromId (videos) {
+  return _(videos).pluck('id').pluck('videoId').value();
 }
 
 function mapVideoDetails (result) {
@@ -75,9 +79,31 @@ class Youtube {
     }).then(mapChannelDetails);
   }
 
+  getVideosDataForChannelSearch (channelId, query, pageToken) {
+    const params = {
+      channelId,
+      maxResults: RESULTS_PER_PAGE,
+      order: 'date',
+      part: 'snippet',
+      q: query,
+    };
+    if (pageToken) params.pageToken = pageToken;
+
+    return queryYouTube('search', params)
+      .then(({ items, prevPageToken, nextPageToken }) => {
+        // there seems to be a bug with the youtube api where it returns
+        // a nextPageToken even if there are no more results after this page
+        if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
+
+        return getVideos(videoIdsFromId(items)).then((videos) => {
+          return { videos, prevPageToken, nextPageToken };
+        });
+      });
+  }
+
   getVideosDataForPlaylist (playlistId, pageToken) {
     const params = {
-      playlistId: playlistId,
+      playlistId,
       part: 'snippet,contentDetails',
       maxResults: RESULTS_PER_PAGE
     };
@@ -85,7 +111,7 @@ class Youtube {
 
     return queryYouTube('playlistItems', params)
       .then(({ items, prevPageToken, nextPageToken }) => {
-        return getVideos(videoIds(items)).then((videos) => {
+        return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
           return { videos, prevPageToken, nextPageToken };
         });
       });
@@ -95,7 +121,7 @@ class Youtube {
     return queryYouTube('channels', {
       id: channelId,
       part: 'contentDetails'
-    }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads );
+    }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads);
   }
 
   getVideos (ids) {

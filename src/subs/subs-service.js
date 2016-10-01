@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Immutable from 'immutable';
 import { SUBS_KEY } from '../lib/constants';
 import { getItem, setItem } from '../lib/local-data';
@@ -10,7 +9,7 @@ class SubsService {
   }
 
   getSub (id) {
-    return this._getSubs().then(subs => subs.get(id));
+    return this._getSubs().then((subs) => subs.get(id));
   }
 
   search (query) {
@@ -20,7 +19,7 @@ class SubsService {
   addChannel (channel) {
     return getPlaylistIdForChannel(channel.get('id')).then((playlistId) => {
       return this._addSub(channel.merge(Immutable.Map({
-        playlistId: playlistId,
+        playlistId,
         custom: false
       })));
     });
@@ -61,7 +60,7 @@ class SubsService {
       if (transform) sub = transform(subs);
       const id = sub.get('id');
       subs = subs.set(id, sub.set('order', this._newOrder(subs)));
-      return this._setSubs(subs).then(() => subs.get(id) );
+      return this._setSubs(subs).then(() => subs.get(id));
     });
   }
 
@@ -86,14 +85,14 @@ class SubsService {
   }
 
   _newOrder (items) {
-    return this._next(items.map(item => item.order || 0));
+    return this._next(items.map((item) => item.order || 0));
   }
 
   _newId (subs) {
     const customIds = subs
       .toList()
-      .filter(sub => sub.get('custom'))
-      .map(playlist => parseInt(playlist.get('id').match(/\d+/)[0], 10));
+      .filter((sub) => sub.get('custom'))
+      .map((playlist) => parseInt(playlist.get('id').match(/\d+/)[0], 10));
     return this._next(customIds);
   }
 

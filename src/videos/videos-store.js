@@ -5,19 +5,16 @@ import actions from './videos-actions';
 
 class VideosStore {
   constructor () {
-    this.clearVideos();
+    this.videos = Immutable.List();
 
     this.bindListeners({
-      clearVideos: [
-        actions.GET_VIDEOS_DATA_FOR_PLAYLIST,
-        actions.GET_VIDEOS_DATA_FOR_CUSTOM_PLAYLIST
-      ],
+      updateLoadingVideos: actions.UPDATE_LOADING_VIDEOS,
       updateVideosData: actions.DID_UPDATE_VIDEOS_DATA
     });
   }
 
-  clearVideos () {
-    this.videos = Immutable.List();
+  updateLoadingVideos (isLoading) {
+    this.isLoading = isLoading
   }
 
   updateVideosData (data) {

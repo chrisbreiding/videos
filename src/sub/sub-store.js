@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Immutable from 'immutable';
 import dispatcher from '../lib/dispatcher';
 import actions from './sub-actions';
@@ -22,7 +21,7 @@ class SubStore {
     if (sub.get('custom')) {
       const videos = sub.get('videos')
         .toList()
-        .sortBy(video => video.get('order'));
+        .sortBy((video) => video.get('order'));
       this.sub.set('videos', videos);
     }
   }
