@@ -2,16 +2,16 @@ import {
   getVideosDataForChannelSearch,
   getVideosDataForPlaylist,
   getVideos,
-} from '../lib/youtube';
-import subsService from '../subs/subs-service';
+} from '../lib/youtube'
+import subsService from '../subs/subs-service'
 
 class VideosService {
   getVideosDataForPlaylist (playlistId, pageToken) {
-    return getVideosDataForPlaylist(playlistId, pageToken);
+    return getVideosDataForPlaylist(playlistId, pageToken)
   }
 
   getVideosDataForChannelSearch (channelId, query, pageToken) {
-    return getVideosDataForChannelSearch(channelId, query, pageToken);
+    return getVideosDataForChannelSearch(channelId, query, pageToken)
   }
 
   getVideosDataForCustomPlaylist (id) {
@@ -20,10 +20,10 @@ class VideosService {
         .toList()
         // .sortBy((video) => video.get('order')) TODO: ordering is borked
         .map((video) => video.get('id'))
-        .toArray();
+        .toArray()
       return getVideos(ids)
-    });
+    })
   }
 }
 
-export default new VideosService();
+export default new VideosService()

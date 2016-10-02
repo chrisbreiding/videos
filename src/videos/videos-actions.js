@@ -1,27 +1,27 @@
-import dispatcher from '../lib/dispatcher';
-import videosService from './videos-service';
+import dispatcher from '../lib/dispatcher'
+import videosService from './videos-service'
 
 class VideosActions {
   didUpdateVideosData (videosData) {
-    this.dispatch(videosData);
+    this.dispatch(videosData)
   }
 
   getVideosDataForPlaylist (playlistId, pageToken) {
     this.actions.updateLoadingVideos(true)
 
     videosService.getVideosDataForPlaylist(playlistId, pageToken).then((videosData) => {
-      this.actions.didUpdateVideosData(videosData);
+      this.actions.didUpdateVideosData(videosData)
       this.actions.updateLoadingVideos(false)
-    });
+    })
   }
 
   getVideosDataForChannelSearch (channelId, query, pageToken) {
     this.actions.updateLoadingVideos(true)
 
     videosService.getVideosDataForChannelSearch(channelId, query, pageToken).then((videosData) => {
-      this.actions.didUpdateVideosData(videosData);
+      this.actions.didUpdateVideosData(videosData)
       this.actions.updateLoadingVideos(false)
-    });
+    })
   }
 
   getVideosDataForCustomPlaylist (id) {
@@ -32,9 +32,9 @@ class VideosActions {
         videos,
         prevPageToken: null,
         nextPageToken: null,
-      });
+      })
       this.actions.updateLoadingVideos(false)
-    });
+    })
   }
 
   updateLoadingVideos (isLoading) {
@@ -42,4 +42,4 @@ class VideosActions {
   }
 }
 
-export default dispatcher.createActions(VideosActions);
+export default dispatcher.createActions(VideosActions)

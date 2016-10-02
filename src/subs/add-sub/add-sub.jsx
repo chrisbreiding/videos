@@ -1,57 +1,59 @@
-import _ from 'lodash';
-import React, { createClass, PropTypes } from 'react';
-import { Link, History } from 'react-router';
-import AddChannel from './add-channel';
-import AddCustomPlaylist from './add-custom-playlist';
-import { icon } from '../../lib/util';
+import _ from 'lodash'
+import React, { Component, PropTypes } from 'react'
+import { Link } from 'react-router'
+import AddChannel from './add-channel'
+import AddCustomPlaylist from './add-custom-playlist'
+import { icon } from '../../lib/util'
 
-export default createClass({
-  mixins: [History],
+class AddSub extends Component {
+  // mixins: [History],
 
   contextTypes: {
-    location: PropTypes.object
-  },
+    location: PropTypes.object,
+  }
 
   render () {
-    return <div className='add-sub' >
+    return (<div className='add-sub' >
       <header>
         <Link {...this._linkProps('channel')}>{icon('plus', 'Channel')}</Link>
         <Link {...this._linkProps('customPlaylist')}>{icon('plus', 'Custom Playlist')}</Link>
       </header>
       {this._subComponent()}
-    </div>
-  },
+    </div>)
+  }
 
   _subComponent () {
-    const type = this._addingType();
-    if (!type) return null;
+    const type = this._addingType()
+    if (!type) return null
 
-    const Component = type === 'channel' ? AddChannel : AddCustomPlaylist;
+    const Component = type === 'channel' ? AddChannel : AddCustomPlaylist
 
-    return <main>
+    return (<main>
       <header><Link {...this._linkProps()}>Done</Link></header>
       <Component onAdd={this._closeAdding} clearSearch={this._clearSearch} params={this.props.params} />
-    </main>
-  },
+    </main>)
+  }
 
   _linkProps (type) {
     const ret = {
       to: this.context.location.pathname,
-      query: _.extend({}, this.context.location.query, { adding: type })
-    };
-    return ret;
-  },
+      query: _.extend({}, this.context.location.query, { adding: type }),
+    }
+    return ret
+  }
 
   _closeAdding () {
-    const { to, query } = this._linkProps();
-    this.history.pushState(null, to, query);
-  },
+    const { to, query } = this._linkProps()
+    this.history.pushState(null, to, query)
+  }
 
   _clearSearch () {
-    this.history.replaceState(null, this.context.location.pathname, _.omit(this.context.location.query, 'q'));
-  },
+    this.history.replaceState(null, this.context.location.pathname, _.omit(this.context.location.query, 'q'))
+  }
 
   _addingType () {
-    return this.context.location.query.adding;
+    return this.context.location.query.adding
   }
-});
+}
+
+export default AddSub

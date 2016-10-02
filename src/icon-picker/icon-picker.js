@@ -1,14 +1,12 @@
-import _ from 'lodash';
-import Immutable from 'immutable';
-import { createFactory, createClass, DOM } from 'react';
-import cs from 'classnames';
-import { icon } from '../lib/util';
-import icons from '../lib/icons-list';
-import IconThumbComponent from '../icon-thumb/icon-thumb';
+import _ from 'lodash'
+import { createFactory, Component, DOM } from 'react'
+import cs from 'classnames'
+import icons from '../lib/icons-list'
+import IconThumbComponent from '../icon-thumb/icon-thumb'
 
-const IconThumb = createFactory(IconThumbComponent);
+const IconThumb = createFactory(IconThumbComponent)
 
-export default createClass({
+class IconPicker extends Component {
   render () {
     return DOM.div({ className: 'icon-picker' },
       DOM.form({ onSubmit: (e) => { e.preventDefault() } },
@@ -17,7 +15,7 @@ export default createClass({
           DOM.input({
             ref: 'foregroundColor',
             value: this.props.icon.get('foregroundColor'),
-            onChange: _.partial(this._updateColor, 'foregroundColor')
+            onChange: _.partial(this._updateColor, 'foregroundColor'),
           })
         ),
         DOM.fieldset(null,
@@ -25,7 +23,7 @@ export default createClass({
           DOM.input({
             ref: 'backgroundColor',
             value: this.props.icon.get('backgroundColor'),
-            onChange: _.partial(this._updateColor, 'backgroundColor')
+            onChange: _.partial(this._updateColor, 'backgroundColor'),
           })
         )
       ),
@@ -34,18 +32,20 @@ export default createClass({
           return DOM.button({
             key: icon,
             onClick: _.partial(this._updateProp, 'icon', icon),
-            className: cs('picker-icon', { chosen: this.props.icon.get('icon') === icon })
-          }, IconThumb(_.extend({}, this.props, { icon: this.props.icon.set('icon', icon) })));
+            className: cs('picker-icon', { chosen: this.props.icon.get('icon') === icon }),
+          }, IconThumb(_.extend({}, this.props, { icon: this.props.icon.set('icon', icon) })))
         })
       )
-    );
-  },
+    )
+  }
 
   _updateColor (type) {
-    this._updateProp(type, this.refs[type].value);
-  },
+    this._updateProp(type, this.refs[type].value)
+  }
 
   _updateProp (prop, value) {
-    this.props.onUpdate(prop, value);
+    this.props.onUpdate(prop, value)
   }
-});
+}
+
+export default IconPicker

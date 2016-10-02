@@ -1,19 +1,19 @@
-import Immutable from 'immutable';
-import { Promise } from 'rsvp';
+import Immutable from 'immutable'
+import { Promise } from 'rsvp'
 
 class LocalData {
   getItem (key) {
     return new Promise((resolve) => {
-      resolve(localStorage[key] ? Immutable.fromJS(JSON.parse(localStorage[key])) : undefined);
-    });
+      resolve(localStorage[key] ? Immutable.fromJS(JSON.parse(localStorage[key])) : undefined)
+    })
   }
 
   setItem (key, value) {
     return new Promise((resolve) => {
-      localStorage[key] = JSON.stringify(value);
-      resolve(value);
-    });
+      localStorage[key] = JSON.stringify(value)
+      resolve(value)
+    })
   }
 }
 
-export default new LocalData();
+export default new LocalData()

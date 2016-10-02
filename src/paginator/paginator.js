@@ -1,44 +1,42 @@
-import _ from 'lodash';
-import { createFactory, createClass, DOM, PropTypes } from 'react';
-import { Link as LinkComponent } from 'react-router';
-import { icon } from '../lib/util';
+import _ from 'lodash'
+import { Component, DOM, PropTypes } from 'react'
+import { Link } from 'react-router'
+import { icon } from '../lib/util'
 
-const Link = createFactory(LinkComponent);
-
-export default createClass({
-  displayName: 'Paginator',
-
+class Paginator extends Component {
   contextTypes: {
-    location: PropTypes.object
-  },
+    location: PropTypes.object,
+  }
 
   render () {
     return DOM.div({ className: 'paginator' },
       this._prev(),
       this.props.children,
       this._next()
-    );
-  },
+    )
+  }
 
   _prev () {
-    const prev = this.props.prevPageToken;
+    const prev = this.props.prevPageToken
     if (!prev) return DOM.span()
 
     return this._linkTo(prev ? '' : 'disabled', prev, icon('angle-left', 'Newer'))
-  },
+  }
 
   _next () {
-    const next = this.props.nextPageToken;
+    const next = this.props.nextPageToken
     if (!next) return DOM.span()
 
     return this._linkTo(next ? '' : 'disabled', next, icon('angle-right', null, 'Older'))
-  },
+  }
 
   _linkTo (className, pageToken, children) {
     return Link({
       className: `paginator-button ${className}`,
       to: this.context.location.pathname,
-      query: _.extend({}, this.context.location.query, { pageToken })
-    }, children);
+      query: _.extend({}, this.context.location.query, { pageToken }),
+    }, children)
   }
-});
+}
+
+export default Paginator

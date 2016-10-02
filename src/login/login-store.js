@@ -1,16 +1,16 @@
-import dispatcher from '../lib/dispatcher';
+import dispatcher from '../lib/dispatcher'
 import actions from './login-actions'
 
 class LoginStore {
   constructor () {
     this.bindListeners({
-      onApiKeyUpdate: actions.DID_UPDATE_API_KEY
-    });
+      onApiKeyUpdate: actions.DID_UPDATE_API_KEY,
+    })
   }
 
   onApiKeyUpdate (apiKey) {
-    this.apiKey = apiKey;
+    this.apiKey = apiKey
   }
 }
 
-export default dispatcher.createStore(LoginStore, 'LoginStore');
+export default dispatcher.createStore(LoginStore, 'LoginStore')

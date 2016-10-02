@@ -1,58 +1,53 @@
-import _ from 'lodash';
-import { createFactory, createClass, DOM } from 'react';
-import { History } from 'react-router';
-import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin';
-import moment from 'moment';
-import SubStore from './sub-store';
-import subActions from './sub-actions';
-import SubsStore from '../subs/subs-store';
-import subsActions from '../subs/subs-actions';
-import VideosStore from '../videos/videos-store';
-import videosActions from '../videos/videos-actions';
-import PaginatorComponent from '../paginator/paginator';
-import VideoComponent from '../videos/video';
-import { icon } from '../lib/util';
-import SearchComponent from '../search/search';
+import _ from 'lodash'
+import { Component, DOM } from 'react'
+// import { History } from 'react-router'
+// import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
+import moment from 'moment'
+import SubStore from './sub-store'
+import subActions from './sub-actions'
+import SubsStore from '../subs/subs-store'
+import subsActions from '../subs/subs-actions'
+import VideosStore from '../videos/videos-store'
+import videosActions from '../videos/videos-actions'
+import Paginator from '../paginator/paginator'
+import Video from '../videos/video'
+import { icon } from '../lib/util'
+import Search from '../search/search'
 
-const Paginator = createFactory(PaginatorComponent);
-const Video = createFactory(VideoComponent);
-const Search = createFactory(SearchComponent);
 
-export default createClass({
-  displayName: 'Sub',
-
-  mixins: [ReactStateMagicMixin, History],
+class Sub extends Component {
+  // mixins: [ReactStateMagicMixin, History],
 
   statics: {
     registerStores: {
       sub: SubStore,
       subs: SubsStore,
-      videos: VideosStore
+      videos: VideosStore,
     }
-  },
+  }
 
   componentDidMount () {
-    subActions.getSub(this._getId());
-    subsActions.fetch();
-  },
+    subActions.getSub(this._getId())
+    subsActions.fetch()
+  }
 
   componentDidUpdate (__, prevState) {
-    const newId = this._getId();
-    const oldId = prevState.sub.id;
+    const newId = this._getId()
+    const oldId = prevState.sub.id
 
-    const newPlaylistId = this.state.sub.sub.get('playlistId');
-    const oldPlaylistId = prevState.sub.sub.get('playlistId');
+    const newPlaylistId = this.state.sub.sub.get('playlistId')
+    const oldPlaylistId = prevState.sub.sub.get('playlistId')
 
-    const newSearchQuery = this._getSearchQuery();
+    const newSearchQuery = this._getSearchQuery()
     const oldSearchQuery = this.searchQuery
     this.searchQuery = newSearchQuery
 
-    const newToken = this._getPageToken();
-    const oldToken = this.pageToken;
-    this.pageToken = newToken;
+    const newToken = this._getPageToken()
+    const oldToken = this.pageToken
+    this.pageToken = newToken
 
     if (oldId !== newId) {
-      subActions.getSub(newId);
+      subActions.getSub(newId)
     } else if (
       oldPlaylistId !== newPlaylistId
       || oldToken !== newToken
@@ -66,28 +61,28 @@ export default createClass({
             newToken
           )
         } else if (this.state.sub.sub.get('custom')) {
-          videosActions.getVideosDataForCustomPlaylist(newId);
+          videosActions.getVideosDataForCustomPlaylist(newId)
         } else {
-          videosActions.getVideosDataForPlaylist(newPlaylistId, newToken);
+          videosActions.getVideosDataForPlaylist(newPlaylistId, newToken)
         }
-      });
+      })
     }
-  },
+  }
 
   _getId () {
-    return this.props.params.id;
-  },
+    return this.props.params.id
+  }
 
   _getPageToken () {
-    return this.props.location.query.pageToken;
-  },
+    return this.props.location.query.pageToken
+  }
 
   _getSearchQuery () {
     return this.props.location.query.search
-  },
+  }
 
   render () {
-    let { isLoading, prevPageToken, nextPageToken } = this.state.videos;
+    let { isLoading, prevPageToken, nextPageToken } = this.state.videos
     if (isLoading) {
       nextPageToken = undefined
       prevPageToken = undefined
@@ -96,14 +91,14 @@ export default createClass({
       Paginator({ prevPageToken, nextPageToken }, this._search()),
       isLoading ? this._loader() : this._videos(),
       Paginator({ prevPageToken, nextPageToken })
-    );
-  },
+    )
+  }
 
   _search () {
     if (this.state.sub.sub.get('custom')) return null
 
     return Search({ query: this._getSearchQuery(), onSearch: this._onSearchUpdate })
-  },
+  }
 
   _videos () {
     if (!this.state.videos.videos.size) {
@@ -115,10 +110,10 @@ export default createClass({
     return this.state.videos.videos
       .sort((video1, video2) => {
         const method = isCustom ? 'isAfter' : 'isBefore'
-        return moment(video1.get('published'))[method](video2.get('published')) ? 1 : -1;
+        return moment(video1.get('published'))[method](video2.get('published')) ? 1 : -1
       })
       .map((video) => {
-        const id = video.get('id');
+        const id = video.get('id')
 
         return Video({
           key: id,
@@ -126,29 +121,31 @@ export default createClass({
           subs: this.state.subs.subs,
           video,
           addedToPlaylist: (playlist) => subsActions.addVideoToPlaylist(playlist, id),
-          removedFromPlaylist: (playlist) => subsActions.removeVideoFromPlaylist(playlist, id)
-        });
-      });
-  },
+          removedFromPlaylist: (playlist) => subsActions.removeVideoFromPlaylist(playlist, id),
+        })
+      })
+  }
 
   _loader () {
     return DOM.div({ className: 'loader' },
       icon('spin fa-play-circle'),
       icon('spin fa-play-circle'),
       icon('spin fa-play-circle')
-    );
-  },
+    )
+  }
 
   _playVideo (id) {
-    const query = _.extend({}, this.props.location.query, { nowPlaying: id });
-    this.history.pushState(null, this.props.location.pathname, query);
-  },
+    const query = _.extend({}, this.props.location.query, { nowPlaying: id })
+    this.history.pushState(null, this.props.location.pathname, query)
+  }
 
   _onSearchUpdate (search) {
     const query = _.extend({}, this.props.location.query, {
       search: search || undefined,
-      pageToken: undefined
-    });
-    this.history.pushState(null, this.props.location.pathname, query);
-  },
-});
+      pageToken: undefined,
+    })
+    this.history.pushState(null, this.props.location.pathname, query)
+  }
+}
+
+export default Sub

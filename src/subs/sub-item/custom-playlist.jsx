@@ -1,17 +1,17 @@
-import _ from 'lodash';
-import Immutable from 'immutable';
-import React, { createClass } from 'react';
-import { Link } from 'react-router';
-import Title from './title';
-import { icon } from '../../lib/util';
-import IconPicker from '../../icon-picker/icon-picker';
-import IconThumb from '../../icon-thumb/icon-thumb';
-import Modal from '../../modal/modal';
+import _ from 'lodash'
+import Immutable from 'immutable'
+import React, { Component } from 'react'
+import Title from './title'
+import IconPicker from '../../icon-picker/icon-picker'
+import IconThumb from '../../icon-thumb/icon-thumb'
+import Modal from '../../modal/modal'
 
-export default createClass({
-  getInitialState () {
-    return {};
-  },
+class CustomPlaylist extends Component {
+  constructor (...props) {
+    super(...props)
+
+    this.state = {}
+  }
 
   render () {
     const iconPicker = this.state.pickingIcon ?
@@ -21,9 +21,9 @@ export default createClass({
           onUpdate={this._iconUpdated}
           icon={this.props.sub.get('icon')}
         />
-      </Modal> : null;
+      </Modal> : null
 
-    return <span className='custom-sub-item'>
+    return (<span className='custom-sub-item'>
       <Title sub={this.props.sub} />
       <input ref='title' onChange={this._onChange} value={this.props.sub.get('title')} />
       <span className='sub-item-icon'>
@@ -33,22 +33,24 @@ export default createClass({
         <IconThumb icon={this.props.sub.get('icon')} />
       </button>
       {iconPicker}
-    </span>
-  },
+    </span>)
+  }
 
   _onChange () {
-    this._update({ title: this.refs.title.value });
-  },
+    this._update({ title: this.refs.title.value })
+  }
 
   _iconUpdated (key, value) {
-    this._update({ icon: this.props.sub.get('icon').set(key, value) });
-  },
+    this._update({ icon: this.props.sub.get('icon').set(key, value) })
+  }
 
   _update (props) {
-    this.props.onUpdate(this.props.sub.merge(Immutable.Map(props)));
-  },
+    this.props.onUpdate(this.props.sub.merge(Immutable.Map(props)))
+  }
 
   _setPickingIcon (pickingIcon) {
-    this.setState({ pickingIcon });
+    this.setState({ pickingIcon })
   }
-});
+}
+
+export default CustomPlaylist

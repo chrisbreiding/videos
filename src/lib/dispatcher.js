@@ -1,3 +1,3 @@
-import Dispatcher from 'alt';
+import Dispatcher from 'alt'
 
-export default new Dispatcher();
+export default new Dispatcher()

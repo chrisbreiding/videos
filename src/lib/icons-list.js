@@ -592,4 +592,4 @@ export default [
   'youtube',
   'youtube-play',
   'youtube-square',
-];
+]

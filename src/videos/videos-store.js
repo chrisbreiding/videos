@@ -1,16 +1,16 @@
-import _ from 'lodash';
-import Immutable from 'immutable';
-import dispatcher from '../lib/dispatcher';
-import actions from './videos-actions';
+import _ from 'lodash'
+import Immutable from 'immutable'
+import dispatcher from '../lib/dispatcher'
+import actions from './videos-actions'
 
 class VideosStore {
   constructor () {
-    this.videos = Immutable.List();
+    this.videos = Immutable.List()
 
     this.bindListeners({
       updateLoadingVideos: actions.UPDATE_LOADING_VIDEOS,
-      updateVideosData: actions.DID_UPDATE_VIDEOS_DATA
-    });
+      updateVideosData: actions.DID_UPDATE_VIDEOS_DATA,
+    })
   }
 
   updateLoadingVideos (isLoading) {
@@ -18,8 +18,8 @@ class VideosStore {
   }
 
   updateVideosData (data) {
-    _.extend(this, data);
+    _.extend(this, data)
   }
 }
 
-export default dispatcher.createStore(VideosStore, 'VideosStore');
+export default dispatcher.createStore(VideosStore, 'VideosStore')
