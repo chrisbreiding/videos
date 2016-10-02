@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, { createClass, PropTypes } from 'react';
 import { History } from 'react-router';
 import YoutubePlayer from '../lib/youtube-player';
