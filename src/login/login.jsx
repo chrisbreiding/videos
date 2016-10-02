@@ -1,4 +1,4 @@
-import { Component, DOM } from 'react'
+import React, { Component } from 'react'
 // import { History } from 'react-router'
 // import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
 import LoginStore from './login-store'
@@ -30,11 +30,13 @@ class Login extends Component {
   }
 
   render () {
-    return DOM.div({ className: 'login' },
-      DOM.form({ onSubmit: this._onFormSubmit },
-        DOM.h2(null, 'Please enter your API Key'),
-        DOM.input({ ref: 'apiKey', defaulValue: this.state.apiKey })
-      )
+    return (
+      <div className='login'>
+        <form onSubmit={this._onFormSubmit}>
+          <h2>Please enter your API Key</h2>
+          <input ref='apiKey' defaulValue={this.state.apiKey} />
+        </form>
+      </div>
     )
   }
 

@@ -1,4 +1,4 @@
-import { Component, DOM } from 'react'
+import React, { Component } from 'react'
 import { render } from 'react-dom'
 import cs from 'classnames'
 import { icon } from '../lib/util'
@@ -20,12 +20,16 @@ class Modal extends Component {
   }
 
   _render () {
-    const modal = DOM.div({ className: 'modal-box' },
-      DOM.button({ className: 'modal-close', onClick: this.props.onClose }, icon('remove')),
-      DOM.div({ className: 'modal-content' }, this.props.children)
-    )
-
-    render(modal, this.el)
+    render(
+      <div className='modal-box'>
+        <button className='modal-close' onClick={this.props.onClose}>
+          {icon('remove')}
+        </button>
+        <div className='modal-content'>
+          {this.props.children}
+        </div>
+      </div>
+    , this.el)
   }
 
   render () {

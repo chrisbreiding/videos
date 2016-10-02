@@ -1,6 +1,6 @@
 /* global YT */
 
-import { Component, DOM } from 'react'
+import React, { Component } from 'react'
 
 const SCRIPT_ID = 'youtube-player-api-script'
 const PLAYER_ID = 'youtube-player'
@@ -38,7 +38,7 @@ class YoutubePlayer extends Component {
   }
 
   render () {
-    return DOM.div({ className: PLAYER_ID, id: PLAYER_ID })
+    return <div className={PLAYER_ID} id={PLAYER_ID} />
   }
 }
 

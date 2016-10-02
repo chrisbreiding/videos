@@ -1,14 +1,15 @@
 import _ from 'lodash'
-import { DOM } from 'react'
+import React from 'react'
 
 const IconThumb = (props) => (
-  DOM.span(_.extend({
+  <span {..._.extend({
     className: 'icon-thumb',
     style: {
       backgroundColor: props.icon.get('backgroundColor'),
       color: props.icon.get('foregroundColor'),
-    } }, props), DOM.i({ className: `fa fa-${props.icon.get('icon')}` })
-  )
+    } }, props)}>
+    <i className={`fa fa-${props.icon.get('icon')}`} />
+  </span>
 )
 
 export default IconThumb

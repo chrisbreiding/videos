@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { DOM } from 'react'
+import React from 'react'
 import moment from 'moment'
 
 const re = /^P(?:(\d+(?:[\.,]\d{0,3})?W)|(\d+(?:[\.,]\d{0,3})?Y)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?D)?(?:T(\d+(?:[\.,]\d{0,3})?H)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?S)?)?)$/
@@ -25,10 +25,12 @@ function toTwoDigits (num) {
 
 class Util {
   icon (iconName, rightText, leftText) {
-    return DOM.span({ className: `icon${rightText || leftText ? ' with-text' : ''}` },
-      leftText ? leftText : null,
-      DOM.i({ className: `fa fa-${iconName}` }),
-      rightText ? rightText : null
+    return (
+      <span className={`icon${rightText || leftText ? ' with-text' : ''}`}>
+        {leftText ? leftText : null}
+        <i className={`fa fa-${iconName}`} />
+        {rightText ? rightText : null}
+      </span>
     )
   }
 
@@ -41,10 +43,14 @@ class Util {
 
   date (date) {
     const mDate = moment(date)
-    return DOM.span(null,
-      DOM.span(null, mDate.fromNow()),
-      DOM.br(),
-      DOM.span({ className: 'formatted' }, mDate.format('MMM D, YYYY h:mma'))
+    return (
+      <span>
+        <span>{mDate.fromNow()}</span>
+        <br />
+        <span className='formatted'>
+          {mDate.format('MMM D, YYYY h:mma')}
+        </span>
+      </span>
     )
   }
 }

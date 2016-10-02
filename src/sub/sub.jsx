@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { Component, DOM } from 'react'
+import React, { Component } from 'react'
 // import { History } from 'react-router'
 // import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
 import moment from 'moment'
@@ -87,10 +87,14 @@ class Sub extends Component {
       nextPageToken = undefined
       prevPageToken = undefined
     }
-    return DOM.div(null,
-      Paginator({ prevPageToken, nextPageToken }, this._search()),
-      isLoading ? this._loader() : this._videos(),
-      Paginator({ prevPageToken, nextPageToken })
+    return (
+      <div>
+        <Paginator prevPageToken={prevPageToken} nextPageToken={nextPageToken}>
+          {this._search()}
+        </Paginator>
+        {isLoading ? this._loader() : this._videos()}
+        <Paginator prevPageToken={prevPageToken} nextPageToken={nextPageToken} />
+      </div>
     )
   }
 
@@ -102,7 +106,7 @@ class Sub extends Component {
 
   _videos () {
     if (!this.state.videos.videos.size) {
-      return DOM.div({ className: 'empty' }, 'No videos')
+      return <div className='empty'>No videos</div>
     }
 
     const isCustom = this.state.sub.sub.get('custom')
@@ -127,10 +131,12 @@ class Sub extends Component {
   }
 
   _loader () {
-    return DOM.div({ className: 'loader' },
-      icon('spin fa-play-circle'),
-      icon('spin fa-play-circle'),
-      icon('spin fa-play-circle')
+    return (
+      <div className='loader'>
+        {icon('spin fa-play-circle')}
+        {icon('spin fa-play-circle')}
+        {icon('spin fa-play-circle')}
+      </div>
     )
   }
 
