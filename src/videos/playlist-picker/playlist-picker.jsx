@@ -1,37 +1,36 @@
 import _ from 'lodash'
-import React, { Component } from 'react'
+import { observer } from 'mobx-react'
+import React from 'react'
 import { icon } from '../../lib/util'
 
-class PlaylistPicker extends Component {
-  render () {
-    return (
-      <div className='playlist-picker'>
-        <span>Playlists:</span>
-        <ul>
-          {this.props.playlists.map((playlist) => {
-            const inPlaylist = !!playlist.getIn(['videos', this.props.videoId])
-
-            return (
-              <li key={playlist.get('id')}>
-                <button onClick={_.partial(this._setPlaylist, playlist, !inPlaylist)}>
-                  {icon(inPlaylist ? 'check-square' : 'square-o')}
-                  <span>{playlist.get('title')}</span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    )
-  }
-
-  _setPlaylist (playlist, inPlaylist) {
+const PlaylistPicker = observer((props) => {
+  function setPlaylist (playlist, inPlaylist) {
     if (inPlaylist) {
-      this.props.addedToPlaylist(playlist)
+      props.addedToPlaylist(playlist)
     } else {
-      this.props.removedFromPlaylist(playlist)
+      props.removedFromPlaylist(playlist)
     }
   }
-}
+
+  return (
+    <div className='playlist-picker'>
+      <span>Playlists:</span>
+      <ul>
+        {props.playlists.map((playlist) => {
+          const inPlaylist = playlist.videos.has(props.videoId)
+
+          return (
+            <li key={playlist.id}>
+              <button onClick={_.partial(setPlaylist, playlist, !inPlaylist)}>
+                {icon(inPlaylist ? 'check-square' : 'square-o')}
+                <span>{playlist.title}</span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+})
 
 export default PlaylistPicker

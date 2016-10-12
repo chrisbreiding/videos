@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react'
 import React from 'react'
 
 import { icon } from '../../lib/util'
@@ -5,25 +6,26 @@ import { icon } from '../../lib/util'
 import Title from './title'
 import CustomPlaylist from './custom-playlist'
 
-const Channel = ({ sub }) => (
+const Channel = observer(({ sub }) => (
   <span>
+    <img src={sub.thumb} />
     <Title sub={sub} />
-    <img src={sub.get('thumb')} />
   </span>
-)
+))
 
-const SubItem  = (props) => {
+const SubItem = observer((props) => {
   function remove () {
-    if (confirm(`Remove ${props.sub.get('title') || props.sub.get('author')}?`)) {
+    if (confirm(`Remove ${props.sub.title || props.sub.author}?`)) {
       props.onRemove()
     }
   }
+
   return (
     <li className='sub-item'>
+      {props.sub.isCustom ? <CustomPlaylist {...props} /> : <Channel {...props} /> }
       <button className='remove' onClick={remove}>{icon('minus-circle')}</button>
-      {this.props.sub.get('custom') ? <CustomPlaylist {...props} /> : <Channel {...props} /> }
     </li>
   )
-}
+})
 
 export default SubItem

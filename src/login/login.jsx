@@ -1,48 +1,53 @@
+import { action } from 'mobx'
+import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-// import { History } from 'react-router'
-// import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
-import LoginStore from './login-store'
-import { getApiKey, checkApiKey, updateApiKey } from './login-actions'
 
+import authStore from './auth-store'
+import propTypes from '../lib/prop-types'
+
+@observer
 class Login extends Component {
-  statics: {
-    registerStore: LoginStore,
+  static contextTypes = {
+    router: propTypes.router,
+  }
+
+  componentWillMount () {
+    authStore.getApiKey()
+    .then(action('login:got:api:key', (apiKey) => {
+      authStore.setApiKey(apiKey)
+    }))
   }
 
   componentDidMount () {
-    getApiKey().then(this._checkApiKey)
     this.refs.apiKey.focus()
   }
 
-  shouldComponentUpdate (__, nextState) {
-    return this.state.apiKey !== nextState.apiKey
-  }
-
-  componentDidUpdate () {
-    this.refs.apiKey.value = this.state.apiKey
-    this._checkApiKey(this.state.apiKey)
-  }
-
-  _checkApiKey (apiKey) {
-    checkApiKey(apiKey).then((isValid) => {
-      if (isValid) this.history.pushState(null, '/subs')
+  _checkApiKey = () => {
+    authStore.checkApiKey().then((isValid) => {
+      if (isValid) {
+        this.context.router.transitionTo({ pathname: '/' })
+      }
     })
   }
 
   render () {
     return (
       <div className='login'>
-        <form onSubmit={this._onFormSubmit}>
+        <form onSubmit={this._login}>
           <h2>Please enter your API Key</h2>
-          <input ref='apiKey' defaulValue={this.state.apiKey} />
+          <input ref='apiKey' value={authStore.apiKey} onChange={this._setApiKey} />
         </form>
       </div>
     )
   }
 
-  _onFormSubmit (e) {
+  _setApiKey = () => {
+    authStore.setApiKey(this.refs.apiKey.value)
+  }
+
+  @action _login = (e) => {
     e.preventDefault()
-    updateApiKey(this.refs.apiKey.value)
+    this._checkApiKey()
   }
 }
 

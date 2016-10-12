@@ -1,42 +1,27 @@
 import _ from 'lodash'
+import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-// import { History } from 'react-router'
-// import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
 import moment from 'moment'
-import SubStore from './sub-store'
-import subActions from './sub-actions'
-import SubsStore from '../subs/subs-store'
-import subsActions from '../subs/subs-actions'
-import VideosStore from '../videos/videos-store'
-import videosActions from '../videos/videos-actions'
+
+import { icon } from '../lib/util'
+import propTypes from '../lib/prop-types'
+import subsStore from '../subs/subs-store'
+import videosStore from '../videos/videos-store'
+
 import Paginator from '../paginator/paginator'
 import Video from '../videos/video'
-import { icon } from '../lib/util'
 import Search from '../search/search'
 
-
+@observer
 class Sub extends Component {
-  // mixins: [ReactStateMagicMixin, History],
-
-  statics: {
-    registerStores: {
-      sub: SubStore,
-      subs: SubsStore,
-      videos: VideosStore,
-    }
+  static contextTypes = {
+    router: propTypes.router,
   }
 
-  componentDidMount () {
-    subActions.getSub(this._getId())
-    subsActions.fetch()
-  }
+  componentDidUpdate () {
+    const sub = this._getSub()
 
-  componentDidUpdate (__, prevState) {
-    const newId = this._getId()
-    const oldId = prevState.sub.id
-
-    const newPlaylistId = this.state.sub.sub.get('playlistId')
-    const oldPlaylistId = prevState.sub.sub.get('playlistId')
+    if (!sub) return
 
     const newSearchQuery = this._getSearchQuery()
     const oldSearchQuery = this.searchQuery
@@ -46,88 +31,114 @@ class Sub extends Component {
     const oldToken = this.pageToken
     this.pageToken = newToken
 
-    if (oldId !== newId) {
-      subActions.getSub(newId)
-    } else if (
+    const newPlaylistId = sub.playlistId
+    const oldPlaylistId = this.playlistId
+    this.playlistId = newPlaylistId
+
+    if (
       oldPlaylistId !== newPlaylistId
       || oldToken !== newToken
       || oldSearchQuery !== newSearchQuery
     ) {
-      setTimeout(() => {
-        if (newSearchQuery) {
-          videosActions.getVideosDataForChannelSearch(
-            this.state.sub.sub.get('id'),
-            newSearchQuery,
-            newToken
-          )
-        } else if (this.state.sub.sub.get('custom')) {
-          videosActions.getVideosDataForCustomPlaylist(newId)
-        } else {
-          videosActions.getVideosDataForPlaylist(newPlaylistId, newToken)
-        }
-      })
+      if (newSearchQuery) {
+        videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+      } else if (sub.isCustom) {
+        videosStore.getVideosDataForCustomPlaylist(sub)
+      } else {
+        videosStore.getVideosDataForPlaylist(newPlaylistId, newToken)
+      }
     }
   }
 
-  _getId () {
-    return this.props.params.id
+  _getSub () {
+    return subsStore.getSubById(this.props.params.id)
+  }
+
+  _getQuery () {
+    return this.props.location.query || {}
   }
 
   _getPageToken () {
-    return this.props.location.query.pageToken
+    return this._getQuery().pageToken
   }
 
   _getSearchQuery () {
-    return this.props.location.query.search
+    return this._getQuery().search
   }
 
   render () {
-    let { isLoading, prevPageToken, nextPageToken } = this.state.videos
-    if (isLoading) {
-      nextPageToken = undefined
-      prevPageToken = undefined
+    const sub = this._getSub()
+
+    if (!subsStore.subs.length) return null
+
+    if (!sub) {
+      return <p className='videos-empty'>Please select a sub</p>
     }
+
+    let { isLoading, prevPageToken, nextPageToken } = videosStore
+
     return (
-      <div>
-        <Paginator prevPageToken={prevPageToken} nextPageToken={nextPageToken}>
-          {this._search()}
+      <main className='videos'>
+        <Paginator
+          location={this.props.location}
+          prevPageToken={prevPageToken}
+          nextPageToken={nextPageToken}
+        >
+          {this._search(sub)}
         </Paginator>
-        {isLoading ? this._loader() : this._videos()}
-        <Paginator prevPageToken={prevPageToken} nextPageToken={nextPageToken} />
-      </div>
+        {isLoading ? this._loader() : this._videos(sub)}
+        <Paginator
+          location={this.props.location}
+          prevPageToken={prevPageToken}
+          nextPageToken={nextPageToken}
+        />
+    </main>
     )
   }
 
-  _search () {
-    if (this.state.sub.sub.get('custom')) return null
+  _search (sub) {
+    if (sub.isCustom) return null
 
-    return Search({ query: this._getSearchQuery(), onSearch: this._onSearchUpdate })
+    return (
+      <Search
+        query={this._getSearchQuery()}
+        onSearch={this._onSearchUpdate}
+      />
+    )
   }
 
-  _videos () {
-    if (!this.state.videos.videos.size) {
-      return <div className='empty'>No videos</div>
+  _videos (sub) {
+    if (!videosStore.videos.length) {
+      return (
+        <div className='videos-empty'>
+          <i className='fa fa-film'></i>
+          No videos
+          <i className='fa fa-film'></i>
+        </div>
+      )
     }
 
-    const isCustom = this.state.sub.sub.get('custom')
-
-    return this.state.videos.videos
+    return _(videosStore.videos)
+      .map((video) => video)
       .sort((video1, video2) => {
-        const method = isCustom ? 'isAfter' : 'isBefore'
-        return moment(video1.get('published'))[method](video2.get('published')) ? 1 : -1
+        const method = sub.isCustom ? 'isAfter' : 'isBefore'
+        return moment(video1.published)[method](video2.published) ? 1 : -1
       })
       .map((video) => {
-        const id = video.get('id')
+        const id = video.id
 
-        return Video({
-          key: id,
-          onPlay: _.partial(this._playVideo, id),
-          subs: this.state.subs.subs,
-          video,
-          addedToPlaylist: (playlist) => subsActions.addVideoToPlaylist(playlist, id),
-          removedFromPlaylist: (playlist) => subsActions.removeVideoFromPlaylist(playlist, id),
-        })
+        return (
+          <Video
+            key={id}
+            onPlay={_.partial(this._playVideo, id)}
+            subs={subsStore.subs}
+            video={video}
+            addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
+            removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
+          />
+        )
       })
+      .value()
   }
 
   _loader () {
@@ -140,17 +151,21 @@ class Sub extends Component {
     )
   }
 
-  _playVideo (id) {
-    const query = _.extend({}, this.props.location.query, { nowPlaying: id })
-    this.history.pushState(null, this.props.location.pathname, query)
+  _playVideo = (id) => {
+    this.context.router.transitionTo({
+      pathname: this.props.location.pathname,
+      query: _.extend({}, this._getQuery(), { nowPlaying: id }),
+    })
   }
 
-  _onSearchUpdate (search) {
-    const query = _.extend({}, this.props.location.query, {
-      search: search || undefined,
-      pageToken: undefined,
+  _onSearchUpdate = (search) => {
+    this.context.router.transitionTo({
+      pathname: this.props.location.pathname,
+      query: _.extend({}, this._getQuery(), {
+        search: search || undefined,
+        pageToken: undefined,
+      }),
     })
-    this.history.pushState(null, this.props.location.pathname, query)
   }
 }
 

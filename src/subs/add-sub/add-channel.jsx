@@ -1,22 +1,11 @@
+import { observer } from 'mobx-react'
 import _ from 'lodash'
-import React, { Component, PropTypes } from 'react'
-// import { History } from 'react-router'
-// import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
-import SubsStore from '../subs-store'
-import { search, clearSearch, addChannel } from '../subs-actions'
+import React, { Component } from 'react'
+
 import { icon } from '../../lib/util'
 
+@observer
 class AddChannel extends Component {
-  // mixins: [ReactStateMagicMixin, History],
-
-  contextTypes: {
-    location: PropTypes.object,
-  }
-
-  statics: {
-    registerStore: SubsStore,
-  }
-
   componentDidMount () {
     this._search()
     this.refs.query.focus()
@@ -27,47 +16,45 @@ class AddChannel extends Component {
   }
 
   componentWillUnmount () {
-    clearSearch()
     this.props.clearSearch()
   }
 
   _search () {
-    const query = this.context.location.query.q
+    const query = this.props.query
     const oldQuery = this.query
-    this.query = query
     if (!query || query === oldQuery) return
+    this.query = query
     this.refs.query.value = query
-    search(query)
+    this.props.search(query)
   }
 
   render () {
-    return (<div className='add-channel'>
-      <form onSubmit={this._searchSubs}>
-        <input ref='query' placeholder='Search...' defaultValue={this.context.location.query.q} />
-        <button>{icon('search')}</button>
-      </form>
-      <ul>{this._results()}</ul>
-    </div>)
-  }
-
-  _updateSearch (search) {
-    const query = _.extend({}, this.context.location.query, { q: search })
-    this.history.pushState(null, this.context.location.pathname, query)
-  }
-
-  _searchSubs (e) {
-    e.preventDefault()
-    this._updateSearch(this.refs.query.value)
+    return (
+      <div className='add-channel'>
+        <form onSubmit={this._searchSubs}>
+          <input ref='query' placeholder='Search...' defaultValue={this.props.query} />
+          <button>{icon('search')}</button>
+        </form>
+        <ul>{this._results()}</ul>
+      </div>
+    )
   }
 
   _results () {
-    return this.state.searchResults.map((channel) => {
-      return (<li key={channel.get('id')}>
-        <img src={channel.get('thumb')} />
-        <h3>{channel.get('title') || channel.get('author')}</h3>
-        <button onClick={_.partial(addChannel, channel)}>{icon('plus')}</button>
-      </li>)
+    return this.props.searchResults.map((channel) => {
+      return (
+        <li key={channel.id}>
+          <img src={channel.thumb} />
+          <h3>{channel.title || channel.author}</h3>
+          <button onClick={_.partial(this.props.onAdd, 'channel', channel)}>{icon('plus')}</button>
+        </li>
+      )
     })
+  }
+
+  _searchSubs = (e) => {
+    e.preventDefault()
+    this.props.updateSearch(this.refs.query.value)
   }
 }
 

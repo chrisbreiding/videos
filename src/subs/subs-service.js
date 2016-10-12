@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import _ from 'lodash'
 import { SUBS_KEY } from '../lib/constants'
 import { getItem, setItem } from '../lib/local-data'
 import { searchChannels, getPlaylistIdForChannel } from '../lib/youtube'
@@ -8,71 +8,68 @@ class SubsService {
     return this._getSubs()
   }
 
-  getSub (id) {
-    return this._getSubs().then((subs) => subs.get(id))
-  }
-
   search (query) {
     return searchChannels(query)
   }
 
   addChannel (channel) {
-    return getPlaylistIdForChannel(channel.get('id')).then((playlistId) => {
-      return this._addSub(channel.merge(Immutable.Map({
+    return getPlaylistIdForChannel(channel.id).then((playlistId) => {
+      return this._addSub(_.extend(channel, {
         playlistId,
-        custom: false,
-      })))
+        isCustom: false,
+      }))
     })
   }
 
   addCustomPlaylist (playlist) {
     return this._addSub(playlist, (subs) => {
       const id = this._newId(subs)
-      return playlist.merge(Immutable.Map({
-        custom: true,
+      return _.extend(playlist, {
+        isCustom: true,
         id: `custom-${id}`,
         playlistId: `playlist-${id}`,
-        videos: Immutable.Map(),
-      }))
+        videos: {},
+      })
     })
   }
 
   addVideoToPlaylist (playlist, videoId) {
-    return this._getSubs().then((subs = Immutable.Map()) => {
-      subs = subs.updateIn([playlist.get('id'), 'videos'], (videos) => {
-        return videos.set(videoId, Immutable.Map({
-          id: videoId,
-          order: this._newOrder(videos),
-        }))
-      })
-      return this._setSubs(subs)
+    return this._getSubs().then((subs = {}) => {
+      const video = {
+        id: videoId,
+        order: this._newOrder(subs[playlist.id].videos),
+      }
+      subs[playlist.id].videos[videoId] = video
+      return this._setSubs(subs).then(() => video)
     })
   }
 
   removeVideoFromPlaylist (playlist, videoId) {
-    return this._getSubs().then((subs = Immutable.Map()) => {
-      return this._setSubs(subs.removeIn([playlist.get('id'), 'videos', videoId]))
+    return this._getSubs().then((subs = {}) => {
+      subs[playlist.id].videos = _.omit(subs[playlist.id].videos, videoId)
+      return this._setSubs(subs)
     })
   }
 
   _addSub (sub, transform) {
-    return this._getSubs().then((subs = Immutable.Map()) => {
+    return this._getSubs().then((subs = {}) => {
       if (transform) sub = transform(subs)
-      const id = sub.get('id')
-      subs = subs.set(id, sub.set('order', this._newOrder(subs)))
-      return this._setSubs(subs).then(() => subs.get(id))
+      sub.order = this._newOrder(subs)
+      subs[sub.id] = sub
+      return this._setSubs(subs).then(() => sub)
     })
   }
 
   update (sub) {
-    return this._getSubs().then((subs = Immutable.Map()) => {
-      return this._setSubs(subs.set(sub.get('id'), sub))
+    return this._getSubs().then((subs = {}) => {
+      subs[sub.id] = sub
+      return this._setSubs(subs)
     })
   }
 
   remove (id) {
-    return this._getSubs().then((subs = Immutable.Map()) => {
-      return this._setSubs(subs.remove(id))
+    return this._getSubs().then((subs = {}) => {
+      return this._setSubs(_.omit(subs, id))
     })
   }
 
@@ -85,21 +82,20 @@ class SubsService {
   }
 
   _newOrder (items) {
-    // TODO: this seems to be totally borked
-    return this._next(items.map((item) => item.order || 0))
+    return this._next(_.map(items, (item) => item.order || 0))
   }
 
   _newId (subs) {
-    const customIds = subs
-      .toList()
-      .filter((sub) => sub.get('custom'))
-      .map((playlist) => parseInt(playlist.get('id').match(/\d+/)[0], 10))
+    const customIds = _(subs)
+      .filter((sub) => sub.custom || sub.isCustom)
+      .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
+      .value()
     return this._next(customIds)
   }
 
   _next (items) {
-    if (!items.size) return 0
-    return items.max() + 1
+    if (!items.length) return 0
+    return _.max(items) + 1
   }
 }
 

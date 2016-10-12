@@ -3,19 +3,24 @@
   overflow-y: hidden;
   height: 100%;
 
-  > aside {
+  .subs-list {
     flex-shrink: 0;
     overflow-y: scroll;
-    padding-right: 1em;
-    width: sidebar-width;
+    padding-right: 5px;
+    width: sidebar-width + 5;
 
     > header {
       display: flex;
       padding: 0.6em;
     }
+
+    &.is-empty > header {
+      display: none;
+    }
   }
 
-  > main {
+  .videos,
+  .videos-empty {
     flex-grow: 2;
     min-width: 30em;
     overflow-y: scroll;
@@ -32,10 +37,18 @@
     }
   }
 
-  .empty {
+  .subs-empty,
+  .videos-empty {
     color: #666;
-    font-size: 1.2em;
-    padding: 4em 0;
     text-align: center;
+
+    i {
+      margin: 0 0.5em;
+    }
+  }
+
+  .videos-empty {
+    font-size: 1.2em;
+    padding-top: 3em;
   }
 }

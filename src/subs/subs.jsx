@@ -1,58 +1,132 @@
-import _ from 'lodash'
-import React, { Component } from 'react'
-// import { History } from 'react-router'
-// import ReactStateMagicMixin from 'alt/mixins/ReactStateMagicMixin'
 import cs from 'classnames'
-import SubsStore from './subs-store'
-import { fetch, update, remove } from './subs-actions'
+import _ from 'lodash'
+import { action, observable } from 'mobx'
+import { observer } from 'mobx-react'
+import React, { Component } from 'react'
+
+import propTypes from '../lib/prop-types'
+import subsStore from './subs-store'
+
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
 
+@observer
 class Subs extends Component {
-  // mixins: [ReactStateMagicMixin, History],
-
-  statics: {
-    registerStore: SubsStore,
+  static contextTypes = {
+    router: propTypes.router,
   }
 
-  componentDidMount () {
-    fetch()
+  @observable isEditing = false
+
+  componentWillMount () {
+    subsStore.fetch()
   }
 
   render () {
-    return (<aside>
-      <header>
-        <button onClick={this._toggleEditing}>{this.state.editing ? 'Done' : 'Edit'}</button>
-      </header>
-      {this._subs()}
-      <AddSub params={this.props.params} />
-    </aside>)
+    const query = this.props.location.query || {}
+    const hasNoSubs = !subsStore.subs.length
+
+    return (
+      <aside className={cs('subs-list', { 'is-empty': hasNoSubs })}>
+        <header>
+          {this._editButton()}
+        </header>
+        {this._subs()}
+        <AddSub
+          clearSearch={this._clearAddSearch}
+          linkTo={this._linkToAdding}
+          onAdd={this._onAdd}
+          type={hasNoSubs ? 'channel' : query.adding}
+          query={query.q}
+          search={this._search}
+          searchResults={subsStore.searchResults}
+          updateSearch={this._updateSearch}
+        />
+      </aside>
+    )
+  }
+
+  _editButton () {
+    if (!subsStore.subs.length) return null
+
+    return (
+      <button onClick={this._toggleEditing}>
+        {this.isEditing ? 'Done' : 'Edit'}
+      </button>
+    )
   }
 
   _subs () {
-    return (<ul className={cs({ editing: this.state.editing })}>
-      {this.state.subs.map((sub) => {
-        return (<SubItem
-          key={sub.get('id')}
-          sub={sub}
-          onUpdate={this._updateSub}
-          onRemove={_.partial(this._removeSub, sub.get('id'))}
-        />)
-      })}
-    </ul>)
+    if (!subsStore.subs.length) {
+      return (
+        <p className='subs-empty'>Add a channel to get started</p>
+      )
+    }
+
+    return (
+      <ul className={cs({ editing: this.isEditing })}>
+        {subsStore.subs.map((sub) => (
+          <SubItem
+            key={sub.id}
+            sub={sub}
+            onUpdate={_.partial(this._updateSub, sub.id)}
+            onRemove={_.partial(this._removeSub, sub.id)}
+          />
+        ))}
+      </ul>
+    )
   }
 
-  _toggleEditing () {
-    this.setState({ editing: !this.state.editing })
+  _clearAddSearch = () => {
+    subsStore.clearSearchResults()
+
+    this.context.router.replaceWith({
+      pathname: this.props.location.pathname,
+      query: _.omit(this.props.location.query, 'q'),
+    })
   }
 
-  _updateSub (sub) {
-    update(sub)
+  _linkToAdding = (type) => {
+    const { pathname, query } = this.props.location
+    return {
+      pathname,
+      query: _.extend({}, query, { adding: type }),
+    }
   }
 
-  _removeSub (id) {
-    remove(id)
-    if (this.props.params.id === id) this.history.pushState(null, '/subs')
+  _onAdd = (type, sub) => {
+    if (type === 'channel') {
+      subsStore.addChannel(sub)
+    } else {
+      subsStore.addCustomPlaylist(sub)
+    }
+
+    this.context.router.transitionTo(this._linkToAdding())
+  }
+
+  _search = (query) => {
+    subsStore.search(query)
+  }
+
+  _updateSearch = (search) => {
+    const { pathname, query } = this.props.location
+    this.context.router.transitionTo({
+      pathname,
+      query: _.extend({}, query, { q: search }),
+    })
+  }
+
+  @action _toggleEditing = () => {
+    this.isEditing = !this.isEditing
+  }
+
+  _updateSub = (id, props) => {
+    subsStore.update(id, props)
+  }
+
+  _removeSub = (id) => {
+    this.isEditing = false
+    subsStore.remove(id)
   }
 }
 

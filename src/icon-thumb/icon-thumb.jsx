@@ -1,14 +1,14 @@
-import _ from 'lodash'
 import React from 'react'
 
-const IconThumb = (props) => (
-  <span {..._.extend({
-    className: 'icon-thumb',
-    style: {
-      backgroundColor: props.icon.get('backgroundColor'),
-      color: props.icon.get('foregroundColor'),
-    } }, props)}>
-    <i className={`fa fa-${props.icon.get('icon')}`} />
+const IconThumb = ({ backgroundColor, foregroundColor, icon }) => (
+  <span
+    className='icon-thumb'
+    style={{
+      backgroundColor,
+      color: foregroundColor,
+    }}
+  >
+    <i className={`fa fa-${icon}`} />
   </span>
 )
 

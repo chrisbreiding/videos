@@ -1,9 +1,9 @@
+import RSVP from 'rsvp'
 import {
   getVideosDataForChannelSearch,
   getVideosDataForPlaylist,
   getVideos,
 } from '../lib/youtube'
-import subsService from '../subs/subs-service'
 
 class VideosService {
   getVideosDataForPlaylist (playlistId, pageToken) {
@@ -14,15 +14,10 @@ class VideosService {
     return getVideosDataForChannelSearch(channelId, query, pageToken)
   }
 
-  getVideosDataForCustomPlaylist (id) {
-    return subsService.getSub(id).then((sub) => {
-      const ids = sub.get('videos')
-        .toList()
-        // .sortBy((video) => video.get('order')) TODO: ordering is borked
-        .map((video) => video.get('id'))
-        .toArray()
-      return getVideos(ids)
-    })
+  getVideosDataForCustomPlaylist (playlist) {
+    if (!playlist.videoIds.length) return RSVP.Promise.resolve([])
+
+    return getVideos(playlist.videoIds)
   }
 }
 

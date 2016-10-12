@@ -1,13 +1,11 @@
 import _ from 'lodash'
-import React, { Component, PropTypes } from 'react'
+import { observer } from 'mobx-react'
+import React, { Component } from 'react'
 import { Link } from 'react-router'
 import { icon } from '../lib/util'
 
+@observer
 class Paginator extends Component {
-  contextTypes: {
-    location: PropTypes.object,
-  }
-
   render () {
     return (
       <div className='paginator'>
@@ -36,8 +34,10 @@ class Paginator extends Component {
     return (
       <Link
         className={`paginator-button ${className}`}
-        to={this.context.location.pathname}
-        query={_.extend({}, this.context.location.query, { pageToken })}
+        to={{
+          pathname: this.props.location.pathname,
+          query: _.extend({}, this.props.location.query, { pageToken }),
+        }}
       >
         {children}
       </Link>

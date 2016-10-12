@@ -1,8 +1,10 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { Router } from 'react-router'
+import { HashRouter as Router, Link, Match, Miss } from 'react-router'
 import RSVP from 'rsvp'
-import routes from './routes'
+
+import App from './app/app'
+import Login from './login/login'
 
 RSVP.on('error', (e) => {
   /* eslint-disable no-console */
@@ -12,4 +14,20 @@ RSVP.on('error', (e) => {
   /* eslint-enable no-console */
 })
 
-render(<Router routes={routes} />, document.getElementById('app-container'))
+render(
+  <Router>
+    <div>
+      <Match exactly pattern="/" component={App} />
+      <Match pattern="/subs" component={App} />
+      <Match exactly pattern="/login" component={Login} />
+      <Miss
+        component={() => (
+          <div>
+            <p>404 - Not Found</p>
+            <p><Link to={{ pathname: '/subs' }}>Subs</Link></p>
+          </div>
+        )}
+      />
+    </div>
+  </Router>
+, document.getElementById('app-container'))

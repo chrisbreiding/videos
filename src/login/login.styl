@@ -17,9 +17,13 @@
 
   input {
     background: light-color;
-    border: none;
+    border-radius: 0;
     display: block;
     padding: 0.8em 1.2em;
     width: 100%;
+
+    &:focus {
+      outline: solid 0.2em action-color;
+    }
   }
 }

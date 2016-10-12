@@ -11,19 +11,18 @@
     "babel-eslint": "^7.0.0",
     "eslint": "^3.6.1",
     "eslint-plugin-react": "^6.3.0",
-    "zunder": "^3.4.13"
+    "zunder": "^3.4.15"
   },
   "dependencies": {
-    "alt": "^0.16.10",
     "classnames": "^2.1.1",
     "font-awesome": "^4.6.3",
-    "history": "^1.17.0",
-    "immutable": "^3.7.3",
-    "lodash": "^3.8.0",
+    "lodash": "^4.16.2",
+    "mobx": "^2.5.2",
+    "mobx-react": "^3.5.6",
     "moment": "^2.10.3",
-    "react": "^0.14.8",
-    "react-dom": "^0.14.8",
-    "react-router": "^1.0.0-rc3",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-router": "^4.0.0-alpha.4",
     "reqwest": "^1.1.6",
     "rsvp": "^3.0.18"
   }

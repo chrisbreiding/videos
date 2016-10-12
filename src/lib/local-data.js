@@ -1,10 +1,9 @@
-import Immutable from 'immutable'
 import { Promise } from 'rsvp'
 
 class LocalData {
   getItem (key) {
     return new Promise((resolve) => {
-      resolve(localStorage[key] ? Immutable.fromJS(JSON.parse(localStorage[key])) : undefined)
+      resolve(localStorage[key] ? JSON.parse(localStorage[key]) : undefined)
     })
   }
 

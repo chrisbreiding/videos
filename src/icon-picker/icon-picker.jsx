@@ -13,16 +13,16 @@ class IconPicker extends Component {
             <label>Foreground Color</label>
             <input
               ref='foregroundColor'
-              value={this.props.icon.get('foregroundColor')}
-              onChange={_.partial(this._updateColor, 'foregroundColor')}
+              value={this.props.icon.foregroundColor}
+              onChange={this._updateForegroundColor}
             />
           </fieldset>
           <fieldset>
             <label>Background Color</label>
             <input
               ref='backgroundColor'
-              value={this.props.icon.get('backgroundColor')}
-              onChange={_.partial(this._updateColor, 'backgroundColor')}
+              value={this.props.icon.backgroundColor}
+              onChange={this._updateBackgroundColor}
             />
           </fieldset>
         </form>
@@ -30,10 +30,14 @@ class IconPicker extends Component {
           {_.map(icons, (icon) => (
             <button
               key={icon}
-              onClick={_.partial(this._updateProp, 'icon', icon)}
-              className={cs('picker-icon', { chosen: this.props.icon.get('icon') === icon })}
+              onClick={_.partial(this._updateIcon, icon)}
+              className={cs('picker-icon', { chosen: this.props.icon.icon === icon })}
             >
-              <IconThumb {..._.extend({}, this.props, { icon: this.props.icon.set('icon', icon) })} />
+              <IconThumb
+                backgroundColor={this.props.icon.backgroundColor}
+                foregroundColor={this.props.icon.foregroundColor}
+                icon={icon}
+              />
             </button>
           ))}
         </div>
@@ -41,12 +45,20 @@ class IconPicker extends Component {
     )
   }
 
-  _updateColor (type) {
-    this._updateProp(type, this.refs[type].value)
+  _updateBackgroundColor = () => {
+    this._update('backgroundColor', this.refs.backgroundColor.value)
   }
 
-  _updateProp (prop, value) {
-    this.props.onUpdate(prop, value)
+  _updateForegroundColor = () => {
+    this._update('foregroundColor', this.refs.foregroundColor.value)
+  }
+
+  _updateIcon = (icon) => {
+    this._update('icon', icon)
+  }
+
+  _update (key, value) {
+    this.props.onUpdate(key, value)
   }
 }
 

@@ -1,4 +1,5 @@
 /* global YT */
+// https://developers.google.com/youtube/iframe_api_reference
 
 import React, { Component } from 'react'
 
@@ -7,16 +8,23 @@ const PLAYER_ID = 'youtube-player'
 
 class YoutubePlayer extends Component {
   componentDidMount () {
-    window.onYouTubeIframeAPIReady = this._apiLoaded
+    window.onYouTubeIframeAPIReady = this._initPlayer
     this._loadScript()
   }
 
+  componentDidUpdate (prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this._updatePlayer()
+    }
+  }
+
   componentWillUnmount () {
+    this._player.destroy()
     window.onYouTubeIframeAPIReady = null
   }
 
   _loadScript () {
-    if (this._scriptLoaded()) return this._apiLoaded()
+    if (this._scriptLoaded()) return this._initPlayer()
 
     let script = document.createElement('script')
     script.id = SCRIPT_ID
@@ -25,16 +33,24 @@ class YoutubePlayer extends Component {
     document.body.appendChild(script)
   }
 
-  _scriptLoaded () {
+  _scriptLoaded = () => {
     return !!document.getElementById(SCRIPT_ID)
   }
 
-  _apiLoaded () {
+  _initPlayer = () => {
     this._player = new YT.Player(PLAYER_ID, {
-      height: '540',
-      width: '960',
       videoId: this.props.id,
+      playerVars: { autoplay: 1 },
+      width: '960',
+      height: '540',
     })
+  }
+
+  _updatePlayer () {
+    if (!this._player) return
+
+    this._player.stopVideo()
+    this._player.loadVideoById(this.props.id)
   }
 
   render () {

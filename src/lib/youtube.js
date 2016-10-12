@@ -1,8 +1,7 @@
 import _ from 'lodash'
-import Immutable from 'immutable'
 import req from 'reqwest'
 import { getItem } from './local-data'
-import loginActions from '../login/login-actions'
+import authStore from '../login/auth-store'
 import { Promise } from 'rsvp'
 
 const RESULTS_PER_PAGE = 25
@@ -14,7 +13,7 @@ function getBaseUrl () {
 }
 
 function queryYouTube (url, data) {
-  return Promise.all([getBaseUrl(), loginActions.getApiKey()])
+  return Promise.all([getBaseUrl(), authStore.getApiKey()])
     .then(_.spread((baseUrl, apiKey) => {
       return req({
         url: `${baseUrl}${url}`,
@@ -24,35 +23,35 @@ function queryYouTube (url, data) {
 }
 
 function mapChannelDetails (result) {
-  return Immutable.List(_.map(result.items, (item) => {
-    return Immutable.Map({
+  return _.map(result.items, (item) => {
+    return {
       id: item.id.channelId,
       title: item.snippet.channelTitle,
       author: item.snippet.title,
       thumb: item.snippet.thumbnails.medium.url,
-    })
-  }))
+    }
+  })
 }
 
 function videoIdsFromContentDetails (videos) {
-  return _(videos).pluck('contentDetails').pluck('videoId').value()
+  return _(videos).map('contentDetails').map('videoId').value()
 }
 
 function videoIdsFromId (videos) {
-  return _(videos).pluck('id').pluck('videoId').value()
+  return _(videos).map('id').map('videoId').value()
 }
 
 function mapVideoDetails (result) {
-  return Immutable.List(_.map(result.items, (video) => {
-    return Immutable.Map({
+  return _.map(result.items, (video) => {
+    return {
       id: video.id,
       title: video.snippet.title,
       description: video.snippet.description,
       published: video.snippet.publishedAt,
       thumb: video.snippet.thumbnails.medium.url,
       duration: video.contentDetails.duration,
-    })
-  }))
+    }
+  })
 }
 
 function getVideos (ids) {
@@ -111,6 +110,10 @@ class Youtube {
 
     return queryYouTube('playlistItems', params)
       .then(({ items, prevPageToken, nextPageToken }) => {
+        // there seems to be a bug with the youtube api where it returns
+        // a nextPageToken even if there are no more results after this page
+        if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
+
         return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
           return { videos, prevPageToken, nextPageToken }
         })

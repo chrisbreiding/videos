@@ -1,16 +1,22 @@
+remove-width = 28px;
+
 .sub-item {
   display: flex;
   margin-bottom: 0.4em;
 
   > span {
     display: flex;
+    flex-grow: 2;
+    position: relative;
   }
 
-  a {
+  .sub-title {
     background: darken(light-color, 10%);
     color: dark-color;
+    flex-grow: 2;
+    height: thumb-size;
+    outline: none;
     text-decoration: none;
-    width: sidebar-width - (thumb-size / 2);
 
     &:hover,
     &:focus,
@@ -22,7 +28,6 @@
   h3 {
     font-size: 1.1em;
     font-weight: 400;
-    height: thumb-size;
     padding: 0.6em;
 
     .editing & {
@@ -39,6 +44,8 @@
 
   input {
     border-radius: 0;
+    box-sizing: border-box;
+    width: sidebar-width - thumb-size - remove-width;
   }
 
   input,
@@ -60,14 +67,23 @@
   .sub-item-icon,
   img {
     flex-shrink: 0;
-    margin-left: -(thumb-size / 2);
   }
 
   img {
     background: light-color;
-    border-radius: 50%;
     height: thumb-size;
     width: thumb-size;
+  }
+
+  .num-videos {
+    color: #666;
+    display: none;
+    margin: 0;
+    padding: 0 0.6em;
+  }
+
+  .custom-sub-item .num-videos {
+    display: block;
   }
 
   .remove {
@@ -79,8 +95,9 @@
     display: none;
     flex-shrink: 0;
     justify-content: center;
-    padding: 0 0.4em;
+    text-align: center;
     text-decoration: none;
+    width: remove-width;
 
     &:hover,
     &:focus {
