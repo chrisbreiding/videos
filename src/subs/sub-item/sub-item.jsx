@@ -6,10 +6,10 @@ import { icon } from '../../lib/util'
 import Title from './title'
 import CustomPlaylist from './custom-playlist'
 
-const Channel = observer(({ sub }) => (
+const Channel = observer(({ sub, link }) => (
   <span>
     <img src={sub.thumb} />
-    <Title sub={sub} />
+    <Title sub={sub} link={link} />
   </span>
 ))
 

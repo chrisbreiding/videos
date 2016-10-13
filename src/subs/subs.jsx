@@ -23,7 +23,7 @@ class Subs extends Component {
   }
 
   render () {
-    const query = this.props.location.query || {}
+    const query = this._getQuery()
     const hasNoSubs = !subsStore.subs.length
 
     return (
@@ -65,14 +65,21 @@ class Subs extends Component {
 
     return (
       <ul className={cs({ editing: this.isEditing })}>
-        {subsStore.subs.map((sub) => (
-          <SubItem
-            key={sub.id}
-            sub={sub}
-            onUpdate={_.partial(this._updateSub, sub.id)}
-            onRemove={_.partial(this._removeSub, sub.id)}
-          />
-        ))}
+        {subsStore.subs.map((sub) => {
+          const link = {
+            pathname: `/subs/${sub.id}`,
+            query: { nowPlaying: this._getQuery().nowPlaying },
+          }
+          return (
+            <SubItem
+              key={sub.id}
+              sub={sub}
+              link={link}
+              onUpdate={_.partial(this._updateSub, sub.id)}
+              onRemove={_.partial(this._removeSub, sub.id)}
+            />
+          )
+        })}
       </ul>
     )
   }
@@ -92,6 +99,10 @@ class Subs extends Component {
       pathname,
       query: _.extend({}, query, { adding: type }),
     }
+  }
+
+  _getQuery () {
+    return this.props.location.query || {}
   }
 
   _onAdd = (type, sub) => {

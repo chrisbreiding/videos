@@ -21,7 +21,7 @@ class CustomPlaylist extends Component {
         <button className='sub-item-icon editable' onClick={_.partial(this._setPickingIcon, true)} >
           <IconThumb {...this.props.sub.icon} />
         </button>
-        <Title sub={this.props.sub} />
+        <Title sub={this.props.sub} link={this.props.link} />
         <input ref='title' onChange={this._onChange} value={this.props.sub.title} />
         {this._iconPicker()}
       </span>
