@@ -12,22 +12,13 @@ class Login extends Component {
   }
 
   componentWillMount () {
-    authStore.getApiKey()
-    .then(action('login:got:api:key', (apiKey) => {
+    authStore.getApiKey().then(action('login:set:api:key', (apiKey) => {
       authStore.setApiKey(apiKey)
     }))
   }
 
   componentDidMount () {
     this.refs.apiKey.focus()
-  }
-
-  _checkApiKey = () => {
-    authStore.checkApiKey().then((isValid) => {
-      if (isValid) {
-        this.context.router.transitionTo({ pathname: '/' })
-      }
-    })
   }
 
   render () {
@@ -41,13 +32,24 @@ class Login extends Component {
     )
   }
 
-  _setApiKey = () => {
+  @action _setApiKey = () => {
     authStore.setApiKey(this.refs.apiKey.value)
   }
 
-  @action _login = (e) => {
+  _login = (e) => {
     e.preventDefault()
-    this._checkApiKey()
+
+    const apiKey = this.refs.apiKey.value
+
+    authStore.checkApiKey(apiKey).then((isValid) => {
+      if (!isValid) return
+
+      action('login:save:api:key', () => {
+        authStore.saveApiKey(apiKey).then(() => {
+          this.context.router.transitionTo({ pathname: '/' })
+        })
+      })()
+    })
   }
 }
 

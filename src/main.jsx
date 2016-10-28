@@ -18,8 +18,8 @@ render(
   <Router>
     <div>
       <Match exactly pattern="/" component={App} />
-      <Match pattern="/subs" component={App} />
       <Match exactly pattern="/login" component={Login} />
+      <Match pattern="/subs" component={App} />
       <Miss
         component={() => (
           <div>

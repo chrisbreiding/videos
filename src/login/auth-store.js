@@ -13,13 +13,22 @@ class AuthStore {
   }
 
   setApiKey = (apiKey) => {
-    this.apiKey = apiKey
+    if (!apiKey) return
 
+    this.apiKey = apiKey
+  }
+
+  saveApiKey =  (apiKey) => {
+    if (!apiKey) return Promise.resolve()
+
+    this.apiKey = apiKey
     return setItem(API_KEY_KEY, this.apiKey)
   }
 
-  checkApiKey = () => {
-    return youtube.checkApiKey(this.apiKey)
+  checkApiKey = (apiKey) => {
+    if (!apiKey) return Promise.resolve(false)
+
+    return youtube.checkApiKey(apiKey)
   }
 
   login () {

@@ -26,12 +26,17 @@ class App extends Component {
 
   componentWillMount () {
     authStore.getApiKey()
-    .then(action('app:got:api:key', (apiKey) => {
-      return authStore.setApiKey(apiKey)
-    }))
-    .then(authStore.checkApiKey)
-    .then((isValid) => {
-      if (!isValid) {
+    .then((apiKey) => {
+      return authStore.checkApiKey(apiKey).then((isValid) => {
+        return { apiKey, isValid }
+      })
+    })
+    .then(({ apiKey, isValid }) => {
+      if (isValid) {
+        action('app:set:api:key', () => {
+          authStore.setApiKey(apiKey)
+        })()
+      } else {
         this.context.router.transitionTo({ pathname: '/login' })
       }
     })
