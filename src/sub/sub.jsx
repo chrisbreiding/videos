@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import moment from 'moment'
@@ -41,11 +42,17 @@ class Sub extends Component {
       || oldSearchQuery !== newSearchQuery
     ) {
       if (newSearchQuery) {
-        videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+        action('get:channel:search:videos', () => {
+          videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+        })()
       } else if (sub.isCustom) {
-        videosStore.getVideosDataForCustomPlaylist(sub)
+        action('get:custom:playlist:videos', () => {
+          videosStore.getVideosDataForCustomPlaylist(sub)
+        })()
       } else {
-        videosStore.getVideosDataForPlaylist(newPlaylistId, newToken)
+        action('get:playlist:videos', () => {
+          videosStore.getVideosDataForPlaylist(newPlaylistId, newToken)
+        })()
       }
     }
   }

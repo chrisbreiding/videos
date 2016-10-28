@@ -84,7 +84,7 @@ class Subs extends Component {
     )
   }
 
-  _clearAddSearch = () => {
+  @action _clearAddSearch = () => {
     subsStore.clearSearchResults()
 
     this.context.router.replaceWith({
@@ -131,11 +131,11 @@ class Subs extends Component {
     this.isEditing = !this.isEditing
   }
 
-  _updateSub = (id, props) => {
+  @action _updateSub = (id, props) => {
     subsStore.update(id, props)
   }
 
-  _removeSub = (id) => {
+  @action _removeSub = (id) => {
     this.isEditing = false
     subsStore.remove(id)
   }

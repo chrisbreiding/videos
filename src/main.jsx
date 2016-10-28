@@ -1,3 +1,4 @@
+import { useStrict } from 'mobx'
 import React from 'react'
 import { render } from 'react-dom'
 import { HashRouter as Router, Link, Match, Miss } from 'react-router'
@@ -5,6 +6,8 @@ import RSVP from 'rsvp'
 
 import App from './app/app'
 import Login from './login/login'
+
+useStrict(true)
 
 RSVP.on('error', (e) => {
   /* eslint-disable no-console */

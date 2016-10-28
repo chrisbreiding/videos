@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { asReference, computed, map, observable } from 'mobx'
+import { action, asReference, computed, map, observable } from 'mobx'
 
 import SubModel from '../sub/sub-model'
 import subsService from './subs-service'
@@ -18,9 +18,9 @@ class SubsStore {
   }
 
   fetch () {
-    subsService.fetch().then((subs) => {
+    subsService.fetch().then(action('fetched:subs', (subs) => {
       this._setSubs(subs)
-    })
+    }))
   }
 
   update (id, props) {
@@ -41,12 +41,12 @@ class SubsStore {
   }
 
   search (query) {
-    subsService.search(query).then((searchResults) => {
+    subsService.search(query).then(action('received:search:results', (searchResults) => {
       this.searchResults = searchResults
-    })
+    }))
   }
 
-  clearSearchResults () {
+  @action clearSearchResults () {
     this.searchResults = []
   }
 
@@ -58,20 +58,22 @@ class SubsStore {
     subsService.addCustomPlaylist(playlist).then(this._addSub)
   }
 
-  _addSub = (sub) => {
+  @action _addSub = (sub) => {
     this._subs.set(sub.id, new SubModel(sub))
   }
 
   addVideoToPlaylist (playlist, videoId) {
-    subsService.addVideoToPlaylist(playlist, videoId).then((video) => {
+    subsService.addVideoToPlaylist(playlist, videoId)
+    .then(action('playlist:video:added', (video) => {
       this.getSubById(playlist.id).addVideo(video)
-    })
+    }))
   }
 
   removeVideoFromPlaylist (playlist, videoId) {
-    subsService.removeVideoFromPlaylist(playlist, videoId).then(() => {
+    subsService.removeVideoFromPlaylist(playlist, videoId)
+    .then(action('playlist:video:removed', () => {
       this.getSubById(playlist.id).removeVideo(videoId)
-    })
+    }))
   }
 }
 
