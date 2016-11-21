@@ -3,9 +3,23 @@
   background: #000;
   background: linear-gradient(to bottom, #222 0%, #000 100%);
   display: flex;
-  padding: 1em;
+  flex-shrink: 0;
   position: relative;
   justify-content: center;
+
+  .cover {
+    display: none;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    .is-resizing & {
+      display: block;
+    }
+  }
+
 
   button {
     background: #000;

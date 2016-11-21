@@ -33,4 +33,4 @@ render(
       />
     </div>
   </Router>
-, document.getElementById('app-container'))
+, document.getElementById('app'))

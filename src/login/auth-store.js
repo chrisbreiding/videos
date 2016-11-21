@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import { Promise } from 'rsvp'
 
 import { getItem, setItem } from '../lib/local-data'
@@ -7,6 +7,10 @@ import youtube from '../lib/youtube'
 
 class AuthStore {
   @observable apiKey = ''
+
+  @computed get isAuthenticated () {
+    return !!this.apiKey
+  }
 
   getApiKey () {
     return getItem(API_KEY_KEY)

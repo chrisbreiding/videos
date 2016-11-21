@@ -22,7 +22,7 @@
     "moment": "^2.10.3",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-router": "^4.0.0-alpha.4",
+    "react-router": "^4.0.0-alpha.5",
     "reqwest": "^1.1.6",
     "rsvp": "^3.0.18"
   }

@@ -1,14 +1,17 @@
+import cs from 'classnames'
 import _ from 'lodash'
-import { action } from 'mobx'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Match } from 'react-router'
 
+import appState from './app-state'
 import authStore from '../login/auth-store'
 import propTypes from '../lib/prop-types'
 import subsStore from '../subs/subs-store'
 
 import NowPlaying from '../now-playing/now-playing'
+import Resizer from './resizer'
 import Subs from '../subs/subs'
 import Sub from '../sub/sub'
 
@@ -20,6 +23,8 @@ const NoSubSelected = () => {
 
 @observer
 class App extends Component {
+  @observable isResizing = false
+
   static contextTypes = {
     router: propTypes.router,
   }
@@ -43,11 +48,26 @@ class App extends Component {
   }
 
   render () {
+    if (!authStore.isAuthenticated) {
+      return (
+        <div className='loader'>Authenticating...</div>
+      )
+    }
+
     return (
-      <div className='app'>
+      <div
+        className={cs('app', { 'is-resizing': this.isResizing })}
+        style={{ height: appState.windowHeight }}
+      >
         <NowPlaying
           id={(this.props.location.query || {}).nowPlaying}
           onClose={this._closeNowPlaying}
+        />
+        <Resizer
+          height={appState.nowPlayingHeight}
+          onResizeStart={this._startResizing}
+          onResize={this._updateNowPlayingHeight}
+          onResizeEnd={this._endResizing}
         />
         <div className='subs'>
           <Subs {...this.props} />
@@ -63,6 +83,18 @@ class App extends Component {
       pathname: this.props.location.pathname,
       query: _.omit(this.props.location.query || {}, 'nowPlaying'),
     })
+  }
+
+  @action _startResizing = () => {
+    this.isResizing = true
+  }
+
+  @action _updateNowPlayingHeight = (height) => {
+    appState.updateNowPlayingHeight(height)
+  }
+
+  @action _endResizing = () => {
+    this.isResizing = false
   }
 }
 

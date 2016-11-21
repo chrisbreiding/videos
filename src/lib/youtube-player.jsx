@@ -14,7 +14,11 @@ class YoutubePlayer extends Component {
 
   componentDidUpdate (prevProps) {
     if (prevProps.id !== this.props.id) {
-      this._updatePlayer()
+      this._updatePlayerId()
+    }
+
+    if (prevProps.width !== this.props.width || prevProps.height !== this.props.height) {
+      this._updatePlayerDimensions()
     }
   }
 
@@ -41,16 +45,20 @@ class YoutubePlayer extends Component {
     this._player = new YT.Player(PLAYER_ID, {
       videoId: this.props.id,
       playerVars: { autoplay: 1 },
-      width: '960',
-      height: '540',
+      width: this.props.width,
+      height: this.props.height,
     })
   }
 
-  _updatePlayer () {
+  _updatePlayerId () {
     if (!this._player) return
 
     this._player.stopVideo()
     this._player.loadVideoById(this.props.id)
+  }
+
+  _updatePlayerDimensions () {
+    this._player.setSize(this.props.width, this.props.height)
   }
 
   render () {
