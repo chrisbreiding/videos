@@ -50,7 +50,9 @@ class App extends Component {
   render () {
     if (!authStore.isAuthenticated) {
       return (
-        <div className='loader'>Authenticating...</div>
+        <div className='loader'>
+          <i className='fa fa-sign-in'></i> Authenticating...
+        </div>
       )
     }
 
