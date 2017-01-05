@@ -7,8 +7,6 @@ import { icon } from '../lib/util'
 
 const padding = 15
 
-// TODO: cover player while resizing
-
 const NowPlaying = observer(({ id, onClose }) => {
   if (!id) return null
 
