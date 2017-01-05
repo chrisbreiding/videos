@@ -1,4 +1,7 @@
+import _ from 'lodash'
 import { action, computed, observable } from 'mobx'
+import { NOW_PLAYING_HEIGHT } from '../lib/constants'
+import { getItem, setItem } from '../lib/local-data'
 
 const minNowPlayingHeight = 100
 const maxNowPlayingHeightOffset = 10
@@ -10,6 +13,11 @@ class AppState {
 
   constructor () {
     window.addEventListener('resize', this._onWindowResize)
+    getItem(NOW_PLAYING_HEIGHT).then(action('got:stored:now:playing:height', (height) => {
+      if (height != null) {
+        this._nowPlayingHeight = height
+      }
+    }))
   }
 
   @computed get _maxNowPlayingHeight () {
@@ -33,8 +41,13 @@ class AppState {
   }
 
   updateNowPlayingHeight (height) {
+    this._saveNowPlayingHeight(height)
     this._nowPlayingHeight = height
   }
+
+  _saveNowPlayingHeight = _.debounce((height) => {
+    setItem(NOW_PLAYING_HEIGHT, height)
+  }, 500)
 }
 
 export default new AppState()
