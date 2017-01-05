@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -7,18 +8,27 @@ import { icon } from '../lib/util'
 
 const padding = 15
 
-const NowPlaying = observer(({ id, onClose }) => {
-  if (!id) return null
+const NowPlaying = observer((props) => {
+  if (!props.id) return null
 
   return (
     <div className='now-playing' style={{ height: appState.nowPlayingHeight, padding }}>
       <YoutubePlayer
-        id={id}
+        id={props.id}
         width={appState.nowPlayingWidth - (padding * 2)}
         height={appState.nowPlayingHeight - (padding * 2)}
+        onEnd={props.onEnd}
       />
       <div className='cover' />
-      <button onClick={onClose}>{icon('remove')}</button>
+      <button className='close' onClick={props.onClose}>{icon('remove')}</button>
+      <button
+        className={cs('toggle-auto-play', {
+          enabled: props.autoPlayEnabled,
+        })}
+        onClick={props.onToggleAutoPlay}
+      >
+        {icon('refresh')}
+      </button>
     </div>
   )
 })

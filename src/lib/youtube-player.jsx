@@ -48,6 +48,12 @@ class YoutubePlayer extends Component {
       width: this.props.width,
       height: this.props.height,
     })
+
+    this._player.addEventListener('onStateChange', (e) => {
+      if (e.data === YT.PlayerState.ENDED) {
+        this.props.onEnd()
+      }
+    })
   }
 
   _updatePlayerId () {

@@ -24,9 +24,7 @@
   button {
     background: #000;
     border: none;
-    border-radius: 0 0 0 3px;
     color: darken(light-color, 20%);
-    top: 0;
     position: absolute;
     right: 0;
 
@@ -37,6 +35,25 @@
 
     i {
       font-size: 1.4em;
+    }
+  }
+
+  .close {
+    border-radius: 0 0 0 3px;
+    top: 0;
+  }
+
+  .toggle-auto-play {
+    border-radius: 3px 0 0 0;
+    bottom: 0;
+
+    &.enabled {
+      color: lighten(action-color, 20%);
+
+      &:hover,
+      &:focus {
+        color: lighten(action-color, 40%);
+      }
     }
   }
 }

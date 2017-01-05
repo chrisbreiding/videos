@@ -9,6 +9,7 @@ import appState from './app-state'
 import authStore from '../login/auth-store'
 import propTypes from '../lib/prop-types'
 import subsStore from '../subs/subs-store'
+import videosStore from '../videos/videos-store'
 
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
@@ -62,8 +63,11 @@ class App extends Component {
         style={{ height: appState.windowHeight }}
       >
         <NowPlaying
-          id={(this.props.location.query || {}).nowPlaying}
+          autoPlayEnabled={appState.autoPlayEnabled}
+          id={this._nowPlayingId()}
           onClose={this._closeNowPlaying}
+          onEnd={this._onVideoEnded}
+          onToggleAutoPlay={appState.toggleAutoPlay}
         />
         <Resizer
           height={appState.nowPlayingHeight}
@@ -80,11 +84,27 @@ class App extends Component {
     )
   }
 
+  _nowPlayingId () {
+    return (this.props.location.query || {}).nowPlaying
+  }
+
   _closeNowPlaying = () => {
     this.context.router.transitionTo({
       pathname: this.props.location.pathname,
       query: _.omit(this.props.location.query || {}, 'nowPlaying'),
     })
+  }
+
+  _onVideoEnded = () => {
+    if (!appState.autoPlayEnabled) return
+
+    const nextVideoId = videosStore.nextVideoId(this._nowPlayingId())
+    if (nextVideoId) {
+      this.context.router.transitionTo({
+        pathname: this.props.location.pathname,
+        query: _.extend({}, this.props.location.query, { nowPlaying: nextVideoId }),
+      })
+    }
   }
 
   @action _startResizing = () => {

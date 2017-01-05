@@ -44,6 +44,18 @@ class VideosStore {
     }))
   }
 
+  nextVideoId (videoId) {
+    if (!videoId || this.videos.lenghth < 2) return null
+
+    const videoIndex = _.findIndex(this.videos, { id: videoId })
+    if (videoIndex === -1) return null
+
+    const nextVideo = this.videos[videoIndex + 1]
+    if (!nextVideo) return null
+
+    return nextVideo.id
+  }
+
   _beforeLoad () {
     this.isLoading = true
     this.prevPageToken = null
