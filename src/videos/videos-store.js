@@ -1,14 +1,23 @@
-import { action, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import _ from 'lodash'
+import moment from 'moment'
 
 import videosService from './videos-service'
 import VideoModel from './video-model'
 
 class VideosStore {
-  @observable videos = []
+  @observable _videos = []
+  @observable _isCustom = false
   @observable isLoading = false
   @observable prevPageToken
   @observable nextPageToken
+
+  @computed get videos () {
+    return this._videos.sort((video1, video2) => {
+      const method = this._isCustom ? 'isAfter' : 'isBefore'
+      return moment(video1.published)[method](video2.published) ? 1 : -1
+    })
+  }
 
   getVideosDataForPlaylist (playlistId, pageToken) {
     this._beforeLoad()
@@ -16,6 +25,7 @@ class VideosStore {
     videosService.getVideosDataForPlaylist(playlistId, pageToken)
     .then(action('get:playlist:videos', (videosData) => {
       this._updateVideosData(videosData)
+      this._isCustom = false
       this.isLoading = false
     }))
   }
@@ -26,6 +36,7 @@ class VideosStore {
     videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
     .then(action('get:channel:search:videos', (videosData) => {
       this._updateVideosData(videosData)
+      this._isCustom = false
       this.isLoading = false
     }))
   }
@@ -40,12 +51,13 @@ class VideosStore {
         prevPageToken: null,
         nextPageToken: null,
       })
+      this._isCustom = true
       this.isLoading = false
     }))
   }
 
   nextVideoId (videoId) {
-    if (!videoId || this.videos.lenghth < 2) return null
+    if (!videoId || this.videos.length < 2) return null
 
     const videoIndex = _.findIndex(this.videos, { id: videoId })
     if (videoIndex === -1) return null
@@ -63,7 +75,7 @@ class VideosStore {
   }
 
   _updateVideosData ({ videos, prevPageToken, nextPageToken }) {
-    if (videos) this.videos = _.map(videos, (video) => new VideoModel(video))
+    if (videos) this._videos = _.map(videos, (video) => new VideoModel(video))
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken
   }

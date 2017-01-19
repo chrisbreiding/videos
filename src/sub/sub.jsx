@@ -2,7 +2,6 @@ import _ from 'lodash'
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-import moment from 'moment'
 
 import { icon } from '../lib/util'
 import propTypes from '../lib/prop-types'
@@ -114,7 +113,7 @@ class Sub extends Component {
     )
   }
 
-  _videos (sub) {
+  _videos () {
     if (!videosStore.videos.length) {
       return (
         <div className='videos-empty'>
@@ -125,27 +124,20 @@ class Sub extends Component {
       )
     }
 
-    return _(videosStore.videos)
-      .map((video) => video)
-      .sort((video1, video2) => {
-        const method = sub.isCustom ? 'isAfter' : 'isBefore'
-        return moment(video1.published)[method](video2.published) ? 1 : -1
-      })
-      .map((video) => {
-        const id = video.id
+    return _.map(videosStore.videos, (video) => {
+      const id = video.id
 
-        return (
-          <Video
-            key={id}
-            onPlay={_.partial(this._playVideo, id)}
-            subs={subsStore.subs}
-            video={video}
-            addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
-            removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
-          />
-        )
-      })
-      .value()
+      return (
+        <Video
+          key={id}
+          onPlay={_.partial(this._playVideo, id)}
+          subs={subsStore.subs}
+          video={video}
+          addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
+          removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
+        />
+      )
+    })
   }
 
   _loader () {
