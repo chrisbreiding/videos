@@ -1,7 +1,7 @@
 import { useStrict } from 'mobx'
 import React from 'react'
 import { render } from 'react-dom'
-import { HashRouter as Router, Link, Match, Miss } from 'react-router'
+import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import RSVP from 'rsvp'
 
 import App from './app/app'
@@ -19,18 +19,18 @@ RSVP.on('error', (e) => {
 
 render(
   <Router>
-    <div>
-      <Match exactly pattern="/" component={App} />
-      <Match exactly pattern="/login" component={Login} />
-      <Match pattern="/subs" component={App} />
-      <Miss
+    <Switch>
+      <Route exact path="/" component={App} />
+      <Route exact path="/login" component={Login} />
+      <Route path="/subs" component={App} />
+      <Route
         component={() => (
           <div>
             <p>404 - Not Found</p>
-            <p><Link to={{ pathname: '/subs' }}>Subs</Link></p>
+            <p><Link to='/subs'>Subs</Link></p>
           </div>
         )}
       />
-    </div>
+    </Switch>
   </Router>
 , document.getElementById('app'))

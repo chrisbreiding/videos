@@ -3,14 +3,9 @@ import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 
 import authStore from './auth-store'
-import propTypes from '../lib/prop-types'
 
 @observer
 class Login extends Component {
-  static contextTypes = {
-    router: propTypes.router,
-  }
-
   componentWillMount () {
     authStore.getApiKey().then(action('login:set:api:key', (apiKey) => {
       authStore.setApiKey(apiKey)
@@ -46,7 +41,7 @@ class Login extends Component {
 
       action('login:save:api:key', () => {
         authStore.saveApiKey(apiKey).then(() => {
-          this.context.router.transitionTo({ pathname: '/' })
+          window.hist.push({ pathname: '/' })
         })
       })()
     })

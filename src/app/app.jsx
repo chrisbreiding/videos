@@ -3,18 +3,21 @@ import _ from 'lodash'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { Match } from 'react-router'
+import { Route, Switch } from 'react-router-dom'
+import { createHashHistory } from 'history'
 
 import appState from './app-state'
 import authStore from '../login/auth-store'
-import propTypes from '../lib/prop-types'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
+import util from '../lib/util'
 
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
 import Subs from '../subs/subs'
 import Sub from '../sub/sub'
+
+window.hist = createHashHistory()
 
 const NoSubSelected = () => {
   if (!subsStore.subs.length) return null
@@ -26,11 +29,7 @@ const NoSubSelected = () => {
 class App extends Component {
   @observable isResizing = false
 
-  static contextTypes = {
-    router: propTypes.router,
-  }
-
-  componentWillMount () {
+  componentDidMount () {
     authStore.getApiKey()
     .then((apiKey) => {
       return authStore.checkApiKey(apiKey).then((isValid) => {
@@ -43,7 +42,7 @@ class App extends Component {
           authStore.setApiKey(apiKey)
         })()
       } else {
-        this.context.router.transitionTo({ pathname: '/login' })
+        window.hist.push({ pathname: '/login' })
       }
     })
   }
@@ -77,22 +76,28 @@ class App extends Component {
         />
         <div className='subs'>
           <Subs {...this.props} />
-          <Match exactly pattern={this.props.pathname} component={NoSubSelected} />
-          <Match pattern='/subs/:id' component={Sub} />
+          <Switch>
+            <Route exact path='/subs' component={NoSubSelected} />
+            <Route path='/subs/:id' component={Sub} />
+          </Switch>
         </div>
       </div>
     )
   }
 
   _nowPlayingId () {
-    return (this.props.location.query || {}).nowPlaying
+    return this._getQuery().nowPlaying
   }
 
   _closeNowPlaying = () => {
-    this.context.router.transitionTo({
+    window.hist.push({
       pathname: this.props.location.pathname,
-      query: _.omit(this.props.location.query || {}, 'nowPlaying'),
+      search: util.stringifyQueryString(_.omit(this._getQuery(), 'nowPlaying')),
     })
+  }
+
+  _getQuery () {
+    return util.parseQueryString(this.props.location.search)
   }
 
   _onVideoEnded = () => {
@@ -100,9 +105,9 @@ class App extends Component {
 
     const nextVideoId = videosStore.nextVideoId(this._nowPlayingId())
     if (nextVideoId) {
-      this.context.router.transitionTo({
+      window.hist.push({
         pathname: this.props.location.pathname,
-        query: _.extend({}, this.props.location.query, { nowPlaying: nextVideoId }),
+        search: util.stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: nextVideoId })),
       })
     }
   }

@@ -3,8 +3,7 @@ import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 
-import { icon } from '../lib/util'
-import propTypes from '../lib/prop-types'
+import util, { icon } from '../lib/util'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 
@@ -14,11 +13,15 @@ import Search from '../search/search'
 
 @observer
 class Sub extends Component {
-  static contextTypes = {
-    router: propTypes.router,
+  componentDidMount () {
+    this._getVideos()
   }
 
   componentDidUpdate () {
+    this._getVideos()
+  }
+
+  _getVideos () {
     const sub = this._getSub()
 
     if (!sub) return
@@ -57,11 +60,11 @@ class Sub extends Component {
   }
 
   _getSub () {
-    return subsStore.getSubById(this.props.params.id)
+    return subsStore.getSubById(this.props.match.params.id)
   }
 
   _getQuery () {
-    return this.props.location.query || {}
+    return util.parseQueryString(this.props.location.search)
   }
 
   _getPageToken () {
@@ -151,19 +154,19 @@ class Sub extends Component {
   }
 
   _playVideo = (id) => {
-    this.context.router.transitionTo({
+    window.hist.push({
       pathname: this.props.location.pathname,
-      query: _.extend({}, this._getQuery(), { nowPlaying: id }),
+      search: util.stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: id })),
     })
   }
 
   _onSearchUpdate = (search) => {
-    this.context.router.transitionTo({
+    window.hist.push({
       pathname: this.props.location.pathname,
-      query: _.extend({}, this._getQuery(), {
+      search: util.stringifyQueryString(_.extend({}, this._getQuery(), {
         search: search || undefined,
         pageToken: undefined,
-      }),
+      })),
     })
   }
 }

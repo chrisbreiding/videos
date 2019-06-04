@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import React from 'react'
 import moment from 'moment'
+import qs from 'qs'
 
 const re = /^P(?:(\d+(?:[\.,]\d{0,3})?W)|(\d+(?:[\.,]\d{0,3})?Y)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?D)?(?:T(\d+(?:[\.,]\d{0,3})?H)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?S)?)?)$/
 const HR = 5
@@ -52,6 +53,16 @@ class Util {
         </span>
       </span>
     )
+  }
+
+  stringifyQueryString (props) {
+    return `?${qs.stringify(props)}`
+  }
+
+  parseQueryString (queryString) {
+    if (!_.isString(queryString)) return {}
+
+    return qs.parse(queryString.replace(/^\?/, ''))
   }
 }
 

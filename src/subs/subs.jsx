@@ -4,18 +4,14 @@ import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 
-import propTypes from '../lib/prop-types'
 import subsStore from './subs-store'
+import util from '../lib/util'
 
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
 
 @observer
 class Subs extends Component {
-  static contextTypes = {
-    router: propTypes.router,
-  }
-
   @observable isEditing = false
 
   componentWillMount () {
@@ -68,7 +64,7 @@ class Subs extends Component {
         {subsStore.subs.map((sub) => {
           const link = {
             pathname: `/subs/${sub.id}`,
-            query: { nowPlaying: this._getQuery().nowPlaying },
+            search: util.stringifyQueryString({ nowPlaying: this._getQuery().nowPlaying }),
           }
           return (
             <SubItem
@@ -87,22 +83,22 @@ class Subs extends Component {
   @action _clearAddSearch = () => {
     subsStore.clearSearchResults()
 
-    this.context.router.replaceWith({
+    window.hist.replace({
       pathname: this.props.location.pathname,
-      query: _.omit(this.props.location.query, 'q'),
+      search: util.stringifyQueryString(_.omit(this._getQuery(), 'q')),
     })
   }
 
   _linkToAdding = (type) => {
-    const { pathname, query } = this.props.location
+    const { pathname } = this.props.location
     return {
       pathname,
-      query: _.extend({}, query, { adding: type }),
+      search: util.stringifyQueryString(_.extend({}, this._getQuery(), { adding: type })),
     }
   }
 
   _getQuery () {
-    return this.props.location.query || {}
+    return util.parseQueryString(this.props.location.search)
   }
 
   _onAdd = (type, sub) => {
@@ -112,7 +108,7 @@ class Subs extends Component {
       subsStore.addCustomPlaylist(sub)
     }
 
-    this.context.router.transitionTo(this._linkToAdding())
+    window.hist.push(this._linkToAdding())
   }
 
   _search = (query) => {
@@ -120,10 +116,10 @@ class Subs extends Component {
   }
 
   _updateSearch = (search) => {
-    const { pathname, query } = this.props.location
-    this.context.router.transitionTo({
+    const { pathname } = this.props.location
+    window.hist.push({
       pathname,
-      query: _.extend({}, query, { q: search }),
+      search: util.stringifyQueryString(_.extend({}, this._getQuery(), { q: search })),
     })
   }
 
