@@ -41,7 +41,7 @@ class Sub extends Component {
 
     if (this._shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
       action('get:all:playlist:videos', () => {
-        videosStore.getVideosDataForAllPlaylists(subsStore.playlistIds)
+        videosStore.getVideosDataForAllPlaylists(subsStore.channelIds)
       })()
 
       return

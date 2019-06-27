@@ -13,8 +13,9 @@ class SubsStore {
     return _.sortBy(this._subs.values(), 'order')
   }
 
-  @computed get playlistIds () {
-    return _.map(this.subs, 'playlistId')
+  @computed get channelIds () {
+    const channels = _.reject(this.subs, { isCustom: true })
+    return _.map(channels, 'playlistId')
   }
 
   @computed get fourChannels () {
