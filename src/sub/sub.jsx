@@ -2,6 +2,7 @@ import _ from 'lodash'
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
+import { Redirect } from 'react-router-dom'
 
 import util, { icon } from '../lib/util'
 import subsStore from '../subs/subs-store'
@@ -22,21 +23,29 @@ class Sub extends Component {
   }
 
   _getVideos () {
+    if (videosStore.isLoading) return
+
     const sub = this._getSub()
 
-    if (!sub) return
-
-    const newSearchQuery = this._getSearchQuery()
     const oldSearchQuery = this.searchQuery
+    const newSearchQuery = this._getSearchQuery()
     this.searchQuery = newSearchQuery
 
-    const newToken = this._getPageToken()
     const oldToken = this.pageToken
+    const newToken = this._getPageToken()
     this.pageToken = newToken
 
-    const newPlaylistId = sub.playlistId
     const oldPlaylistId = this.playlistId
+    const newPlaylistId = sub && sub.playlistId
     this.playlistId = newPlaylistId
+
+    if (this._shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
+      action('get:all:playlist:videos', () => {
+        videosStore.getVideosDataForAllPlaylists(subsStore.playlistIds)
+      })()
+
+      return
+    }
 
     if (
       oldPlaylistId !== newPlaylistId
@@ -75,14 +84,22 @@ class Sub extends Component {
     return this._getQuery().search
   }
 
+  _isAllPlaylists () {
+    return !this.props.match.params.id
+  }
+
+  _shouldLoadAllPlaylists (sub, oldPlaylistId, newPlaylistId) {
+    if (sub) return false
+    if (oldPlaylistId && !newPlaylistId) return true
+    if (videosStore.hasLoadedAllPlaylists) return false
+
+    return true
+  }
+
   render () {
     const sub = this._getSub()
 
     if (!subsStore.subs.length) return null
-
-    if (!sub) {
-      return <p className='videos-empty'>Please select a sub</p>
-    }
 
     let { isLoading, prevPageToken, nextPageToken } = videosStore
 
@@ -106,7 +123,7 @@ class Sub extends Component {
   }
 
   _search (sub) {
-    if (sub.isCustom) return null
+    if (!sub || sub.isCustom) return null
 
     return (
       <Search
@@ -136,6 +153,7 @@ class Sub extends Component {
           onPlay={_.partial(this._playVideo, id)}
           subs={subsStore.subs}
           video={video}
+          channelImage={this._isAllPlaylists() && subsStore.getChannelImage(video.channelId)}
           addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
           removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
         />

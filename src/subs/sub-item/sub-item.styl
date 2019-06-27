@@ -19,9 +19,13 @@ remove-width = 28px;
     text-decoration: none;
 
     &:hover,
-    &:focus,
+    &:focus {
+      background: darken(light-color, 30%);
+    }
+
     &.active {
-      background: darken(light-color, 20%);
+      background: darken(warning-color, 20%);
+      color: light-color;
     }
   }
 
@@ -29,10 +33,6 @@ remove-width = 28px;
     font-size: 1.1em;
     font-weight: 400;
     padding: 0.6em;
-
-    .editing & {
-      border-left: solid 1px darken(light-color, 20%);
-    }
   }
 
   .editing & .custom-sub-item {

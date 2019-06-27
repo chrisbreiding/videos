@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
+import { NavLink } from 'react-router-dom'
 
 import subsStore from './subs-store'
 import util from '../lib/util'
@@ -60,7 +61,22 @@ class Subs extends Component {
     }
 
     return (
-      <ul className={cs({ editing: this.isEditing })}>
+      <ul className={cs({
+        'editing': this.isEditing,
+        'has-subs': !!subsStore.subs.length,
+      })}>
+        <li className='sub-item all-subs'>
+          <span>
+            <span className='thumb'>
+              {_.map(subsStore.fourChannels, (sub) => (
+                <img key={sub.id} src={sub.thumb} />
+              ))}
+            </span>
+            <NavLink exact to='/' className='sub-title' activeClassName='active'>
+              <h3>All Subs</h3>
+            </NavLink>
+          </span>
+        </li>
         {subsStore.subs.map((sub) => {
           const link = {
             pathname: `/subs/${sub.id}`,

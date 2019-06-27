@@ -27,6 +27,7 @@ const Video = observer((props) => {
         <aside>
           <button className='play-video' onClick={props.onPlay}>
             <img src={props.video.thumb} />
+            {props.channelImage && <img className='channel' src={props.channelImage} />}
             {icon('youtube-play')}
           </button>
         </aside>

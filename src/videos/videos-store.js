@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx'
 import _ from 'lodash'
 import moment from 'moment'
+import RSVP from 'rsvp'
 
 import videosService from './videos-service'
 import VideoModel from './video-model'
@@ -8,51 +9,72 @@ import VideoModel from './video-model'
 class VideosStore {
   @observable _videos = []
   @observable _isCustom = false
+  @observable hasLoadedAllPlaylists = false
   @observable isLoading = false
   @observable prevPageToken
   @observable nextPageToken
 
   @computed get videos () {
-    return this._videos.sort((video1, video2) => {
+    const sortedVideos = this._videos.sort((video1, video2) => {
       const method = this._isCustom ? 'isAfter' : 'isBefore'
       return moment(video1.published)[method](video2.published) ? 1 : -1
     })
+
+    return _.take(sortedVideos, 25)
+  }
+
+  @action setHasLoadedAllPlaylists (hasLoaded) {
+    this.hasLoadedAllPlaylists = hasLoaded
   }
 
   getVideosDataForPlaylist (playlistId, pageToken) {
     this._beforeLoad()
 
-    videosService.getVideosDataForPlaylist(playlistId, pageToken)
+    return videosService.getVideosDataForPlaylist(playlistId, pageToken)
     .then(action('get:playlist:videos', (videosData) => {
       this._updateVideosData(videosData)
-      this._isCustom = false
-      this.isLoading = false
+      this._afterLoad(false)
+    }))
+  }
+
+  getVideosDataForAllPlaylists (playlistIds) {
+    if (!playlistIds.length) return RSVP.Promise.resolve([])
+
+    this._beforeLoad()
+
+    return videosService.getVideosDataForAllPlaylists(playlistIds)
+    .then(action('get:all:playlist:videos', (videos) => {
+      this._updateVideosData({
+        videos,
+        prevPageToken: null,
+        nextPageToken: null,
+      })
+      this.hasLoadedAllPlaylists = true
+      this._afterLoad(false)
     }))
   }
 
   getVideosDataForChannelSearch (channel, query, pageToken) {
     this._beforeLoad()
 
-    videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
+    return videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
     .then(action('get:channel:search:videos', (videosData) => {
       this._updateVideosData(videosData)
-      this._isCustom = false
-      this.isLoading = false
+      this._afterLoad(false)
     }))
   }
 
   getVideosDataForCustomPlaylist (playlist) {
     this._beforeLoad()
 
-    videosService.getVideosDataForCustomPlaylist(playlist)
+    return videosService.getVideosDataForCustomPlaylist(playlist)
     .then(action('get:custom:playlist:videos', (videos) => {
       this._updateVideosData({
         videos,
         prevPageToken: null,
         nextPageToken: null,
       })
-      this._isCustom = true
-      this.isLoading = false
+      this._afterLoad(true)
     }))
   }
 
@@ -72,6 +94,11 @@ class VideosStore {
     this.isLoading = true
     this.prevPageToken = null
     this.nextPageToken = null
+  }
+
+  _afterLoad (isCustom) {
+    this._isCustom = isCustom
+    this.isLoading = false
   }
 
   _updateVideosData ({ videos, prevPageToken, nextPageToken }) {

@@ -18,6 +18,26 @@
     }
   }
 
+  .all-subs {
+    display: none;
+
+    .thumb {
+      background: #333;
+      display: flex;
+      flex-wrap: wrap;
+      width: thumb-size;
+    }
+
+    img {
+      height: (thumb-size / 2);
+      width: (thumb-size / 2);
+    }
+  }
+
+  .has-subs .all-subs {
+    display: block;
+  }
+
   .videos,
   .videos-empty {
     flex-grow: 2;

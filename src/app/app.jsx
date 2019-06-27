@@ -19,12 +19,6 @@ import Sub from '../sub/sub'
 
 window.hist = createHashHistory()
 
-const NoSubSelected = () => {
-  if (!subsStore.subs.length) return null
-
-  return <p className='videos-empty'>Please select a sub</p>
-}
-
 @observer
 class App extends Component {
   @observable isResizing = false
@@ -77,7 +71,7 @@ class App extends Component {
         <div className='subs'>
           <Subs {...this.props} />
           <Switch>
-            <Route exact path='/subs' component={NoSubSelected} />
+            <Route exact path='/' component={Sub} />
             <Route path='/subs/:id' component={Sub} />
           </Switch>
         </div>

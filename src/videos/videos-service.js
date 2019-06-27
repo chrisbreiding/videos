@@ -2,12 +2,17 @@ import RSVP from 'rsvp'
 import {
   getVideosDataForChannelSearch,
   getVideosDataForPlaylist,
+  getVideosDataForAllPlaylists,
   getVideos,
 } from '../lib/youtube'
 
 class VideosService {
   getVideosDataForPlaylist (playlistId, pageToken) {
     return getVideosDataForPlaylist(playlistId, pageToken)
+  }
+
+  getVideosDataForAllPlaylists (playlistIds) {
+    return getVideosDataForAllPlaylists(playlistIds)
   }
 
   getVideosDataForChannelSearch (channelId, query, pageToken) {

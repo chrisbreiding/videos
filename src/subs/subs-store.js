@@ -13,8 +13,23 @@ class SubsStore {
     return _.sortBy(this._subs.values(), 'order')
   }
 
+  @computed get playlistIds () {
+    return _.map(this.subs, 'playlistId')
+  }
+
+  @computed get fourChannels () {
+    const channels = _.reject(this.subs, { isCustom: true })
+    return _.take(channels, 4)
+  }
+
   getSubById (id) {
     return this._subs.get(id)
+  }
+
+  getChannelImage (id) {
+    const sub = this.getSubById(id)
+
+    return sub && sub.thumb
   }
 
   fetch () {

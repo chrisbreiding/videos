@@ -66,6 +66,7 @@ thumb-width = 160px;
   color: #FFF;
   display: block;
   height: thumb-height;
+  overflow: hidden;
   padding: 0;
   position: relative;
   text-decoration: none;
@@ -75,6 +76,15 @@ thumb-width = 160px;
     display: block;
     height: thumb-height;
     width: thumb-width;
+  }
+
+  .channel {
+    bottom: 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    height: (thumb-height / 2);
+    left: 0;
+    position: absolute;
+    width: (thumb-height / 2);
   }
 
   i {
