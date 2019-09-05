@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint 'src/**/*.+(js|jsx)' --fix",
     "deploy": "zunder deploy",
-    "start": "zunder watch"
+    "start": "zunder watch --port 8001"
   },
   "devDependencies": {
     "babel-eslint": "10.0.3",
