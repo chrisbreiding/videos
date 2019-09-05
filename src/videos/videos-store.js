@@ -27,7 +27,7 @@ class VideosStore {
     this.hasLoadedAllPlaylists = hasLoaded
   }
 
-  getVideosDataForPlaylist (playlistId, pageToken) {
+  @action getVideosDataForPlaylist (playlistId, pageToken) {
     this._beforeLoad()
 
     return videosService.getVideosDataForPlaylist(playlistId, pageToken)
@@ -37,7 +37,7 @@ class VideosStore {
     }))
   }
 
-  getVideosDataForAllPlaylists (playlistIds) {
+  @action getVideosDataForAllPlaylists (playlistIds) {
     if (!playlistIds.length) return RSVP.Promise.resolve([])
 
     this._beforeLoad()
@@ -54,7 +54,7 @@ class VideosStore {
     }))
   }
 
-  getVideosDataForChannelSearch (channel, query, pageToken) {
+  @action getVideosDataForChannelSearch (channel, query, pageToken) {
     this._beforeLoad()
 
     return videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
@@ -64,7 +64,7 @@ class VideosStore {
     }))
   }
 
-  getVideosDataForCustomPlaylist (playlist) {
+  @action getVideosDataForCustomPlaylist (playlist) {
     this._beforeLoad()
 
     return videosService.getVideosDataForCustomPlaylist(playlist)

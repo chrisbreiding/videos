@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React from 'react'
@@ -22,7 +23,12 @@ const Video = observer((props) => {
   }
 
   return (
-    <div className='video'>
+    <div className={cs('video', { 'is-marked': props.isMarked })}>
+      <div className='video-marker'>
+        <div className='remove-video-marker' onClick={props.onRemoveMark}>
+          {icon('remove')}
+        </div>
+      </div>
       <div className='contents'>
         <aside>
           <button className='play-video' onClick={props.onPlay}>

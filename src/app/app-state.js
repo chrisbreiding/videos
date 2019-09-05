@@ -1,6 +1,11 @@
 import _ from 'lodash'
 import { action, computed, observable } from 'mobx'
-import { AUTO_PLAY_ENABLED, NOW_PLAYING_HEIGHT } from '../lib/constants'
+
+import {
+  AUTO_PLAY_ENABLED,
+  NOW_PLAYING_HEIGHT,
+  ALL_SUBS_MARKED_VIDEO_ID,
+} from '../lib/constants'
 import { getItem, setItem } from '../lib/local-data'
 
 const minNowPlayingHeight = 100
@@ -12,12 +17,14 @@ class AppState {
   @observable autoPlayEnabled = true
   @observable isSorting = false
   @observable windowHeight = window.innerHeight
+  @observable allSubsMarkedVideoId
 
   constructor () {
     window.addEventListener('resize', this._onWindowResize)
 
     this._fetch(AUTO_PLAY_ENABLED, 'autoPlayEnabled')
     this._fetch(NOW_PLAYING_HEIGHT, '_nowPlayingHeight')
+    this._fetch(ALL_SUBS_MARKED_VIDEO_ID, 'allSubsMarkedVideoId')
   }
 
   _fetch (key, property) {
@@ -48,11 +55,16 @@ class AppState {
     this.isSorting = isSorting
   }
 
+  @action setAllSubsMarkedVideoId (id) {
+    this.allSubsMarkedVideoId = id
+    setItem(ALL_SUBS_MARKED_VIDEO_ID, id)
+  }
+
   @action _onWindowResize = () => {
     this.windowHeight = window.innerHeight
   }
 
-  updateNowPlayingHeight (height) {
+  @action updateNowPlayingHeight (height) {
     this._saveNowPlayingHeight(height)
     this._nowPlayingHeight = height
   }

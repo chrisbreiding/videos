@@ -57,6 +57,30 @@ thumb-width = 160px;
     margin: 1em 0;
     text-decoration: none;
   }
+
+  .video-marker {
+    display: none;
+    margin-bottom: 0.5em;
+
+    &:before {
+      border-bottom: solid 1px primary-color;
+      content: '';
+      display: block;
+      flex-grow: 2;
+      height: 0.65em;
+    }
+
+    .remove-video-marker {
+      color: primary-color;
+      cursor: pointer;
+      flex-grow: 0;
+      margin-left: 5px;
+    }
+  }
+
+  &.is-marked .video-marker {
+    display: flex;
+  }
 }
 
 .play-video {

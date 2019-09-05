@@ -1,8 +1,6 @@
 import _ from 'lodash'
-import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { Redirect } from 'react-router-dom'
 
 import util, { icon } from '../lib/util'
 import subsStore from '../subs/subs-store'
@@ -11,6 +9,7 @@ import videosStore from '../videos/videos-store'
 import Paginator from '../paginator/paginator'
 import Video from '../videos/video'
 import Search from '../search/search'
+import appState from '../app/app-state'
 
 @observer
 class Sub extends Component {
@@ -40,9 +39,8 @@ class Sub extends Component {
     this.playlistId = newPlaylistId
 
     if (this._shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
-      action('get:all:playlist:videos', () => {
-        videosStore.getVideosDataForAllPlaylists(subsStore.channelIds)
-      })()
+      this._isAllSubs = true
+      videosStore.getVideosDataForAllPlaylists(subsStore.channelIds)
 
       return
     }
@@ -52,18 +50,14 @@ class Sub extends Component {
       || oldToken !== newToken
       || oldSearchQuery !== newSearchQuery
     ) {
+      this._isAllSubs = false
+
       if (newSearchQuery) {
-        action('get:channel:search:videos', () => {
-          videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
-        })()
+        videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
       } else if (sub.isCustom) {
-        action('get:custom:playlist:videos', () => {
-          videosStore.getVideosDataForCustomPlaylist(sub)
-        })()
+        videosStore.getVideosDataForCustomPlaylist(sub)
       } else {
-        action('get:playlist:videos', () => {
-          videosStore.getVideosDataForPlaylist(newPlaylistId, newToken)
-        })()
+        videosStore.getVideosDataForPlaylist(newPlaylistId, newToken)
       }
     }
   }
@@ -118,7 +112,7 @@ class Sub extends Component {
           prevPageToken={prevPageToken}
           nextPageToken={nextPageToken}
         />
-    </main>
+      </main>
     )
   }
 
@@ -133,7 +127,7 @@ class Sub extends Component {
     )
   }
 
-  _videos () {
+  _videos (sub) {
     if (!videosStore.videos.length) {
       return (
         <div className='videos-empty'>
@@ -144,6 +138,10 @@ class Sub extends Component {
       )
     }
 
+    const markedVideoId = this._isAllSubs ? appState.allSubsMarkedVideoId :
+      sub ? sub.markedVideoId :
+        null
+
     return _.map(videosStore.videos, (video) => {
       const id = video.id
 
@@ -153,6 +151,8 @@ class Sub extends Component {
           onPlay={_.partial(this._playVideo, id)}
           subs={subsStore.subs}
           video={video}
+          isMarked={id === markedVideoId}
+          onRemoveMark={_.partial(this._updateVideoMark, null)}
           channelImage={this._isAllPlaylists() && subsStore.getChannelImage(video.channelId)}
           addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
           removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
@@ -172,10 +172,22 @@ class Sub extends Component {
   }
 
   _playVideo = (id) => {
+    this._updateVideoMark(id)
+
     window.hist.push({
       pathname: this.props.location.pathname,
       search: util.stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: id })),
     })
+  }
+
+  _updateVideoMark = (id) => {
+    const sub = this._getSub()
+
+    if (this._isAllSubs) {
+      appState.setAllSubsMarkedVideoId(id)
+    } else if (sub) {
+      subsStore.update(sub.id, { markedVideoId: id })
+    }
   }
 
   _onSearchUpdate = (search) => {

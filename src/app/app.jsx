@@ -8,7 +8,6 @@ import { createHashHistory } from 'history'
 
 import appState from './app-state'
 import authStore from '../login/auth-store'
-import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 import util from '../lib/util'
 
@@ -117,7 +116,7 @@ class App extends Component {
     this.isResizing = true
   }
 
-  @action _updateNowPlayingHeight = (height) => {
+  _updateNowPlayingHeight = (height) => {
     appState.updateNowPlayingHeight(height)
   }
 

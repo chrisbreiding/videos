@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { computed, map, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 
 class SubModel {
   @observable author
@@ -10,7 +10,8 @@ class SubModel {
   @observable playlistId
   @observable thumb
   @observable title
-  @observable videos = map()
+  @observable markedVideoId
+  @observable videos = observable.map()
 
   @computed get videoIds () {
     return this.videos.keys()
@@ -25,10 +26,11 @@ class SubModel {
     this.playlistId = props.playlistId
     this.thumb = props.thumb
     this.title = props.title
-    this.videos = map(props.videos)
+    this.markedVideoId = props.markedVideoId
+    this.videos = observable.map(props.videos)
   }
 
-  update (props) {
+  @action update (props) {
     _.extend(this, props)
   }
 
