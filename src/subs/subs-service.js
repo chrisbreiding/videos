@@ -67,6 +67,10 @@ class SubsService {
     })
   }
 
+  updateAll (subs) {
+    return this._setSubs(subs)
+  }
+
   remove (id) {
     return this._getSubs().then((subs = {}) => {
       return this._setSubs(_.omit(subs, id))
@@ -87,9 +91,9 @@ class SubsService {
 
   _newId (subs) {
     const customIds = _(subs)
-      .filter((sub) => sub.custom || sub.isCustom)
-      .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
-      .value()
+    .filter((sub) => sub.custom || sub.isCustom)
+    .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
+    .value()
     return this._next(customIds)
   }
 

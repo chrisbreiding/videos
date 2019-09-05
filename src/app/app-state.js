@@ -10,6 +10,7 @@ const nowPlayingSizeRatio = 0.5625
 class AppState {
   @observable _nowPlayingHeight = 540
   @observable autoPlayEnabled = true
+  @observable isSorting = false
   @observable windowHeight = window.innerHeight
 
   constructor () {
@@ -41,6 +42,10 @@ class AppState {
 
   @computed get nowPlayingWidth () {
     return Math.floor(this.nowPlayingHeight / nowPlayingSizeRatio)
+  }
+
+  @action setSorting (isSorting) {
+    this.isSorting = isSorting
   }
 
   @action _onWindowResize = () => {

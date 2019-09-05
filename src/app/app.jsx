@@ -52,7 +52,10 @@ class App extends Component {
 
     return (
       <div
-        className={cs('app', { 'is-resizing': this.isResizing })}
+        className={cs('app', {
+          'is-resizing': this.isResizing,
+          'is-sorting': appState.isSorting,
+        })}
         style={{ height: appState.windowHeight }}
       >
         <NowPlaying
@@ -69,7 +72,11 @@ class App extends Component {
           onResizeEnd={this._endResizing}
         />
         <div className='subs'>
-          <Subs {...this.props} />
+          <Subs
+            {...this.props}
+            onSortStart={this._onSortStart}
+            onSortEnd={this._onSortEnd}
+          />
           <Switch>
             <Route exact path='/' component={Sub} />
             <Route path='/subs/:id' component={Sub} />
@@ -116,6 +123,14 @@ class App extends Component {
 
   @action _endResizing = () => {
     this.isResizing = false
+  }
+
+  _onSortStart = () => {
+    appState.setSorting(true)
+  }
+
+  _onSortEnd = (props) => {
+    appState.setSorting(false)
   }
 }
 

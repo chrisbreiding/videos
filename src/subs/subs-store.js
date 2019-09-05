@@ -1,16 +1,17 @@
 import _ from 'lodash'
-import { action, asReference, computed, map, observable } from 'mobx'
+import { action, computed, observable, values } from 'mobx'
+import arrayMove from 'array-move'
 
 import SubModel from '../sub/sub-model'
 import subsService from './subs-service'
 
 class SubsStore {
-  @observable _subs = map()
+  @observable _subs = observable.map()
   @observable selectedSubId = null
-  @observable searchResults = asReference([])
+  @observable.ref searchResults = []
 
   @computed get subs () {
-    return _.sortBy(this._subs.values(), 'order')
+    return _.sortBy(values(this._subs), 'order')
   }
 
   @computed get channelIds () {
@@ -51,9 +52,9 @@ class SubsStore {
   }
 
   _setSubs (subs) {
-    this._subs = _.transform(subs, (memo, sub) => {
-      memo.set(sub.id, new SubModel(sub))
-    }, this._subs)
+    _.each(subs, (sub) => {
+      this._subs.set(sub.id, new SubModel(sub))
+    })
   }
 
   search (query) {
@@ -90,6 +91,19 @@ class SubsStore {
     .then(action('playlist:video:removed', () => {
       this.getSubById(playlist.id).removeVideo(videoId)
     }))
+  }
+
+  sort ({ oldIndex, newIndex }) {
+    if (oldIndex === newIndex) return
+
+    const ids = _.map(this.subs, 'id')
+    const sortedIds = arrayMove(ids, oldIndex, newIndex)
+
+    _.each(sortedIds, (id, order) => {
+      this.getSubById(id).update({ order })
+    })
+
+    subsService.updateAll(this._subs)
   }
 }
 

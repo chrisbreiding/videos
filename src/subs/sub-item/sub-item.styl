@@ -70,9 +70,31 @@ remove-width = 28px;
   }
 
   img {
-    background: light-color;
     height: thumb-size;
     width: thumb-size;
+  }
+
+  .sub-item-icon {
+    background: light-color;
+    cursor: grab;
+    flex-grow: 0;
+    height: thumb-size;
+    position: relative;
+    width: thumb-size;
+
+    // <img /> messes up drag-n-drop sorting, so need to cover it
+    &:after {
+      bottom: 0;
+      content: '';
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
+
+  .sub-item-icon.editable {
+    cursor: pointer;
   }
 
   .num-videos {

@@ -4,12 +4,15 @@ import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
+import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
 import subsStore from './subs-store'
 import util from '../lib/util'
 
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
+
+const SortableSubItem = SortableElement(SubItem)
 
 @observer
 class Subs extends Component {
@@ -77,14 +80,15 @@ class Subs extends Component {
             </NavLink>
           </span>
         </li>
-        {subsStore.subs.map((sub) => {
+        {subsStore.subs.map((sub, index) => {
           const link = {
             pathname: `/subs/${sub.id}`,
             search: util.stringifyQueryString({ nowPlaying: this._getQuery().nowPlaying }),
           }
           return (
-            <SubItem
+            <SortableSubItem
               key={sub.id}
+              index={index}
               sub={sub}
               link={link}
               onUpdate={_.partial(this._updateSub, sub.id)}
@@ -153,4 +157,24 @@ class Subs extends Component {
   }
 }
 
-export default Subs
+
+const SortableSubs = SortableContainer(Subs)
+
+const SortableSubsContainer = (props) => {
+  const onSortEnd = (sortProps) => {
+    props.onSortEnd()
+    subsStore.sort(sortProps)
+  }
+
+  return (
+    <SortableSubs
+      {...props}
+      helperClass='sorting-helper'
+      useDragHandle={true}
+      onSortStart={props.onSortStart}
+      onSortEnd={onSortEnd}
+    />
+  )
+}
+
+export default SortableSubsContainer

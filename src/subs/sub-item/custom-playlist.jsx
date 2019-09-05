@@ -2,11 +2,18 @@ import _ from 'lodash'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
+import { SortableHandle } from 'react-sortable-hoc'
 
 import Title from './title'
 import IconPicker from '../../icon-picker/icon-picker'
 import IconThumb from '../../icon-thumb/icon-thumb'
 import Modal from '../../modal/modal'
+
+const SortHandle = SortableHandle(({ icon }) => (
+  <span className='sub-item-icon'>
+    <IconThumb {...icon} />
+  </span>
+))
 
 @observer
 class CustomPlaylist extends Component {
@@ -15,9 +22,7 @@ class CustomPlaylist extends Component {
   render () {
     return (
       <span className='custom-sub-item'>
-        <span className='sub-item-icon'>
-          <IconThumb {...this.props.sub.icon} />
-        </span>
+        <SortHandle icon={this.props.sub.icon} />
         <button className='sub-item-icon editable' onClick={_.partial(this._setPickingIcon, true)} >
           <IconThumb {...this.props.sub.icon} />
         </button>
