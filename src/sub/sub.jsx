@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 
-import util, { icon } from '../lib/util'
+import { icon, parseQueryString, stringifyQueryString } from '../lib/util'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 
@@ -67,7 +67,7 @@ class Sub extends Component {
   }
 
   _getQuery () {
-    return util.parseQueryString(this.props.location.search)
+    return parseQueryString(this.props.location.search)
   }
 
   _getPageToken () {
@@ -176,7 +176,7 @@ class Sub extends Component {
 
     window.hist.push({
       pathname: this.props.location.pathname,
-      search: util.stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: id })),
+      search: stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: id })),
     })
   }
 
@@ -193,7 +193,7 @@ class Sub extends Component {
   _onSearchUpdate = (search) => {
     window.hist.push({
       pathname: this.props.location.pathname,
-      search: util.stringifyQueryString(_.extend({}, this._getQuery(), {
+      search: stringifyQueryString(_.extend({}, this._getQuery(), {
         search: search || undefined,
         pageToken: undefined,
       })),

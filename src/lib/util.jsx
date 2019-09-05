@@ -24,46 +24,42 @@ function toTwoDigits (num) {
   return num.length === 2 ? num : `0${num}`
 }
 
-class Util {
-  icon (iconName, rightText, leftText) {
-    return (
-      <span className={`icon${rightText || leftText ? ' with-text' : ''}`}>
-        {leftText ? leftText : null}
-        <i className={`fa fa-${iconName}`} />
-        {rightText ? rightText : null}
-      </span>
-    )
-  }
-
-  duration (duration) {
-    const parsed = parseIso8601Duration(duration)
-    let parts = _.map(parsed.slice(1), toTwoDigits)
-    parts.unshift(parsed[0])
-    return parts.join(':')
-  }
-
-  date (date) {
-    const mDate = moment(date)
-    return (
-      <span>
-        <span>{mDate.fromNow()}</span>
-        <br />
-        <span className='formatted'>
-          {mDate.format('MMM D, YYYY h:mma')}
-        </span>
-      </span>
-    )
-  }
-
-  stringifyQueryString (props) {
-    return `?${qs.stringify(props)}`
-  }
-
-  parseQueryString (queryString) {
-    if (!_.isString(queryString)) return {}
-
-    return qs.parse(queryString.replace(/^\?/, ''))
-  }
+export function icon (iconName, rightText, leftText) {
+  return (
+    <span className={`icon${rightText || leftText ? ' with-text' : ''}`}>
+      {leftText ? leftText : null}
+      <i className={`fa fa-${iconName}`} />
+      {rightText ? rightText : null}
+    </span>
+  )
 }
 
-export default new Util()
+export function duration (duration) {
+  const parsed = parseIso8601Duration(duration)
+  let parts = _.map(parsed.slice(1), toTwoDigits)
+  parts.unshift(parsed[0])
+  return parts.join(':')
+}
+
+export function date (date) {
+  const mDate = moment(date)
+  return (
+    <span>
+      <span>{mDate.fromNow()}</span>
+      <br />
+      <span className='formatted'>
+        {mDate.format('MMM D, YYYY h:mma')}
+      </span>
+    </span>
+  )
+}
+
+export function stringifyQueryString (props) {
+  return `?${qs.stringify(props)}`
+}
+
+export function parseQueryString (queryString) {
+  if (!_.isString(queryString)) return {}
+
+  return qs.parse(queryString.replace(/^\?/, ''))
+}

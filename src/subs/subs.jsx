@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
 import subsStore from './subs-store'
-import util from '../lib/util'
+import { parseQueryString, stringifyQueryString } from '../lib/util'
 
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
@@ -83,7 +83,7 @@ class Subs extends Component {
         {subsStore.subs.map((sub, index) => {
           const link = {
             pathname: `/subs/${sub.id}`,
-            search: util.stringifyQueryString({ nowPlaying: this._getQuery().nowPlaying }),
+            search: stringifyQueryString({ nowPlaying: this._getQuery().nowPlaying }),
           }
           return (
             <SortableSubItem
@@ -105,7 +105,7 @@ class Subs extends Component {
 
     window.hist.replace({
       pathname: this.props.location.pathname,
-      search: util.stringifyQueryString(_.omit(this._getQuery(), 'q')),
+      search: stringifyQueryString(_.omit(this._getQuery(), 'q')),
     })
   }
 
@@ -113,12 +113,12 @@ class Subs extends Component {
     const { pathname } = this.props.location
     return {
       pathname,
-      search: util.stringifyQueryString(_.extend({}, this._getQuery(), { adding: type })),
+      search: stringifyQueryString(_.extend({}, this._getQuery(), { adding: type })),
     }
   }
 
   _getQuery () {
-    return util.parseQueryString(this.props.location.search)
+    return parseQueryString(this.props.location.search)
   }
 
   _onAdd = (type, sub) => {
@@ -139,7 +139,7 @@ class Subs extends Component {
     const { pathname } = this.props.location
     window.hist.push({
       pathname,
-      search: util.stringifyQueryString(_.extend({}, this._getQuery(), { q: search })),
+      search: stringifyQueryString(_.extend({}, this._getQuery(), { q: search })),
     })
   }
 

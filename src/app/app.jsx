@@ -9,7 +9,7 @@ import { createHashHistory } from 'history'
 import appState from './app-state'
 import authStore from '../login/auth-store'
 import videosStore from '../videos/videos-store'
-import util from '../lib/util'
+import { parseQueryString, stringifyQueryString } from '../lib/util'
 
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
@@ -92,12 +92,12 @@ class App extends Component {
   _closeNowPlaying = () => {
     window.hist.push({
       pathname: this.props.location.pathname,
-      search: util.stringifyQueryString(_.omit(this._getQuery(), 'nowPlaying')),
+      search: stringifyQueryString(_.omit(this._getQuery(), 'nowPlaying')),
     })
   }
 
   _getQuery () {
-    return util.parseQueryString(this.props.location.search)
+    return parseQueryString(this.props.location.search)
   }
 
   _onVideoEnded = () => {
@@ -107,7 +107,7 @@ class App extends Component {
     if (nextVideoId) {
       window.hist.push({
         pathname: this.props.location.pathname,
-        search: util.stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: nextVideoId })),
+        search: stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: nextVideoId })),
       })
     }
   }
@@ -128,7 +128,7 @@ class App extends Component {
     appState.setSorting(true)
   }
 
-  _onSortEnd = (props) => {
+  _onSortEnd = () => {
     appState.setSorting(false)
   }
 }
