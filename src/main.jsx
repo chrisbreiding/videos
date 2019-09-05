@@ -1,4 +1,4 @@
-import { useStrict } from 'mobx'
+import { configure as configureMobx } from 'mobx'
 import React from 'react'
 import { render } from 'react-dom'
 import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
@@ -7,7 +7,7 @@ import RSVP from 'rsvp'
 import App from './app/app'
 import Login from './login/login'
 
-useStrict(true)
+configureMobx({ enforceActions: 'always' })
 
 RSVP.on('error', (e) => {
   /* eslint-disable no-console */

@@ -6,13 +6,11 @@ import authStore from './auth-store'
 
 @observer
 class Login extends Component {
-  componentWillMount () {
+  componentDidMount () {
     authStore.getApiKey().then(action('login:set:api:key', (apiKey) => {
       authStore.setApiKey(apiKey)
     }))
-  }
 
-  componentDidMount () {
     this.refs.apiKey.focus()
   }
 

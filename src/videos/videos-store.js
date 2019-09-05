@@ -15,7 +15,7 @@ class VideosStore {
   @observable nextPageToken
 
   @computed get videos () {
-    const sortedVideos = this._videos.sort((video1, video2) => {
+    const sortedVideos = this._videos.slice().sort((video1, video2) => {
       const method = this._isCustom ? 'isAfter' : 'isBefore'
       return moment(video1.published)[method](video2.published) ? 1 : -1
     })

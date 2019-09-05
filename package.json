@@ -8,25 +8,27 @@
     "start": "zunder watch"
   },
   "devDependencies": {
-    "zunder": "4.0.4"
     "babel-eslint": "10.0.3",
     "eslint": "6.3.0",
     "eslint-plugin-crb": "^1.0.0",
     "eslint-plugin-react": "7.14.3",
+    "zunder": "4.1.1"
   },
   "dependencies": {
+    "array-move": "^2.1.0",
     "classnames": "2.2.6",
     "font-awesome": "4.7.0",
     "history": "^4.9.0",
-    "lodash": "4.17.11",
-    "mobx": "2.5.2",
-    "mobx-react": "3.5.6",
-    "moment": "2.10.3",
-    "qs": "^6.7.0",
-    "react": "15.3.2",
-    "react-dom": "15.3.2",
-    "react-router": "5.0.0",
-    "react-router-dom": "5.0.0",
+    "lodash": "4.17.15",
+    "mobx": "5.13.0",
+    "mobx-react": "6.1.3",
+    "moment": "2.24.0",
+    "qs": "^6.8.0",
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
+    "react-router": "5.0.1",
+    "react-router-dom": "5.0.1",
+    "react-sortable-hoc": "^1.10.1",
     "reqwest": "1.1.6",
     "rsvp": "3.6.2"
   }

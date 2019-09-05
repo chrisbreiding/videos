@@ -18,7 +18,7 @@ const SortableSubItem = SortableElement(SubItem)
 class Subs extends Component {
   @observable isEditing = false
 
-  componentWillMount () {
+  componentDidMount () {
     subsStore.fetch()
   }
 

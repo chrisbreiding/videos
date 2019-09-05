@@ -1,11 +1,11 @@
-import { asReference, observable } from 'mobx'
+import { observable } from 'mobx'
 import moment from 'moment'
 
 class VideoModel {
   @observable duration
   @observable id
   @observable channelId
-  @observable published = asReference(null)
+  @observable.ref published = null
   @observable description
   @observable order
   @observable thumb
