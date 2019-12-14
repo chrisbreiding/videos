@@ -98,7 +98,7 @@ class IconPicker extends Component {
   }
 
   _updateIcon = (icon) => {
-    this._update('icon', icon)
+    this.props.onUpdate('icon', icon)
   }
 
   @action _updateFilter = (e) => {
