@@ -14,7 +14,7 @@ class SubModel {
   @observable videos = observable.map()
 
   @computed get videoIds () {
-    return this.videos.keys()
+    return Array.from(this.videos.keys())
   }
 
   constructor (props) {
