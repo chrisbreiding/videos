@@ -6,17 +6,15 @@ import YoutubePlayer from '../lib/youtube-player'
 import appState from '../app/app-state'
 import { icon } from '../lib/util'
 
-const padding = 15
-
 const NowPlaying = observer((props) => {
   if (!props.id) return null
 
   return (
-    <div className='now-playing' style={{ height: appState.nowPlayingHeight, padding }}>
+    <div className='now-playing' style={{ height: appState.nowPlayingHeight }}>
       <YoutubePlayer
         id={props.id}
-        width={appState.nowPlayingWidth - (padding * 2)}
-        height={appState.nowPlayingHeight - (padding * 2)}
+        width={appState.nowPlayingWidth}
+        height={appState.nowPlayingHeight}
         onEnd={props.onEnd}
       />
       <div className='cover' />
