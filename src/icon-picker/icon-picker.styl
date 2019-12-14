@@ -12,9 +12,10 @@
 
   fieldset {
     margin-bottom: 0.5em;
+    margin-right: 1em;
 
-    &:first-child {
-      margin-right: 1em;
+    &:last-child {
+      margin-right: 0;
     }
   }
 
@@ -24,7 +25,13 @@
   }
 
   .fields {
+    align-items: center;
     display: flex;
+
+    i {
+      font-size: 1.5em;
+      margin-right: 0.3em;
+    }
   }
 
   input[type='color'] {
@@ -42,6 +49,10 @@
     padding: 0.6em;
     text-align: center;
     width: 100%;
+  }
+
+  .empty-icons {
+    text-align: center;
   }
 
   .picker-icon {

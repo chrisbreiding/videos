@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import cs from 'classnames'
@@ -7,6 +8,8 @@ import IconThumb from '../icon-thumb/icon-thumb'
 
 @observer
 class IconPicker extends Component {
+  @observable filter = ''
+
   render () {
     const { foregroundColor, backgroundColor } = this.props.icon
 
@@ -37,32 +40,57 @@ class IconPicker extends Component {
                 onChange={this._updateColor('background')}
               />
               <input
-                ref='backgroundColor'
                 value={backgroundColor}
                 onChange={this._updateColor('background')}
               />
             </div>
           </fieldset>
+          <fieldset>
+            <label>Filter</label>
+            <div className='fields'>
+              <i className='fa fa-filter' />
+              <input
+                value={this.filter}
+                onChange={this._updateFilter}
+              />
+            </div>
+          </fieldset>
         </form>
         <div className='icons'>
-          {_.map(icons, (icon) => (
-            <button
-              key={icon}
-              onClick={_.partial(this._updateIcon, icon)}
-              className={cs('picker-icon', {
-                chosen: this.props.icon.icon === icon,
-              })}
-            >
-              <IconThumb
-                backgroundColor={this.props.icon.backgroundColor}
-                foregroundColor={this.props.icon.foregroundColor}
-                icon={icon}
-              />
-            </button>
-          ))}
+          {this._icons()}
         </div>
       </div>
     )
+  }
+
+  _icons () {
+    const filteredIcons = this.filter ?
+      _.filter(icons, (icon) => icon.includes(this.filter)) :
+      icons
+
+    if (!filteredIcons.length) {
+      return (
+        <div className='empty-icons'>
+          <p>No icons matching filter '{this.filter}'</p>
+        </div>
+      )
+    }
+
+    return _.map(filteredIcons, (icon) => (
+      <button
+        key={icon}
+        onClick={_.partial(this._updateIcon, icon)}
+        className={cs('picker-icon', {
+          chosen: this.props.icon.icon === icon,
+        })}
+      >
+        <IconThumb
+          backgroundColor={this.props.icon.backgroundColor}
+          foregroundColor={this.props.icon.foregroundColor}
+          icon={icon}
+        />
+      </button>
+    ))
   }
 
   _updateColor = (key) => (e) => {
@@ -71,6 +99,10 @@ class IconPicker extends Component {
 
   _updateIcon = (icon) => {
     this._update('icon', icon)
+  }
+
+  @action _updateFilter = (e) => {
+    this.filter = e.target.value
   }
 }
 
