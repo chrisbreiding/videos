@@ -1,4 +1,4 @@
-import mobx, { action, observable } from 'mobx'
+import mobx, { action, observable, toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import _ from 'lodash'
 import React, { Component } from 'react'
@@ -78,7 +78,7 @@ class AddCustomPlaylist extends Component {
     const title = this.refs.title.value
     if (!title) return
 
-    this.props.onAdd('custom', { title, icon: mobx.toJS(this.icon) })
+    this.props.onAdd('custom', { title, icon: toJS(this.icon) })
   }
 }
 
