@@ -20,8 +20,6 @@ class VideosService {
   }
 
   getVideosDataForCustomPlaylist (playlist) {
-    console.log('getVideosDataForCustomPlaylist:', playlist.videos.size)
-
     if (!playlist.videos.size) return RSVP.Promise.resolve([])
 
     return getVideos(playlist.videoIds)

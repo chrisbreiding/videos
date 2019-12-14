@@ -10,13 +10,29 @@
     margin-bottom: 0.5em;
   }
 
-  fieldset:first-child {
-    margin-right: 1em;
+  fieldset {
+    margin-bottom: 0.5em;
+
+    &:first-child {
+      margin-right: 1em;
+    }
   }
 
   label {
     display: block;
     margin-bottom: 0.4em;
+  }
+
+  .fields {
+    display: flex;
+  }
+
+  input[type='color'] {
+    cursor: pointer;
+    height: 2.2em;
+    margin-right: 0.4em;
+    padding: 0;
+    width: 2.2em;
   }
 
   .icons {

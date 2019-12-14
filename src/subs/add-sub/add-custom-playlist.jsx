@@ -14,8 +14,8 @@ import Modal from '../../modal/modal'
 class AddCustomPlaylist extends Component {
   @observable icon = {
     icon: icons[0],
-    foregroundColor: '#FFF',
-    backgroundColor: '#333',
+    foregroundColor: '#FFFFFF',
+    backgroundColor: '#333333',
   }
   @observable isPickingIcon = false
 
