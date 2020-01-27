@@ -24,6 +24,12 @@ class VideosService {
 
     return getVideos(playlist.videoIds)
   }
+
+  getVideo (id) {
+    return getVideos([id]).then((videos) => {
+      return videos[0]
+    })
+  }
 }
 
 export default new VideosService()

@@ -78,6 +78,10 @@ class VideosStore {
     }))
   }
 
+  getVideoById (id) {
+    return _.find(this._videos, { id })
+  }
+
   nextVideoId (videoId) {
     if (!videoId || this.videos.length < 2) return null
 

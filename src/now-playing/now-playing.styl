@@ -25,11 +25,12 @@
     background: #000;
     border: none;
     color: darken(light-color, 20%);
-    position: absolute;
-    right: 0;
+    height: 2.2em;
+    width: 2.4em;
 
     &:hover,
     &:focus {
+      background: #555;
       color: #FFF;
     }
 
@@ -40,13 +41,29 @@
 
   .close {
     border-radius: 0 0 0 3px;
+    position: absolute;
+    right: 0;
     top: 0;
   }
 
-  .toggle-auto-play {
-    border-radius: 3px 0 0 0;
+  .controls {
     bottom: 0;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+  }
 
+  button {
+    border-radius: 0;
+  }
+
+  button:first-child {
+    border-radius: 3px 0 0 0;
+  }
+
+  .toggle-auto-play,
+  .toggle-description {
     &.enabled {
       color: lighten(action-color, 20%);
 
@@ -55,5 +72,21 @@
         color: lighten(action-color, 40%);
       }
     }
+  }
+
+  .description {
+    background: #f8f8f8;
+    border-bottom: solid 1px #d3d3d3;
+    display: none;
+    left: 0;
+    padding: 0.8em 1em;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 100;
+  }
+
+  &.is-showing-description .description {
+    display: block;
   }
 }
