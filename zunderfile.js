@@ -1,6 +1,10 @@
 const zunder = require('zunder')
 
 zunder.setConfig({
+  browserifyOptions: {
+    ...zunder.config.browserifyOptions,
+    debug: true,
+  },
   staticGlobs: {
     'static/**': '',
     'node_modules/font-awesome/fonts/**': '/fonts',
