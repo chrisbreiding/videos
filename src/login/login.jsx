@@ -1,9 +1,10 @@
 import { action } from 'mobx'
-import { observer } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 
 import authStore from './auth-store'
 
+@inject('router')
 @observer
 class Login extends Component {
   componentDidMount () {
@@ -39,7 +40,7 @@ class Login extends Component {
 
       action('login:save:api:key', () => {
         authStore.saveApiKey(apiKey).then(() => {
-          window.hist.push({ pathname: '/' })
+          this.props.router.push({ pathname: '/' })
         })
       })()
     })

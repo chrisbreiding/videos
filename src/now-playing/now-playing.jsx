@@ -3,6 +3,7 @@ import MarkDown from 'markdown-it'
 import { action } from 'mobx'
 import { observer, useLocalStore } from 'mobx-react'
 import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 import YoutubePlayer from '../lib/youtube-player'
 import appState from '../app/app-state'
@@ -67,7 +68,7 @@ const NowPlaying = observer((props) => {
         onEnd={props.onEnd}
       />
       <div className='cover' />
-      <button className='close' onClick={props.onClose}>{icon('remove')}</button>
+      <Link className='close button' to={props.closeLink}>{icon('remove')}</Link>
       <div className='controls'>
         <button
           className={cs('toggle-auto-play', { enabled: props.autoPlayEnabled })}

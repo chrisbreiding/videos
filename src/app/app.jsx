@@ -1,10 +1,9 @@
 import cs from 'classnames'
 import _ from 'lodash'
 import { action, observable } from 'mobx'
-import { observer } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { createHashHistory } from 'history'
 
 import appState from './app-state'
 import authStore from '../login/auth-store'
@@ -16,8 +15,7 @@ import Resizer from './resizer'
 import Subs from '../subs/subs'
 import Sub from '../sub/sub'
 
-window.hist = createHashHistory()
-
+@inject('router')
 @observer
 class App extends Component {
   @observable isResizing = false
@@ -35,7 +33,7 @@ class App extends Component {
           authStore.setApiKey(apiKey)
         })()
       } else {
-        window.hist.push({ pathname: '/login' })
+        this.props.router.push({ pathname: '/login' })
       }
     })
   }
@@ -60,7 +58,7 @@ class App extends Component {
         <NowPlaying
           autoPlayEnabled={appState.autoPlayEnabled}
           id={this._nowPlayingId()}
-          onClose={this._closeNowPlaying}
+          closeLink={this._closeNowPlayingLink}
           onEnd={this._onVideoEnded}
           onToggleAutoPlay={appState.toggleAutoPlay}
         />
@@ -89,11 +87,9 @@ class App extends Component {
     return this._getQuery().nowPlaying
   }
 
-  _closeNowPlaying = () => {
-    window.hist.push({
-      pathname: this.props.location.pathname,
-      search: stringifyQueryString(_.omit(this._getQuery(), 'nowPlaying')),
-    })
+  _closeNowPlayingLink = () => {
+    const queryString = stringifyQueryString(_.omit(this._getQuery(), 'nowPlaying'))
+    return `${this.props.location.pathname}${queryString}`
   }
 
   _getQuery () {
@@ -105,7 +101,9 @@ class App extends Component {
 
     const nextVideoId = videosStore.nextVideoId(this._nowPlayingId())
     if (nextVideoId) {
-      window.hist.push({
+      // TODO: update video mark
+
+      this.props.router.push({
         pathname: this.props.location.pathname,
         search: stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: nextVideoId })),
       })

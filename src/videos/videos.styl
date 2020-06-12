@@ -87,7 +87,6 @@ thumb-width = 160px;
   background: none;
   border: none;
   border-radius: 0;
-  color: #FFF;
   display: block;
   height: thumb-height;
   overflow: hidden;
@@ -95,6 +94,11 @@ thumb-width = 160px;
   position: relative;
   text-decoration: none;
   width: thumb-width;
+
+  &:link,
+  &:visited {
+    color: #FFF;
+  }
 
   img {
     display: block;

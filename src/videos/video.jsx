@@ -2,6 +2,7 @@ import cs from 'classnames'
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import { icon, duration, date } from '../lib/util'
 import PlaylistPicker from './playlist-picker/playlist-picker'
@@ -31,11 +32,11 @@ const Video = observer((props) => {
       </div>
       <div className='contents'>
         <aside>
-          <button className='play-video' onClick={props.onPlay}>
+          <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
             <img src={props.video.thumb} />
             {props.channelImage && <img className='channel' src={props.channelImage} />}
             {icon('youtube-play')}
-          </button>
+          </Link>
         </aside>
         <main>
           <h4>{props.video.title}</h4>

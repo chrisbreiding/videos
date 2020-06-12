@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import { observer } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 
-import { icon, parseQueryString, stringifyQueryString } from '../lib/util'
+import { icon, parseQueryString, addToQueryString } from '../lib/util'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 
@@ -11,6 +11,7 @@ import Video from '../videos/video'
 import Search from '../search/search'
 import appState from '../app/app-state'
 
+@inject('router')
 @observer
 class Sub extends Component {
   componentDidMount () {
@@ -149,6 +150,7 @@ class Sub extends Component {
         <Video
           key={id}
           onPlay={_.partial(this._playVideo, id)}
+          playLink={this._playVideoLink(id)}
           subs={subsStore.subs}
           video={video}
           isMarked={id === markedVideoId}
@@ -173,11 +175,14 @@ class Sub extends Component {
 
   _playVideo = (id) => {
     this._updateVideoMark(id)
+  }
 
-    window.hist.push({
-      pathname: this.props.location.pathname,
-      search: stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: id })),
-    })
+  _playVideoLink (id) {
+    const { pathname, search } = this.props.location
+    const queryString = addToQueryString(search, { nowPlaying: id })
+
+    return `${pathname}${queryString}`
+  }
   }
 
   _updateVideoMark = (id) => {
@@ -190,13 +195,15 @@ class Sub extends Component {
     }
   }
 
-  _onSearchUpdate = (search) => {
-    window.hist.push({
-      pathname: this.props.location.pathname,
-      search: stringifyQueryString(_.extend({}, this._getQuery(), {
-        search: search || undefined,
+  _onSearchUpdate = (searchTerm) => {
+    const { pathname, search } = this.props.location
+
+    this.props.router.push({
+      pathname,
+      search: addToQueryString(search, {
+        search: searchTerm || undefined,
         pageToken: undefined,
-      })),
+      }),
     })
   }
 }

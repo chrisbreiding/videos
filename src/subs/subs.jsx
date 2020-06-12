@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import _ from 'lodash'
 import { action, observable } from 'mobx'
-import { observer } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
@@ -14,6 +14,7 @@ import SubItem from './sub-item/sub-item'
 
 const SortableSubItem = SortableElement(SubItem)
 
+@inject('router')
 @observer
 class Subs extends Component {
   @observable isEditing = false
@@ -103,7 +104,7 @@ class Subs extends Component {
   @action _clearAddSearch = () => {
     subsStore.clearSearchResults()
 
-    window.hist.replace({
+    this.props.router.replace({
       pathname: this.props.location.pathname,
       search: stringifyQueryString(_.omit(this._getQuery(), 'q')),
     })
@@ -128,7 +129,7 @@ class Subs extends Component {
       subsStore.addCustomPlaylist(sub)
     }
 
-    window.hist.push(this._linkToAdding())
+    this.props.router.push(this._linkToAdding())
   }
 
   _search = (query) => {
@@ -137,7 +138,7 @@ class Subs extends Component {
 
   _updateSearch = (search) => {
     const { pathname } = this.props.location
-    window.hist.push({
+    this.props.router.push({
       pathname,
       search: stringifyQueryString(_.extend({}, this._getQuery(), { q: search })),
     })

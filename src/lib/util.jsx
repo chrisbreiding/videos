@@ -63,3 +63,8 @@ export function parseQueryString (queryString) {
 
   return qs.parse(queryString.replace(/^\?/, ''))
 }
+
+export function addToQueryString (queryString, addition) {
+  const queryObject = parseQueryString(queryString)
+  return stringifyQueryString(_.extend({}, queryObject, addition))
+}

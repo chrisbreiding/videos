@@ -1,8 +1,14 @@
 import { configure as configureMobx } from 'mobx'
+import { Provider } from 'mobx-react'
+import { RouterStore, syncHistoryWithStore } from 'mobx-react-router'
 import React from 'react'
 import { render } from 'react-dom'
-import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
+import { Router, Link, Route, Switch } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
 import RSVP from 'rsvp'
+
+// https://github.com/mobxjs/mobx-react-lite/#observer-batching
+import 'mobx-react-lite/batchingForReactDom'
 
 import App from './app/app'
 import Login from './login/login'
@@ -17,20 +23,28 @@ RSVP.on('error', (e) => {
   /* eslint-enable no-console */
 })
 
+const browserHistory = createBrowserHistory()
+const routerStore = new RouterStore()
+
+const history = syncHistoryWithStore(browserHistory, routerStore)
+
 render(
-  <Router>
-    <Switch>
-      <Route exact path="/" component={App} />
-      <Route exact path="/login" component={Login} />
-      <Route path="/subs" component={App} />
-      <Route
-        component={() => (
-          <div>
-            <p>404 - Not Found</p>
-            <p><Link to='/subs'>Subs</Link></p>
-          </div>
-        )}
-      />
-    </Switch>
-  </Router>
-, document.getElementById('app'))
+  <Provider router={routerStore}>
+    <Router history={history}>
+      <Switch>
+        <Route exact path="/" component={App} />
+        <Route exact path="/login" component={Login} />
+        <Route path="/subs" component={App} />
+        <Route
+          component={() => (
+            <div>
+              <p>404 - Not Found</p>
+              <p><Link to='/subs'>Subs</Link></p>
+            </div>
+          )}
+        />
+      </Switch>
+    </Router>
+  </Provider>,
+  document.getElementById('app'),
+)
