@@ -4,6 +4,7 @@ import { action } from 'mobx'
 import { observer, useLocalStore } from 'mobx-react'
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import DocumentTitle from 'react-document-title'
 
 import YoutubePlayer from '../lib/youtube-player'
 import appState from '../app/app-state'
@@ -20,8 +21,12 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
 
 const NowPlaying = observer((props) => {
   const state = useLocalStore(() => ({
+    title: '...',
     description: 'Loading description...',
     isShowingDescription: false,
+    setTitle: action((title) => {
+      state.title = title
+    }),
     setDescription: action((description) => {
       state.description = description
     }),
@@ -33,6 +38,11 @@ const NowPlaying = observer((props) => {
     },
   }))
 
+  const setVideoProps = (video) => {
+    state.setTitle(video.title)
+    state.setDescription(video.description)
+  }
+
   useEffect(() => {
     state.setShowingDescription(false)
 
@@ -41,13 +51,11 @@ const NowPlaying = observer((props) => {
     const video = videosStore.getVideoById(props.id)
 
     if (video) {
-      state.setDescription(video.description)
+      setVideoProps(video)
       return
     }
 
-    videosService.getVideo(props.id).then((video) => {
-      state.setDescription(video.description)
-    })
+    videosService.getVideo(props.id).then(setVideoProps)
   }, [props.id])
 
   if (!props.id) return null
@@ -61,6 +69,7 @@ const NowPlaying = observer((props) => {
       })}
       style={{ height: appState.nowPlayingHeight }}
     >
+      <DocumentTitle title={`${state.title} | Videos`} />
       <YoutubePlayer
         id={props.id}
         width={appState.nowPlayingWidth}

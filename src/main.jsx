@@ -6,6 +6,7 @@ import { render } from 'react-dom'
 import { Router, Link, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 import RSVP from 'rsvp'
+import DocumentTitle from 'react-document-title'
 
 // https://github.com/mobxjs/mobx-react-lite/#observer-batching
 import 'mobx-react-lite/batchingForReactDom'
@@ -30,6 +31,7 @@ const history = syncHistoryWithStore(browserHistory, routerStore)
 
 render(
   <Provider router={routerStore}>
+    <DocumentTitle title='Videos' />
     <Router history={history}>
       <Switch>
         <Route exact path="/" component={App} />
