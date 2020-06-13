@@ -8,7 +8,7 @@ import { Route, Switch } from 'react-router-dom'
 import appState from './app-state'
 import authStore from '../login/auth-store'
 import videosStore from '../videos/videos-store'
-import { parseQueryString, stringifyQueryString } from '../lib/util'
+import { parseQueryString, updatedLink } from '../lib/util'
 
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
@@ -88,8 +88,9 @@ class App extends Component {
   }
 
   _closeNowPlayingLink = () => {
-    const queryString = stringifyQueryString(_.omit(this._getQuery(), 'nowPlaying'))
-    return `${this.props.location.pathname}${queryString}`
+    return updatedLink(this.props.location, {
+      search: { nowPlaying: undefined },
+    })
   }
 
   _getQuery () {
@@ -103,10 +104,9 @@ class App extends Component {
     if (nextVideoId) {
       // TODO: update video mark
 
-      this.props.router.push({
-        pathname: this.props.location.pathname,
-        search: stringifyQueryString(_.extend({}, this._getQuery(), { nowPlaying: nextVideoId })),
-      })
+      this.props.router.push(updatedLink(this.props.location, {
+        search: { nowPlaying: nextVideoId },
+      }))
     }
   }
 

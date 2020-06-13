@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
 import subsStore from './subs-store'
-import { parseQueryString, stringifyQueryString } from '../lib/util'
+import { parseQueryString, updatedLink } from '../lib/util'
 
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
@@ -64,6 +64,17 @@ class Subs extends Component {
       )
     }
 
+    const { location } = this.props
+    const search = {
+      pageToken: undefined,
+      search: undefined,
+      marker: undefined,
+    }
+    const allSubsLink = updatedLink(location, {
+      pathname: '/',
+      search,
+    })
+
     return (
       <ul className={cs({
         'editing': this.isEditing,
@@ -76,16 +87,17 @@ class Subs extends Component {
                 <img key={sub.id} src={sub.thumb} />
               ))}
             </span>
-            <NavLink exact to='/' className='sub-title' activeClassName='active'>
+            <NavLink exact to={allSubsLink} className='sub-title' activeClassName='active'>
               <h3>All Subs</h3>
             </NavLink>
           </span>
         </li>
         {subsStore.subs.map((sub, index) => {
-          const link = {
+          const link = updatedLink(location, {
             pathname: `/subs/${sub.id}`,
-            search: stringifyQueryString({ nowPlaying: this._getQuery().nowPlaying }),
-          }
+            search,
+          })
+
           return (
             <SortableSubItem
               key={sub.id}
@@ -104,18 +116,15 @@ class Subs extends Component {
   @action _clearAddSearch = () => {
     subsStore.clearSearchResults()
 
-    this.props.router.replace({
-      pathname: this.props.location.pathname,
-      search: stringifyQueryString(_.omit(this._getQuery(), 'q')),
-    })
+    this.props.router.replace(
+      updatedLink(this.props.location, { search: { q: undefined } }),
+    )
   }
 
   _linkToAdding = (type) => {
-    const { pathname } = this.props.location
-    return {
-      pathname,
-      search: stringifyQueryString(_.extend({}, this._getQuery(), { adding: type })),
-    }
+    return updatedLink(this.props.location, {
+      search: { adding: type },
+    })
   }
 
   _getQuery () {
@@ -137,11 +146,11 @@ class Subs extends Component {
   }
 
   _updateSearch = (search) => {
-    const { pathname } = this.props.location
-    this.props.router.push({
-      pathname,
-      search: stringifyQueryString(_.extend({}, this._getQuery(), { q: search })),
-    })
+    this.props.router.push(
+      updatedLink(this.props.location, {
+        search: { add: { q: search } },
+      }),
+    )
   }
 
   @action _toggleEditing = () => {

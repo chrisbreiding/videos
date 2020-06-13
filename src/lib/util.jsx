@@ -64,7 +64,14 @@ export function parseQueryString (queryString) {
   return qs.parse(queryString.replace(/^\?/, ''))
 }
 
-export function addToQueryString (queryString, addition) {
-  const queryObject = parseQueryString(queryString)
-  return stringifyQueryString(_.extend({}, queryObject, addition))
+export function updatedLink (location, updates) {
+  const pathname = updates.pathname || location.pathname
+  let search = location.search
+
+  if (updates.search) {
+    const queryObject = parseQueryString(search)
+    search = stringifyQueryString(_.extend({}, queryObject, updates.search))
+  }
+
+  return { pathname, search }
 }

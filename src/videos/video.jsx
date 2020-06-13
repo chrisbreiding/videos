@@ -1,13 +1,13 @@
 import cs from 'classnames'
 import _ from 'lodash'
-import { observer } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { icon, duration, date } from '../lib/util'
 import PlaylistPicker from './playlist-picker/playlist-picker'
 
-const Video = observer((props) => {
+const Video = inject('router')(observer((props) => {
   const playlists = _.filter(props.subs, (sub) => sub.isCustom)
 
   function playlistPicker () {
@@ -23,13 +23,27 @@ const Video = observer((props) => {
     )
   }
 
+  const removeMark = (e) => {
+    e.stopPropagation()
+
+    props.onRemoveMark()
+  }
+
+  const videoMarkerName = 'video-marker'
+
   return (
     <div className={cs('video', { 'is-marked': props.isMarked })}>
-      <div className='video-marker'>
-        <div className='remove-video-marker' onClick={props.onRemoveMark}>
-          {icon('remove')}
+      {props.isMarked && (
+        <div
+          className={videoMarkerName}
+          id={videoMarkerName}
+          onClick={_.partial(props.addVideoMarkerLink, videoMarkerName)}
+        >
+          <div className='remove-video-marker' onClick={removeMark}>
+            {icon('remove')}
+          </div>
         </div>
-      </div>
+      )}
       <div className='contents'>
         <aside>
           <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
@@ -49,6 +63,6 @@ const Video = observer((props) => {
       {playlistPicker()}
     </div>
   )
-})
+}))
 
 export default Video

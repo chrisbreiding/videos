@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { icon, parseQueryString, stringifyQueryString } from '../lib/util'
+import { icon, updatedLink } from '../lib/util'
 
 @observer
 class Paginator extends Component {
@@ -34,18 +34,11 @@ class Paginator extends Component {
     return (
       <Link
         className={`paginator-button ${className}`}
-        to={{
-          pathname: this.props.location.pathname,
-          search: stringifyQueryString(_.extend({}, this._getQuery(), { pageToken })),
-        }}
+        to={updatedLink(this.props.location, { search: { pageToken } })}
       >
         {children}
       </Link>
     )
-  }
-
-  _getQuery () {
-    return parseQueryString(this.props.location.search)
   }
 }
 
