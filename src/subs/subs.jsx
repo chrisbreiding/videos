@@ -116,7 +116,7 @@ class Subs extends Component {
   @action _clearAddSearch = () => {
     subsStore.clearSearchResults()
 
-    this.props.router.replace(
+    this.props.router.push(
       updatedLink(this.props.location, { search: { q: undefined } }),
     )
   }
