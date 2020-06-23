@@ -12,7 +12,7 @@
     "eslint": "7.2.0",
     "eslint-plugin-crb": "1.0.0",
     "eslint-plugin-react": "7.20.0",
-    "zunder": "6.4.3"
+    "zunder": "6.4.4"
   },
   "dependencies": {
     "array-move": "2.2.2",
