@@ -1,11 +1,6 @@
 import { action, observable } from 'mobx'
 
-import {
-  getDoc,
-  signIn,
-  signOut,
-  updateDoc,
-} from '../lib/firebase'
+import { getDoc, signIn, signOut } from '../lib/firebase'
 import youtube from '../lib/youtube'
 
 class AuthStore {
