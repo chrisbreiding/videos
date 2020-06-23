@@ -7,8 +7,10 @@ import { Route, Switch } from 'react-router-dom'
 
 import appState from './app-state'
 import authStore from '../login/auth-store'
+import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
-import { parseQueryString, updatedLink } from '../lib/util'
+import { watchDoc } from '../lib/firebase'
+import { icon, parseQueryString, updatedLink } from '../lib/util'
 
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
@@ -21,28 +23,51 @@ class App extends Component {
   @observable isResizing = false
 
   componentDidMount () {
-    authStore.getApiKey()
-    .then((apiKey) => {
-      return authStore.checkApiKey(apiKey).then((isValid) => {
-        return { apiKey, isValid }
-      })
-    })
-    .then(({ apiKey, isValid }) => {
-      if (isValid) {
-        action('app:set:api:key', () => {
-          authStore.setApiKey(apiKey)
-        })()
-      } else {
-        this.props.router.push({ pathname: '/login' })
+    authStore.onChange((user) => {
+      if (!user) {
+        return this.props.router.push({ pathname: '/login' })
       }
+
+      this._getApiKey()
     })
+  }
+
+  componentWillUnmount () {
+    if (this.stopListening) {
+      this.stopListening()
+    }
+  }
+
+  async _getApiKey () {
+    this.stopListening = watchDoc(async (data) => {
+      if (data.subs) {
+        subsStore.setSubs(data.subs)
+      }
+
+      if (data.allSubsMarkedVideoId) {
+        appState.setAllSubsMarkedVideoId(data.allSubsMarkedVideoId, false)
+      }
+
+      const apiKey = data.youtubeApiKey
+
+      if (apiKey) {
+        const isValid = await authStore.checkApiKey(apiKey)
+
+        if (isValid) {
+          authStore.setApiKey(apiKey)
+        }
+      }
+
+      // TODO: handle missing or invalid api key
+    })
+
   }
 
   render () {
     if (!authStore.isAuthenticated) {
       return (
         <div className='loader'>
-          <i className='fa fa-sign-in'></i> Authenticating...
+          {icon('sign-in')} Authenticating...
         </div>
       )
     }

@@ -5,7 +5,6 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Router, Link, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
-import RSVP from 'rsvp'
 import DocumentTitle from 'react-document-title'
 
 // https://github.com/mobxjs/mobx-react-lite/#observer-batching
@@ -13,16 +12,11 @@ import 'mobx-react-lite/batchingForReactDom'
 
 import App from './app/app'
 import Login from './login/login'
+import Logout from './login/logout'
 
-configureMobx({ enforceActions: 'always' })
-
-RSVP.on('error', (e) => {
-  /* eslint-disable no-console */
-  console.error('Error caught by RSVP:')
-  console.error(e.message)
-  console.error(e.stack)
-  /* eslint-enable no-console */
-})
+// TODO: need to figure out why mobx thinks it's in production mode
+// when developing. it makes errors from this impossible to debug
+// configureMobx({ enforceActions: 'always' })
 
 const browserHistory = createBrowserHistory()
 const routerStore = new RouterStore()
@@ -36,6 +30,7 @@ render(
       <Switch>
         <Route exact path="/" component={App} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/logout" component={Logout} />
         <Route path="/subs" component={App} />
         <Route
           component={() => (

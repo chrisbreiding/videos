@@ -19,10 +19,6 @@ const SortableSubItem = SortableElement(SubItem)
 class Subs extends Component {
   @observable isEditing = false
 
-  componentDidMount () {
-    subsStore.fetch()
-  }
-
   render () {
     const query = this._getQuery()
     const hasNoSubs = !subsStore.subs.length
@@ -113,8 +109,8 @@ class Subs extends Component {
     )
   }
 
-  @action _clearAddSearch = () => {
-    subsStore.clearSearchResults()
+  _clearAddSearch = () => {
+    subsStore.setSearchResults([])
 
     this.props.router.push(
       updatedLink(this.props.location, { search: { q: undefined } }),
@@ -148,7 +144,7 @@ class Subs extends Component {
   _updateSearch = (search) => {
     this.props.router.push(
       updatedLink(this.props.location, {
-        search: { add: { q: search } },
+        search: { q: search },
       }),
     )
   }

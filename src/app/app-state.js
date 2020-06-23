@@ -1,16 +1,12 @@
 import _ from 'lodash'
 import { action, computed, observable } from 'mobx'
 
-import {
-  AUTO_PLAY_ENABLED,
-  NOW_PLAYING_HEIGHT,
-  ALL_SUBS_MARKED_VIDEO_ID,
-} from '../lib/constants'
 import { getItem, setItem } from '../lib/local-data'
+import { update } from '../lib/remote-data'
 
 const minNowPlayingHeight = 100
 const maxNowPlayingHeightOffset = 10
-const nowPlayingSizeRatio = 0.5625
+const nowPlayingSizeRatio = 1080 / 1920
 
 class AppState {
   @observable _nowPlayingHeight = 540
@@ -22,17 +18,8 @@ class AppState {
   constructor () {
     window.addEventListener('resize', this._onWindowResize)
 
-    this._fetch(AUTO_PLAY_ENABLED, 'autoPlayEnabled')
-    this._fetch(NOW_PLAYING_HEIGHT, '_nowPlayingHeight')
-    this._fetch(ALL_SUBS_MARKED_VIDEO_ID, 'allSubsMarkedVideoId')
-  }
-
-  _fetch (key, property) {
-    getItem(key).then(action(`got:stored:${key}`, (value) => {
-      if (value != null) {
-        this[property] = value
-      }
-    }))
+    this._setProp('autoPlayEnabled', getItem('autoPlayEnabled'))
+    this._setProp('_nowPlayingHeight', getItem('nowPlayingHeight'))
   }
 
   @computed get _maxNowPlayingHeight () {
@@ -51,13 +38,20 @@ class AppState {
     return Math.floor(this.nowPlayingHeight / nowPlayingSizeRatio)
   }
 
+  @action _setProp (key, value) {
+    if (value == null) return
+
+    this[key] = value
+  }
+
   @action setSorting (isSorting) {
     this.isSorting = isSorting
   }
 
-  @action setAllSubsMarkedVideoId (id) {
-    this.allSubsMarkedVideoId = id
-    setItem(ALL_SUBS_MARKED_VIDEO_ID, id)
+  @action setAllSubsMarkedVideoId (allSubsMarkedVideoId, save = true) {
+    this.allSubsMarkedVideoId = allSubsMarkedVideoId
+
+    if (save) this.save()
   }
 
   @action _onWindowResize = () => {
@@ -70,7 +64,7 @@ class AppState {
   }
 
   _saveNowPlayingHeight = _.debounce((height) => {
-    setItem(NOW_PLAYING_HEIGHT, height)
+    setItem('nowPlayingHeight', height)
   }, 500)
 
   @action toggleAutoPlay = () => {
@@ -79,8 +73,12 @@ class AppState {
   }
 
   _saveAutoPlay = _.debounce((isEnabled) => {
-    setItem(AUTO_PLAY_ENABLED, isEnabled)
+    setItem('autoPlayEnabled', isEnabled)
   }, 500)
+
+  save () {
+    update({ allSubsMarkedVideoId: this.allSubsMarkedVideoId })
+  }
 }
 
 export default new AppState()

@@ -2,24 +2,22 @@ import _ from 'lodash'
 import req from 'reqwest'
 import { getItem } from './local-data'
 import authStore from '../login/auth-store'
-import RSVP, { Promise } from 'rsvp'
 
 const RESULTS_PER_PAGE = 25
 
 function getBaseUrl () {
-  return getItem('youtubeBaseUrl').then((baseUrl) => {
-    return baseUrl || 'https://www.googleapis.com/youtube/v3/'
-  })
+  return getItem('youtubeBaseUrl') || 'https://www.googleapis.com/youtube/v3/'
 }
 
 function queryYouTube (url, data) {
-  return Promise.all([getBaseUrl(), authStore.getApiKey()])
-    .then(_.spread((baseUrl, apiKey) => {
-      return req({
-        url: `${baseUrl}${url}`,
-        data: _.extend({ key: apiKey }, data),
-      })
-    }))
+  const baseUrl = getBaseUrl()
+
+  return authStore.getApiKey().then((apiKey) => {
+    return req({
+      url: `${baseUrl}${url}`,
+      data: _.extend({ key: apiKey }, data),
+    })
+  })
 }
 
 function mapChannelDetails (result) {
@@ -65,8 +63,8 @@ function getVideos (ids) {
 function checkApiKey (apiKey) {
   const params = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' }
   return queryYouTube('activities', params)
-    .then(() => true)
-    .catch(() => false)
+  .then(() => true)
+  .catch(() => false)
 }
 
 function searchChannels (query) {
@@ -89,15 +87,15 @@ function getVideosDataForChannelSearch (channelId, query, pageToken) {
   if (pageToken) params.pageToken = pageToken
 
   return queryYouTube('search', params)
-    .then(({ items, prevPageToken, nextPageToken }) => {
-      // there seems to be a bug with the youtube api where it returns
-      // a nextPageToken even if there are no more results after this page
-      if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
+  .then(({ items, prevPageToken, nextPageToken }) => {
+    // there seems to be a bug with the youtube api where it returns
+    // a nextPageToken even if there are no more results after this page
+    if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
 
-      return getVideos(videoIdsFromId(items)).then((videos) => {
-        return { videos, prevPageToken, nextPageToken }
-      })
+    return getVideos(videoIdsFromId(items)).then((videos) => {
+      return { videos, prevPageToken, nextPageToken }
     })
+  })
 }
 
 function getVideosDataForPlaylist (playlistId, pageToken, maxResults = RESULTS_PER_PAGE) {
@@ -109,15 +107,15 @@ function getVideosDataForPlaylist (playlistId, pageToken, maxResults = RESULTS_P
   if (pageToken) params.pageToken = pageToken
 
   return queryYouTube('playlistItems', params)
-    .then(({ items, prevPageToken, nextPageToken }) => {
-      // there seems to be a bug with the youtube api where it returns
-      // a nextPageToken even if there are no more results after this page
-      if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
+  .then(({ items, prevPageToken, nextPageToken }) => {
+    // there seems to be a bug with the youtube api where it returns
+    // a nextPageToken even if there are no more results after this page
+    if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
 
-      return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
-        return { videos, prevPageToken, nextPageToken }
-      })
+    return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
+      return { videos, prevPageToken, nextPageToken }
     })
+  })
 }
 
 function getVideosDataForAllPlaylists (playlistIds) {
@@ -125,7 +123,7 @@ function getVideosDataForAllPlaylists (playlistIds) {
     return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
   })
 
-  return RSVP.Promise.all(getVideos)
+  return Promise.all(getVideos)
   .then((playlists) => _.flatMap(playlists, 'videos'))
 }
 

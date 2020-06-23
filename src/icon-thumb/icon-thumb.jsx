@@ -1,6 +1,7 @@
 import React from 'react'
+import { icon } from '../lib/util'
 
-const IconThumb = ({ backgroundColor, foregroundColor, icon }) => (
+const IconThumb = ({ backgroundColor, foregroundColor, icon: thumbIcon }) => (
   <span
     className='icon-thumb'
     style={{
@@ -8,7 +9,7 @@ const IconThumb = ({ backgroundColor, foregroundColor, icon }) => (
       color: foregroundColor,
     }}
   >
-    <i className={`fa fa-${icon}`} />
+    {icon(thumbIcon)}
   </span>
 )
 

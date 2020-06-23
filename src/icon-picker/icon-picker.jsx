@@ -3,6 +3,8 @@ import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import cs from 'classnames'
+
+import { icon } from '../lib/util'
 import icons from '../lib/icons-list'
 import IconThumb from '../icon-thumb/icon-thumb'
 
@@ -48,7 +50,7 @@ class IconPicker extends Component {
           <fieldset>
             <label>Filter</label>
             <div className='fields'>
-              <i className='fa fa-filter' />
+              {icon('filter')}
               <input
                 value={this.filter}
                 onChange={this._updateFilter}

@@ -15,15 +15,44 @@
     padding: 0.8em 1.2em;
   }
 
+  fieldset {
+    background: light-color;
+    padding: 0.8em 1.2em;
+  }
+
+  label {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 0.4em;
+  }
+
   input {
     background: light-color;
     border-radius: 0;
     display: block;
-    padding: 0.8em 1.2em;
+    padding: 0.4em 0.6em;
     width: 100%;
 
     &:focus {
       outline: solid 0.2em action-color;
+    }
+  }
+
+  .controls {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      background: action-color;
+      border: none;
+      color: light-color;
+      font-size: 1em;
+      padding: 0.6em 0.8em;
+
+      &:hover,
+      &:focus {
+        background: darken(action-color, 20%);
+      }
     }
   }
 }

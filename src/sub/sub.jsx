@@ -143,9 +143,9 @@ class Sub extends Component {
     if (!videosStore.videos.length) {
       return (
         <div className='videos-empty'>
-          <i className='fa fa-film'></i>
+          {icon('film')}
           No videos
-          <i className='fa fa-film'></i>
+          {icon('film')}
         </div>
       )
     }

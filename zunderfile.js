@@ -1,10 +1,18 @@
 const zunder = require('zunder')
 
+const { browserifyOptions } = zunder.config
+const { babel } = zunder.defaults
+
+// enable sourcemaps
+browserifyOptions.debug = true
+// enable async/await
+browserifyOptions.transform[0][1].plugins.push([
+  babel.pluginTransformRuntime.module,
+  babel.pluginTransformRuntime.options,
+])
+
 zunder.setConfig({
-  browserifyOptions: {
-    ...zunder.config.browserifyOptions,
-    debug: true,
-  },
+  browserifyOptions,
   deployBranch: 'production',
   staticGlobs: {
     'static/**': '',

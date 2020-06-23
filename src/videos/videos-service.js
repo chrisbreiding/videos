@@ -1,4 +1,3 @@
-import RSVP from 'rsvp'
 import {
   getVideosDataForChannelSearch,
   getVideosDataForPlaylist,
@@ -20,7 +19,7 @@ class VideosService {
   }
 
   getVideosDataForCustomPlaylist (playlist) {
-    if (!playlist.videos.size) return RSVP.Promise.resolve([])
+    if (!playlist.videos.size) return Promise.resolve([])
 
     return getVideos(playlist.videoIds)
   }

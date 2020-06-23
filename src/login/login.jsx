@@ -1,49 +1,54 @@
-import { action } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 
 import authStore from './auth-store'
+import { icon } from '../lib/util'
 
 @inject('router')
 @observer
 class Login extends Component {
   componentDidMount () {
-    authStore.getApiKey().then(action('login:set:api:key', (apiKey) => {
-      authStore.setApiKey(apiKey)
-    }))
-
-    this.refs.apiKey.focus()
+    this.refs.email.focus()
   }
 
   render () {
     return (
       <div className='login'>
         <form onSubmit={this._login}>
-          <h2>Please enter your API Key</h2>
-          <input ref='apiKey' value={authStore.apiKey} onChange={this._setApiKey} />
+          <h2>Please Log In</h2>
+          <fieldset>
+            <label htmlFor="email">Email</label>
+            <input ref="email" name="email" />
+          </fieldset>
+          <fieldset>
+            <label htmlFor="password">Password</label>
+            <input ref="password" name="password" type='password' />
+          </fieldset>
+          <fieldset className='controls'>
+            <button type="submit">{icon('sign-in')} Log In</button>
+          </fieldset>
         </form>
       </div>
     )
   }
 
-  @action _setApiKey = () => {
-    authStore.setApiKey(this.refs.apiKey.value)
-  }
-
-  _login = (e) => {
+  _login = async (e) => {
     e.preventDefault()
 
-    const apiKey = this.refs.apiKey.value
+    const email = this.refs.email.value
+    const password = this.refs.password.value
 
-    authStore.checkApiKey(apiKey).then((isValid) => {
-      if (!isValid) return
+    try {
+      await authStore.login(email, password)
 
-      action('login:save:api:key', () => {
-        authStore.saveApiKey(apiKey).then(() => {
-          this.props.router.push({ pathname: '/' })
-        })
-      })()
-    })
+      // TODO: store previous route and return to it
+      this.props.router.push({ pathname: '/' })
+    } catch (err) {
+      // TODO: display error message
+
+      // eslint-disable-next-line no-console
+      console.log('error logging in:', err.message)
+    }
   }
 }
 

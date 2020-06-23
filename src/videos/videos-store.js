@@ -1,7 +1,6 @@
 import { action, computed, observable } from 'mobx'
 import _ from 'lodash'
 import moment from 'moment'
-import RSVP from 'rsvp'
 
 import videosService from './videos-service'
 import VideoModel from './video-model'
@@ -31,19 +30,19 @@ class VideosStore {
     this._beforeLoad()
 
     return videosService.getVideosDataForPlaylist(playlistId, pageToken)
-    .then(action('get:playlist:videos', (videosData) => {
+    .then((videosData) => {
       this._updateVideosData(videosData)
       this._afterLoad(false)
-    }))
+    })
   }
 
   @action getVideosDataForAllPlaylists (playlistIds) {
-    if (!playlistIds.length) return RSVP.Promise.resolve([])
+    if (!playlistIds.length) return Promise.resolve([])
 
     this._beforeLoad()
 
     return videosService.getVideosDataForAllPlaylists(playlistIds)
-    .then(action('get:all:playlist:videos', (videos) => {
+    .then((videos) => {
       this._updateVideosData({
         videos,
         prevPageToken: null,
@@ -51,31 +50,31 @@ class VideosStore {
       })
       this.hasLoadedAllPlaylists = true
       this._afterLoad(false)
-    }))
+    })
   }
 
   @action getVideosDataForChannelSearch (channel, query, pageToken) {
     this._beforeLoad()
 
     return videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
-    .then(action('get:channel:search:videos', (videosData) => {
+    .then((videosData) => {
       this._updateVideosData(videosData)
       this._afterLoad(false)
-    }))
+    })
   }
 
   @action getVideosDataForCustomPlaylist (playlist) {
     this._beforeLoad()
 
     return videosService.getVideosDataForCustomPlaylist(playlist)
-    .then(action('get:custom:playlist:videos', (videos) => {
+    .then((videos) => {
       this._updateVideosData({
         videos,
         prevPageToken: null,
         nextPageToken: null,
       })
       this._afterLoad(true)
-    }))
+    })
   }
 
   getVideoById (id) {
@@ -94,18 +93,18 @@ class VideosStore {
     return nextVideo.id
   }
 
-  _beforeLoad () {
+  @action _beforeLoad () {
     this.isLoading = true
     this.prevPageToken = null
     this.nextPageToken = null
   }
 
-  _afterLoad (isCustom) {
+  @action _afterLoad (isCustom) {
     this._isCustom = isCustom
     this.isLoading = false
   }
 
-  _updateVideosData ({ videos, prevPageToken, nextPageToken }) {
+  @action _updateVideosData ({ videos, prevPageToken, nextPageToken }) {
     if (videos) this._videos = _.map(videos, (video) => new VideoModel(video))
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken

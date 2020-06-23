@@ -3,11 +3,12 @@ import { action, computed, observable, values } from 'mobx'
 import arrayMove from 'array-move'
 
 import SubModel from '../sub/sub-model'
-import subsService from './subs-service'
+import { removeSub, removeVideoFromSub, update } from '../lib/remote-data'
+import { mapObject } from '../lib/util'
+import { getPlaylistIdForChannel, searchChannels } from '../lib/youtube'
 
 class SubsStore {
   @observable _subs = observable.map()
-  @observable selectedSubId = null
   @observable.ref searchResults = []
 
   @computed get subs () {
@@ -34,63 +35,100 @@ class SubsStore {
     return sub && sub.thumb
   }
 
-  fetch () {
-    subsService.fetch().then(action('fetched:subs', (subs) => {
-      this._setSubs(subs)
-    }))
+  @action setSearchResults (searchResults) {
+    this.searchResults = searchResults
+  }
+
+  @action setSubs (subs) {
+    _.each(subs, (sub) => {
+      this._subs.set(sub.id, new SubModel(sub))
+    })
+
+    const oldIds = _.map(this._subs.toJSON(), 'id')
+    const newIds = _.map(subs, 'id')
+    const missingIds = _.difference(oldIds, newIds)
+    _.each(missingIds, (id) => {
+      this._subs.delete(id)
+    })
   }
 
   update (id, props) {
     const sub = this.getSubById(id)
     sub.update(props)
-    return subsService.update(sub)
+    this.save()
   }
 
-  remove (id) {
+  @action remove (id) {
     this._subs.delete(id)
-    return subsService.remove(id)
+    removeSub(id)
   }
 
-  _setSubs (subs) {
-    _.each(subs, (sub) => {
-      this._subs.set(sub.id, new SubModel(sub))
+  async search (query) {
+    const searchResults = await searchChannels(query)
+
+    this.setSearchResults(searchResults)
+  }
+
+  async addChannel (channel) {
+    const playlistId = await getPlaylistIdForChannel(channel.id)
+
+    this._addSub(channel, {
+      playlistId,
+      isCustom: false,
     })
   }
 
-  search (query) {
-    subsService.search(query).then(action('received:search:results', (searchResults) => {
-      this.searchResults = searchResults
-    }))
-  }
-
-  @action clearSearchResults () {
-    this.searchResults = []
-  }
-
-  addChannel (channel) {
-    subsService.addChannel(channel).then(this._addSub)
-  }
-
   addCustomPlaylist (playlist) {
-    subsService.addCustomPlaylist(playlist).then(this._addSub)
+    const id = this._newId(this._subs.toJSON())
+
+    this._addSub(playlist, {
+      isCustom: true,
+      id: `custom-${id}`,
+      playlistId: `playlist-${id}`,
+      videos: {},
+    })
   }
 
-  @action _addSub = (sub) => {
+  @action _addSub = (base, props) => {
+    const sub = _.extend(base, props, {
+      order: this._newOrder(this._subs.toJSON()),
+    })
     this._subs.set(sub.id, new SubModel(sub))
+    this.save()
+  }
+
+  _newOrder (items) {
+    return this._next(_.map(items, (item) => item.order || 0))
+  }
+
+  _newId (subs) {
+    const customIds = _(subs)
+    .filter((sub) => sub.custom || sub.isCustom)
+    .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
+    .value()
+
+    return this._next(customIds)
+  }
+
+  _next (orders) {
+    if (!orders.length) return 0
+    return _.max(orders) + 1
   }
 
   addVideoToPlaylist (playlist, videoId) {
-    subsService.addVideoToPlaylist(playlist, videoId)
-    .then(action('playlist:video:added', (video) => {
-      this.getSubById(playlist.id).addVideo(video)
-    }))
+    const sub = this.getSubById(playlist.id)
+    const video = {
+      id: videoId,
+      order: this._newOrder(sub.videos.toJSON()),
+    }
+
+    sub.addVideo(video)
+    this.save()
   }
 
   removeVideoFromPlaylist (playlist, videoId) {
-    subsService.removeVideoFromPlaylist(playlist, videoId)
-    .then(action('playlist:video:removed', () => {
-      this.getSubById(playlist.id).removeVideo(videoId)
-    }))
+    this.getSubById(playlist.id).removeVideo(videoId)
+    removeVideoFromSub(playlist.id, videoId)
   }
 
   sort ({ oldIndex, newIndex }) {
@@ -103,7 +141,15 @@ class SubsStore {
       this.getSubById(id).update({ order })
     })
 
-    subsService.updateAll(this._subs)
+    this.save()
+  }
+
+  save () {
+    update({ subs: this.serialize() })
+  }
+
+  serialize () {
+    return mapObject(this._subs.toJSON(), (sub) => sub.serialize())
   }
 }
 

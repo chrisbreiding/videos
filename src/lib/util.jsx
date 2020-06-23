@@ -24,6 +24,12 @@ function toTwoDigits (num) {
   return num.length === 2 ? num : `0${num}`
 }
 
+export function mapObject (obj, fn) {
+  return _.transform(obj, (memo, value, key) => {
+    memo[key] = fn(value)
+  }, {})
+}
+
 export function icon (iconName, rightText, leftText) {
   return (
     <span className={`icon${rightText || leftText ? ' with-text' : ''}`}>

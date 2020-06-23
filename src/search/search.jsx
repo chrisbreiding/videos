@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import { icon } from '../lib/util'
+
 class Search extends Component {
   componentDidUpdate () {
     if (!this.props.query) {
@@ -15,9 +17,7 @@ class Search extends Component {
           defaultValue={this.props.query}
           placeholder="Search Channel"
         />
-        <button>
-          <i className='fa fa-search' />
-        </button>
+        <button>{icon('search')}</button>
       </form>
     )
   }

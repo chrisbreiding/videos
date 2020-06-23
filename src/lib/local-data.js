@@ -1,18 +1,8 @@
-import { Promise } from 'rsvp'
-
-class LocalData {
-  getItem (key) {
-    return new Promise((resolve) => {
-      resolve(localStorage[key] ? JSON.parse(localStorage[key]) : undefined)
-    })
-  }
-
-  setItem (key, value) {
-    return new Promise((resolve) => {
-      localStorage[key] = JSON.stringify(value)
-      resolve(value)
-    })
-  }
+export const getItem = (key) => {
+  return localStorage[key] ? JSON.parse(localStorage[key]) : undefined
 }
 
-export default new LocalData()
+export const setItem = (key, value) => {
+  localStorage[key] = JSON.stringify(value)
+  return value
+}

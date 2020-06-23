@@ -1,32 +1,52 @@
-import { action, computed, observable } from 'mobx'
-import { Promise } from 'rsvp'
+import { action, observable } from 'mobx'
 
-import { getItem, setItem } from '../lib/local-data'
-import { API_KEY_KEY } from '../lib/constants'
+import {
+  getCurrentUser,
+  getDoc,
+  onAuthStateChanged,
+  signIn,
+  signOut,
+  updateDoc,
+} from '../lib/firebase'
 import youtube from '../lib/youtube'
 
 class AuthStore {
-  @observable apiKey = ''
+  @observable youtubeApiKey = ''
 
-  @computed get isAuthenticated () {
-    return !!this.apiKey
+  isAuthenticated () {
+    return !!getCurrentUser() && !!this.youtubeApiKey
   }
 
-  getApiKey () {
-    return getItem(API_KEY_KEY)
+  userId () {
+    return getCurrentUser()?.uid
   }
 
-  setApiKey = (apiKey) => {
-    if (!apiKey) return
-
-    this.apiKey = apiKey
+  onChange (cb) {
+    onAuthStateChanged(cb)
   }
 
-  saveApiKey =  (apiKey) => {
-    if (!apiKey) return Promise.resolve()
+  async getApiKey () {
+    if (this.youtubeApiKey) return this.youtubeApiKey
 
-    this.apiKey = apiKey
-    return setItem(API_KEY_KEY, this.apiKey)
+    const { youtubeApiKey } = await getDoc()
+
+    this.setApiKey(youtubeApiKey)
+
+    return youtubeApiKey
+  }
+
+  @action setApiKey (youtubeApiKey) {
+    if (!youtubeApiKey) return
+
+    this.youtubeApiKey = youtubeApiKey
+  }
+
+  saveApiKey = (youtubeApiKey) => {
+    if (!youtubeApiKey) return Promise.resolve()
+
+    this.youtubeApiKey = youtubeApiKey
+
+    return updateDoc({ youtubeApiKey })
   }
 
   checkApiKey = (apiKey) => {
@@ -35,14 +55,12 @@ class AuthStore {
     return youtube.checkApiKey(apiKey)
   }
 
-  login () {
-    this.checkApiKey(this.apiKey).then(action('set:api:key', (isValid) => {
-      if (!isValid) return Promise.resolve(isValid)
+  login (email, password) {
+    return signIn(email, password)
+  }
 
-      return setItem(API_KEY_KEY, this.apiKey).then(() => {
-        return isValid
-      })
-    }))
+  logout () {
+    return signOut()
   }
 }
 
