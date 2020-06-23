@@ -29,6 +29,7 @@ render(
     <Router history={history}>
       <Switch>
         <Route exact path="/" component={App} />
+        <Route exact path="/migrate" component={App} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/logout" component={Logout} />
         <Route path="/subs" component={App} />

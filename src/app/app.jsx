@@ -9,9 +9,10 @@ import appState from './app-state'
 import authStore from '../login/auth-store'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
-import { watchDoc } from '../lib/firebase'
+import { onAuthStateChanged, watchDoc } from '../lib/firebase'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
 
+import Migrate from './migrate'
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
 import Subs from '../subs/subs'
@@ -21,25 +22,29 @@ import Sub from '../sub/sub'
 @observer
 class App extends Component {
   @observable isResizing = false
+  unsubscribers = []
 
   componentDidMount () {
-    authStore.onChange((user) => {
-      if (!user) {
-        return this.props.router.push({ pathname: '/login' })
+    const unsubscribe = onAuthStateChanged((user) => {
+      if (user) {
+        authStore.setUserId(user.uid)
+        return this._getApiKey()
       }
 
-      this._getApiKey()
+      this.props.router.push({ pathname: '/login' })
     })
+
+    this.unsubscribers.push(unsubscribe)
   }
 
   componentWillUnmount () {
-    if (this.stopListening) {
-      this.stopListening()
-    }
+    _.each(this.unsubscribers, (unsubscribe) => {
+      unsubscribe()
+    })
   }
 
   async _getApiKey () {
-    this.stopListening = watchDoc(async (data) => {
+    const unsubscribe = watchDoc(async (data) => {
       if (data.subs) {
         subsStore.setSubs(data.subs)
       }
@@ -61,15 +66,20 @@ class App extends Component {
       // TODO: handle missing or invalid api key
     })
 
+    this.unsubscribers.push(unsubscribe)
   }
 
   render () {
-    if (!authStore.isAuthenticated) {
+    if (!authStore.isAuthenticated()) {
       return (
         <div className='loader'>
           {icon('sign-in')} Authenticating...
         </div>
       )
+    }
+
+    if (this.props.location.pathname === '/migrate') {
+      return <Migrate />
     }
 
     return (

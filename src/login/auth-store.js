@@ -1,9 +1,7 @@
 import { action, observable } from 'mobx'
 
 import {
-  getCurrentUser,
   getDoc,
-  onAuthStateChanged,
   signIn,
   signOut,
   updateDoc,
@@ -11,18 +9,11 @@ import {
 import youtube from '../lib/youtube'
 
 class AuthStore {
-  @observable youtubeApiKey = ''
+  @observable userId
+  @observable youtubeApiKey
 
   isAuthenticated () {
-    return !!getCurrentUser() && !!this.youtubeApiKey
-  }
-
-  userId () {
-    return getCurrentUser()?.uid
-  }
-
-  onChange (cb) {
-    onAuthStateChanged(cb)
+    return !!this.userId && !!this.youtubeApiKey
   }
 
   async getApiKey () {
@@ -35,18 +26,14 @@ class AuthStore {
     return youtubeApiKey
   }
 
+  @action setUserId (userId) {
+    this.userId = userId
+  }
+
   @action setApiKey (youtubeApiKey) {
     if (!youtubeApiKey) return
 
     this.youtubeApiKey = youtubeApiKey
-  }
-
-  saveApiKey = (youtubeApiKey) => {
-    if (!youtubeApiKey) return Promise.resolve()
-
-    this.youtubeApiKey = youtubeApiKey
-
-    return updateDoc({ youtubeApiKey })
   }
 
   checkApiKey = (apiKey) => {
