@@ -3,6 +3,7 @@ remove-width = 28px;
 .sub-item {
   display: flex;
   margin-bottom: 0.4em;
+  position relative;
 
   > span {
     display: flex;
@@ -29,6 +30,29 @@ remove-width = 28px;
 
       .num-videos {
         color: #c7c7c7;
+      }
+    }
+  }
+
+  .sub-bookmark {
+    background: none;
+    border-bottom-left-radius: 3px;
+    padding: 0.3em 0.4em;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &:hover,
+    &:focus {
+      background: darken(light-color, 30%);
+    }
+
+    &.active {
+      color: light-color;
+
+      &:hover,
+      &:focus {
+        background: darken(warning-color, 40%);
       }
     }
   }

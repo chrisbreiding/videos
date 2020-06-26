@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import _ from 'lodash'
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
@@ -117,6 +118,7 @@ class Sub extends Component {
           nextPageToken={nextPageToken}
         >
           {this._search(sub)}
+          {this._bookmark(sub)}
         </Paginator>
         {isLoading ? this._loader() : this._videos(sub)}
         <Paginator
@@ -137,6 +139,23 @@ class Sub extends Component {
         onSearch={this._onSearchUpdate}
       />
     )
+  }
+
+  _bookmark (sub) {
+    if (!sub || !this.pageToken) return null
+
+    return (
+      <button
+        className={cs('bookmark', { 'is-bookmarked': this._isPageBookMarked(sub) })}
+        onClick={this._updateBookmark(sub)}
+      >
+        {icon('bookmark')}
+      </button>
+    )
+  }
+
+  _isPageBookMarked (sub) {
+    return sub.bookmarkedPageToken === this.pageToken
   }
 
   _videos (sub) {
@@ -184,6 +203,12 @@ class Sub extends Component {
         {icon('spin fa-play-circle')}
       </div>
     )
+  }
+
+  _updateBookmark = (sub) => () => {
+    const bookmarkedPageToken = this._isPageBookMarked(sub) ? null : this.pageToken
+    sub.update({ bookmarkedPageToken })
+    subsStore.save()
   }
 
   _playVideo = (id) => {

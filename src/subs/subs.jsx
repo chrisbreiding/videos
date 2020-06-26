@@ -11,6 +11,7 @@ import { parseQueryString, updatedLink } from '../lib/util'
 
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
+import { updateLocale } from 'moment'
 
 const SortableSubItem = SortableElement(SubItem)
 
@@ -93,6 +94,12 @@ class Subs extends Component {
             pathname: `/subs/${sub.id}`,
             search,
           })
+          const bookmarkLink = sub.bookmarkedPageToken && updatedLink(location, {
+            pathname: `/subs/${sub.id}`,
+            search: _.extend({}, search, {
+              pageToken: sub.bookmarkedPageToken,
+            }),
+          })
 
           return (
             <SortableSubItem
@@ -100,6 +107,7 @@ class Subs extends Component {
               index={index}
               sub={sub}
               link={link}
+              bookmarkLink={bookmarkLink}
               onUpdate={_.partial(this._updateSub, sub.id)}
               onRemove={_.partial(this._removeSub, sub.id)}
             />

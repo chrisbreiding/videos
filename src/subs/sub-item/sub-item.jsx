@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react'
 import React from 'react'
 import { SortableHandle } from 'react-sortable-hoc'
+import { NavLink } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
 
@@ -13,10 +14,25 @@ const SortHandle = SortableHandle(({ thumb }) => (
   </span>
 ))
 
-const Channel = observer(({ sub, link }) => (
+const BookmarkLink = observer(({ link }) => {
+  if (!link) return null
+
+  const onClick = (e) => {
+    e.stopPropagation()
+  }
+
+  return (
+    <NavLink onClick={onClick} to={link} className='sub-bookmark'>
+      {icon('bookmark')}
+    </NavLink>
+  )
+})
+
+const Channel = observer(({ sub, link, bookmarkLink }) => (
   <span>
     <SortHandle thumb={sub.thumb} />
     <Title sub={sub} link={link} />
+    <BookmarkLink link={bookmarkLink} />
   </span>
 ))
 

@@ -13,6 +13,7 @@ class SubModel {
   @observable thumb
   @observable title
   @observable markedVideoId = null
+  @observable bookmarkedPageToken = null
   @observable videos = observable.map()
 
   @computed get videoIds () {
@@ -29,6 +30,7 @@ class SubModel {
     this.thumb = props.thumb
     this.title = props.title
     this.markedVideoId = props.markedVideoId || null
+    this.bookmarkedPageToken = props.bookmarkedPageToken || null
     this.videos = observable.map(props.videos)
   }
 
@@ -45,7 +47,7 @@ class SubModel {
   }
 
   serialize () {
-    const props = _.pick(this, 'id', 'markedVideoId', 'order', 'playlistId', 'title')
+    const props = _.pick(this, 'id', 'markedVideoId', 'order', 'playlistId', 'title', 'bookmarkedPageToken')
 
     if (this.isCustom) {
       props.isCustom = this.isCustom

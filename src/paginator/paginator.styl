@@ -51,4 +51,15 @@
       border-left: none;
     }
   }
+
+  .bookmark.is-bookmarked {
+    background: action-color;
+    border-color: action-color;
+    color: light-color;
+
+    &:hover,
+    &:focus {
+      background: darken(action-color, 20%);
+    }
+  }
 }
