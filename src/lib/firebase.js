@@ -16,7 +16,7 @@ export const getCurrentUser = () => {
 }
 
 export const onAuthStateChanged = (callback) => {
-  firebase.auth().onAuthStateChanged(callback)
+  return firebase.auth().onAuthStateChanged(callback)
 }
 
 export const signIn = (email, password) => {
