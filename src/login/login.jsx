@@ -1,13 +1,26 @@
+import { action, observable } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 
+import { onAuthStateChanged } from '../lib/firebase'
+import appState from '../app/app-state'
 import authStore from './auth-store'
 import { icon } from '../lib/util'
 
 @inject('router')
 @observer
 class Login extends Component {
+  @observable loginFailed
+
   componentDidMount () {
+    const unsubscribe = onAuthStateChanged((user) => {
+      unsubscribe()
+
+      if (user) {
+        this.props.router.push({ pathname: '/' })
+      }
+    })
+
     this.refs.email.focus()
   }
 
@@ -16,6 +29,7 @@ class Login extends Component {
       <div className='login'>
         <form onSubmit={this._login}>
           <h2>Please Log In</h2>
+          {this.loginFailed && <p>Login failed. Try again.</p>}
           <fieldset>
             <label htmlFor="email">Email</label>
             <input ref="email" name="email" />
@@ -41,14 +55,20 @@ class Login extends Component {
     try {
       await authStore.login(email, password)
 
-      // TODO: store previous route and return to it
-      this.props.router.push({ pathname: '/' })
+      this._setFailed(false)
+      const location = appState.savedLocation || { pathname: '/' }
+      this.props.router.push(location)
+      appState.setSavedLocation()
     } catch (err) {
-      // TODO: display error message
-
       // eslint-disable-next-line no-console
       console.log('error logging in:', err.message)
+
+      this._setFailed(true)
     }
+  }
+
+  @action _setFailed (failed) {
+    this.loginFailed = failed
   }
 }
 

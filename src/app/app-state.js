@@ -76,6 +76,10 @@ class AppState {
     setItem('autoPlayEnabled', isEnabled)
   }, 500)
 
+  setSavedLocation (location) {
+    this.savedLocation = location
+  }
+
   save () {
     update({ allSubsMarkedVideoId: this.allSubsMarkedVideoId })
   }

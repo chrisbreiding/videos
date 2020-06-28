@@ -31,6 +31,7 @@ class App extends Component {
         return this._getApiKey()
       }
 
+      appState.setSavedLocation(this.props.location)
       this.props.router.push({ pathname: '/login' })
     })
 
@@ -70,7 +71,7 @@ class App extends Component {
   }
 
   render () {
-    if (!authStore.isAuthenticated()) {
+    if (!authStore.isAuthenticated) {
       return (
         <div className='loader'>
           {icon('sign-in')} Authenticating...
