@@ -18,6 +18,7 @@ import appState from '../app/app-state'
 class Sub extends Component {
   componentDidMount () {
     this._getVideos()
+    this.previousLoadingValue = videosStore.isLoading
   }
 
   componentDidUpdate () {
@@ -25,9 +26,19 @@ class Sub extends Component {
 
     const marker = this._getQuery().marker
 
-    if (marker) {
-      document.querySelector(`#${marker}`)?.scrollIntoView()
+    if (marker && this._finishedLoadingVideos()) {
+      this._scrollToMarker(marker)
     }
+
+    this.previousLoadingValue = videosStore.isLoading
+  }
+
+  _finishedLoadingVideos () {
+    return this.previousLoadingValue === true && videosStore.isLoading === false
+  }
+
+  _scrollToMarker (marker) {
+    document.querySelector(`#${marker}`)?.scrollIntoView()
   }
 
   _getVideos () {
@@ -228,6 +239,7 @@ class Sub extends Component {
     this.props.router.replace(updatedLink(this.props.location, {
       search: { marker },
     }))
+    this._scrollToMarker(marker)
   }
 
   _updateVideoMark (id) {
