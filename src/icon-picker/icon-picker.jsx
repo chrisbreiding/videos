@@ -24,12 +24,12 @@ class IconPicker extends Component {
               <input
                 type='color'
                 value={foregroundColor}
-                onChange={this._updateColor('foreground')}
+                onChange={this._onColorChange('foreground', true)}
               />
               <input
                 ref='foregroundColor'
                 value={foregroundColor}
-                onChange={this._updateColor('foreground')}
+                onChange={this._onColorChange('foreground', false)}
               />
             </div>
           </fieldset>
@@ -39,11 +39,11 @@ class IconPicker extends Component {
               <input
                 type='color'
                 value={backgroundColor}
-                onChange={this._updateColor('background')}
+                onChange={this._onColorChange('background', true)}
               />
               <input
                 value={backgroundColor}
-                onChange={this._updateColor('background')}
+                onChange={this._onColorChange('background', false)}
               />
             </div>
           </fieldset>
@@ -95,9 +95,21 @@ class IconPicker extends Component {
     ))
   }
 
-  _updateColor = (key) => (e) => {
-    this.props.onUpdate(`${key}Color`, e.target.value)
+  _onColorChange = (key, debounce) => (e) => {
+    if (debounce) {
+      this._updateColorDebounced(key, e.target.value)
+    } else {
+      this._updateColor(key, e.target.value)
+    }
   }
+
+  _updateColor = (key, color) => {
+    this.props.onUpdate(`${key}Color`, color)
+  }
+
+  _updateColorDebounced = _.debounce((key, color) => {
+    this._updateColor(key, color)
+  }, 100)
 
   _updateIcon = (icon) => {
     this.props.onUpdate('icon', icon)
