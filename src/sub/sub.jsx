@@ -179,10 +179,12 @@ class Sub extends Component {
       )
     }
 
+    const isCustom = sub?.isCustom || false
+
     return (
       <Videos
-        isAllSubs={this._isAllSubs}
-        isCustom={sub?.isCustom}
+        showChannelImage={this._isAllSubs || isCustom}
+        isCustom={isCustom}
         location={this.props.location}
         markedVideoId={this._getMarkedVideoId(sub)}
         onPlay={this._playVideo}

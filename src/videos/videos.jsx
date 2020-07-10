@@ -14,7 +14,7 @@ const SortableVideo = SortableElement(Video)
 
 const VideosList = observer((props) => {
   const {
-    isAllSubs,
+    showChannelImage,
     isCustom,
     location,
     markedVideoId,
@@ -42,7 +42,7 @@ const VideosList = observer((props) => {
             video={video}
             isMarked={id === markedVideoId}
             onRemoveMark={onRemoveMark}
-            channelImage={isAllSubs && subsStore.getChannelImage(video.channelId)}
+            channelImage={showChannelImage && subsStore.getChannelImage(video.channelId)}
             addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
             removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
           />
