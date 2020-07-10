@@ -21,6 +21,10 @@ class VideoModel {
     this.thumb = props.thumb
     this.title = props.title
   }
+
+  update ({ order }) {
+    this.order = order
+  }
 }
 
 export default VideoModel

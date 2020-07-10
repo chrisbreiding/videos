@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { action, computed, observable } from 'mobx'
+import { action, computed, observable, toJS } from 'mobx'
 
 import { mapObject } from '../lib/util'
 
@@ -42,8 +42,14 @@ class SubModel {
     this.videos.set(video.id, video)
   }
 
-  removeVideo (videoId) {
+  @action removeVideo (videoId) {
     this.videos.delete(videoId)
+  }
+
+  @action updateVideosOrder (videosWithNewOrders) {
+    _.map(videosWithNewOrders, ({ id, order }) => {
+      this.videos.get(id).order = order
+    })
   }
 
   serialize () {
@@ -52,7 +58,7 @@ class SubModel {
     if (this.isCustom) {
       props.isCustom = this.isCustom
       props.icon = _.pick(this.icon, 'backgroundColor', 'foregroundColor', 'icon')
-      props.videos = mapObject(this.videos.toJSON(), ({ id, order }) => ({ id, order }))
+      props.videos = mapObject(toJS(this.videos), ({ id, order }) => ({ id, order }))
     } else {
       _.extend(props, _.pick(this, 'author', 'thumb'))
     }

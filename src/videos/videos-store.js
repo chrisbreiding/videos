@@ -1,6 +1,7 @@
-import { action, computed, observable } from 'mobx'
+import { action, computed, observable, values, toJS } from 'mobx'
 import _ from 'lodash'
 import moment from 'moment'
+import arrayMove from 'array-move'
 
 import videosService from './videos-service'
 import VideoModel from './video-model'
@@ -14,9 +15,12 @@ class VideosStore {
   @observable nextPageToken
 
   @computed get videos () {
+    if (this._isCustom) {
+      return _.sortBy(values(this._videos), 'order')
+    }
+
     const sortedVideos = this._videos.slice().sort((video1, video2) => {
-      const method = this._isCustom ? 'isAfter' : 'isBefore'
-      return moment(video1.published)[method](video2.published) ? 1 : -1
+      return moment(video1.published).isBefore(video2.published) ? 1 : -1
     })
 
     return _.take(sortedVideos, 25)
@@ -68,6 +72,10 @@ class VideosStore {
 
     return videosService.getVideosDataForCustomPlaylist(playlist)
     .then((videos) => {
+      videos = _.map(videos, (video) => {
+        return _.extend(video, toJS(playlist.videos)[video.id])
+      })
+
       this._updateVideosData({
         videos,
         prevPageToken: null,
@@ -108,6 +116,19 @@ class VideosStore {
     if (videos) this._videos = _.map(videos, (video) => new VideoModel(video))
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken
+  }
+
+  sort ({ oldIndex, newIndex }) {
+    if (oldIndex === newIndex) return false
+
+    const ids = _.map(this.videos, 'id')
+    const sortedIds = arrayMove(ids, oldIndex, newIndex)
+
+    _.each(sortedIds, (id, order) => {
+      this.getVideoById(id).update({ order })
+    })
+
+    return true
   }
 }
 

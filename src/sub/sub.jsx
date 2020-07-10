@@ -1,17 +1,16 @@
 import cs from 'classnames'
-import _ from 'lodash'
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 import DocumentTitle from 'react-document-title'
 
+import appState from '../app/app-state'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 
 import Paginator from '../paginator/paginator'
-import Video from '../videos/video'
 import Search from '../search/search'
-import appState from '../app/app-state'
+import Videos from '../videos/videos'
 
 @inject('router')
 @observer
@@ -98,7 +97,7 @@ class Sub extends Component {
     return this._getQuery().search
   }
 
-  _isAllPlaylists () {
+  _isAllSubs () {
     return !this.props.match.params.id
   }
 
@@ -180,30 +179,25 @@ class Sub extends Component {
       )
     }
 
-    const markedVideoId = this._isAllSubs ? appState.allSubsMarkedVideoId :
-      sub ? sub.markedVideoId :
-        null
+    return (
+      <Videos
+        isAllSubs={this._isAllSubs}
+        isCustom={sub?.isCustom}
+        location={this.props.location}
+        markedVideoId={this._getMarkedVideoId(sub)}
+        onPlay={this._playVideo}
+        onRemoveMark={this._removeVideoMark}
+        onSortStart={this._onSortStart}
+        onSortEnd={this._onSortEnd}
+        onUpdateVideoMarkerLink={this._updateVideoMarkerLink}
+      />
+    )
+  }
 
-    return _.map(videosStore.videos, (video) => {
-      const id = video.id
+  _getMarkedVideoId (sub) {
+    if (this._isAllSubs) return appState.allSubsMarkedVideoId
 
-      return (
-        <Video
-          key={id}
-          location={this.props.location}
-          onPlay={_.partial(this._playVideo, id)}
-          playLink={this._playVideoLink(id)}
-          addVideoMarkerLink={this._updateVideoMarkerLink}
-          subs={subsStore.subs}
-          video={video}
-          isMarked={id === markedVideoId}
-          onRemoveMark={this._removeVideoMark}
-          channelImage={this._isAllPlaylists() && subsStore.getChannelImage(video.channelId)}
-          addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, id)}
-          removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, id)}
-        />
-      )
-    })
+    return sub ? sub.markedVideoId : null
   }
 
   _loader () {
@@ -226,10 +220,6 @@ class Sub extends Component {
     this._updateVideoMark(id)
   }
 
-  _playVideoLink (id) {
-    return updatedLink(this.props.location, { search: { nowPlaying: id } })
-  }
-
   _removeVideoMark = () => {
     this._updateVideoMark()
     this._updateVideoMarkerLink()
@@ -249,6 +239,20 @@ class Sub extends Component {
       appState.setAllSubsMarkedVideoId(id)
     } else if (sub) {
       subsStore.update(sub.id, { markedVideoId: id })
+    }
+  }
+
+  _onSortStart = () => {
+    appState.setSorting(true)
+  }
+
+  _onSortEnd = (sortProps) => {
+    appState.setSorting(false)
+    const changed = videosStore.sort(sortProps)
+
+    if (changed) {
+      subsStore.updatePlaylistVideosOrder(this.props.match.params.id, videosStore.videos)
+      subsStore.save()
     }
   }
 

@@ -11,7 +11,6 @@ import { parseQueryString, updatedLink } from '../lib/util'
 
 import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
-import { updateLocale } from 'moment'
 
 const SortableSubItem = SortableElement(SubItem)
 
@@ -171,7 +170,6 @@ class Subs extends Component {
   }
 }
 
-
 const SortableSubs = SortableContainer(Subs)
 
 const SortableSubsContainer = (props) => {
@@ -183,7 +181,6 @@ const SortableSubsContainer = (props) => {
   return (
     <SortableSubs
       {...props}
-      helperClass='sorting-helper'
       useDragHandle={true}
       onSortStart={props.onSortStart}
       onSortEnd={onSortEnd}

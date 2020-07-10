@@ -131,6 +131,10 @@ class SubsStore {
     removeVideoFromSub(playlist.id, videoId)
   }
 
+  updatePlaylistVideosOrder (playlistId, videosWithNewOrders) {
+    this.getSubById(playlistId).updateVideosOrder(videosWithNewOrders)
+  }
+
   sort ({ oldIndex, newIndex }) {
     if (oldIndex === newIndex) return
 

@@ -1,13 +1,21 @@
 import cs from 'classnames'
 import _ from 'lodash'
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { SortableHandle } from 'react-sortable-hoc'
 
 import { icon, duration, date } from '../lib/util'
 import PlaylistPicker from './playlist-picker/playlist-picker'
 
-const Video = inject('router')(observer((props) => {
+const SortHandle = SortableHandle(() => (
+  <div className='video-sort-handle'>
+    {icon('ellipsis-v')}
+    {icon('ellipsis-v')}
+  </div>
+))
+
+const Video = observer((props) => {
   const playlists = _.filter(props.subs, (sub) => sub.isCustom)
 
   function playlistPicker () {
@@ -45,6 +53,7 @@ const Video = inject('router')(observer((props) => {
         </div>
       )}
       <div className='contents'>
+        <SortHandle />
         <aside>
           <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
             <img src={props.video.thumb} />
@@ -63,6 +72,6 @@ const Video = inject('router')(observer((props) => {
       {playlistPicker()}
     </div>
   )
-}))
+})
 
 export default Video

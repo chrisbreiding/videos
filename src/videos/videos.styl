@@ -2,15 +2,39 @@ thumb-height = 90px;
 thumb-width = 160px;
 
 .video {
-  padding: 0.6em;
-
-  &.watched {
-    background: darken(light-color, 30%);
-    opacity: 0.4;
-  }
+  padding: 0.6em 1.6em;
+  position: relative;
 
   .contents {
     display: flex;
+  }
+
+  .video-sort-handle {
+    cursor: grab;
+    left: 0;
+    padding: 0.6em;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+
+    .icon {
+      color: darken(light-color, 30%);
+
+      &:first-child {
+        margin-right: 0.16em;
+      }
+    }
+  }
+
+  .videos-is-custom &:hover .video-sort-handle,
+  &.videos-sort-helper .video-sort-handle {
+    visibility: visible;
+  }
+
+  &.videos-sort-helper {
+    background: light-color;
+    border-radius: 3px;
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.2);
   }
 
   aside {
@@ -50,12 +74,6 @@ thumb-width = 160px;
     i {
       font-size: 1.3em;
     }
-  }
-
-  a.toggle-watched {
-    float: left;
-    margin: 1em 0;
-    text-decoration: none;
   }
 
   .video-marker {
