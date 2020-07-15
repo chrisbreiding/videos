@@ -97,6 +97,7 @@ class Subs extends Component {
             pathname: `/subs/${sub.id}`,
             search: _.extend({}, search, {
               pageToken: sub.bookmarkedPageToken,
+              marker: 'video-marker',
             }),
           })
 
