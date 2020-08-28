@@ -20,47 +20,54 @@
     }
   }
 
-
   button,
   .button {
-    background: #000;
     border: none;
-    color: darken(light-color, 20%);
     height: 2.2em;
     width: 2.4em;
-
-    &:hover,
-    &:focus {
-      background: #555;
-      color: #FFF;
-    }
 
     i {
       font-size: 1.4em;
     }
   }
 
-  .close {
-    border-radius: 0 0 0 3px;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
   .controls {
-    bottom: 0;
     display: flex;
-    flex-direction: column;
     position: absolute;
-    right: 0;
-  }
+    left: 0;
+    top: 100%;
+    z-index: 101;
 
-  button {
-    border-radius: 0;
-  }
+    button {
+      border-radius: 0;
+      color: lighten(neutral-color, 40%);
+      border-color: lighten(neutral-color, 40%);
+    }
 
-  button:first-child {
-    border-radius: 3px 0 0 0;
+    .close {
+      background: #000;
+      border-radius: 0 0 3px 0;
+      color: darken(light-color, 20%);
+      margin-right: 2em;
+
+      &:hover,
+      &:focus {
+        background: #555;
+        color: #FFF;
+      }
+    }
+
+    button:first-of-type {
+      border-bottom: solid 1px lighten(neutral-color, 40%);
+      border-left: solid 1px lighten(neutral-color, 40%);
+      border-radius: 0 0 0 3px;
+    }
+
+    button:last-child {
+      border-bottom: solid 1px lighten(neutral-color, 40%);
+      border-right: solid 1px lighten(neutral-color, 40%);
+      border-radius: 0 0 3px 0;
+    }
   }
 
   .toggle-auto-play,
@@ -70,7 +77,7 @@
 
       &:hover,
       &:focus {
-        color: lighten(action-color, 40%);
+        color: action-color;
       }
     }
   }
@@ -80,7 +87,7 @@
     border-bottom: solid 1px #d3d3d3;
     display: none;
     left: 0;
-    padding: 0.8em 1em;
+    padding: 1.6em 1em 0.8em;
     position: absolute;
     top: 100%;
     right: 0;

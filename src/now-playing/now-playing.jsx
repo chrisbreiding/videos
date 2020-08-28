@@ -77,8 +77,8 @@ const NowPlaying = observer((props) => {
         onEnd={props.onEnd}
       />
       <div className='cover' />
-      <Link className='close button' to={props.closeLink}>{icon('remove')}</Link>
       <div className='controls'>
+        <Link className='close button' to={props.closeLink}>{icon('remove')}</Link>
         <button
           className={cs('toggle-auto-play', { enabled: props.autoPlayEnabled })}
           onClick={props.onToggleAutoPlay}
