@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
@@ -31,11 +30,10 @@ class Paginator extends Component {
   }
 
   _linkTo (className, pageToken, children) {
+    const link = updatedLink({ pathname: `/subs/${this.props.subId}/page/${pageToken}` })
+
     return (
-      <Link
-        className={`paginator-button ${className}`}
-        to={updatedLink(this.props.location, { search: { pageToken } })}
-      >
+      <Link className={`paginator-button ${className}`} to={link}>
         {children}
       </Link>
     )

@@ -82,7 +82,11 @@ class Sub extends Component {
   }
 
   _getSub () {
-    return subsStore.getSubById(this.props.match.params.id)
+    return subsStore.getSubById(this._getParam('id'))
+  }
+
+  _getParam (key) {
+    return this.props.match.params[key]
   }
 
   _getQuery () {
@@ -90,7 +94,7 @@ class Sub extends Component {
   }
 
   _getPageToken () {
-    return this._getQuery().pageToken
+    return this._getParam('pageToken')
   }
 
   _getSearchQuery () {
@@ -98,7 +102,7 @@ class Sub extends Component {
   }
 
   _isAllSubs () {
-    return !this.props.match.params.id
+    return !this._getParam('id')
   }
 
   _shouldLoadAllPlaylists (sub, oldPlaylistId, newPlaylistId) {
@@ -123,7 +127,7 @@ class Sub extends Component {
           <DocumentTitle title={`${sub?.title || 'All Subs'} | Videos`} />
         )}
         <Paginator
-          location={this.props.location}
+          subId={this._getParam('id')}
           prevPageToken={prevPageToken}
           nextPageToken={nextPageToken}
         >
@@ -132,7 +136,7 @@ class Sub extends Component {
         </Paginator>
         {isLoading ? this._loader() : this._videos(sub)}
         <Paginator
-          location={this.props.location}
+          subId={this._getParam('id')}
           prevPageToken={prevPageToken}
           nextPageToken={nextPageToken}
         />
@@ -253,13 +257,15 @@ class Sub extends Component {
     const changed = videosStore.sort(sortProps)
 
     if (changed) {
-      subsStore.updatePlaylistVideosOrder(this.props.match.params.id, videosStore.videos)
+      subsStore.updatePlaylistVideosOrder(this._getParam('id'), videosStore.videos)
       subsStore.save()
     }
   }
 
   _onSearchUpdate = (searchTerm) => {
-    this.props.router.push(updatedLink(this.props.location, {
+    this.props.router.push(updatedLink({
+      pathname: `/subs/${this._getParam('id')}`,
+    }, {
       search: {
         search: searchTerm || undefined,
         pageToken: undefined,

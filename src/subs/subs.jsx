@@ -62,7 +62,6 @@ class Subs extends Component {
 
     const { location } = this.props
     const search = {
-      pageToken: undefined,
       search: undefined,
       marker: undefined,
     }
@@ -94,9 +93,8 @@ class Subs extends Component {
             search,
           })
           const bookmarkLink = sub.bookmarkedPageToken && updatedLink(location, {
-            pathname: `/subs/${sub.id}`,
+            pathname: `/subs/${sub.id}/page/${sub.bookmarkedPageToken}`,
             search: _.extend({}, search, {
-              pageToken: sub.bookmarkedPageToken,
               marker: 'video-marker',
             }),
           })

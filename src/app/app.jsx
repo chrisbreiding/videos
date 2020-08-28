@@ -112,6 +112,7 @@ class App extends Component {
           />
           <Switch>
             <Route exact path='/' component={Sub} />
+            <Route path='/subs/:id/page/:pageToken' component={Sub} />
             <Route path='/subs/:id' component={Sub} />
           </Switch>
         </div>

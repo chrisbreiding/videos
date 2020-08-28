@@ -70,7 +70,7 @@ export function parseQueryString (queryString) {
   return qs.parse(queryString.replace(/^\?/, ''))
 }
 
-export function updatedLink (location, updates) {
+export function updatedLink (location, updates = {}) {
   const pathname = updates.pathname || location.pathname
   let search = location.search
 
