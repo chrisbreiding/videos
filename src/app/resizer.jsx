@@ -14,6 +14,7 @@ class Resizer extends Component {
         className='resizer'
         style={{ top: this.props.height }}
         onMouseDown={this._startResize}
+        onTouchStart={this._startResize}
       />
     )
   }
@@ -22,7 +23,9 @@ class Resizer extends Component {
     this._isDragging = false
 
     document.addEventListener('mousemove', this._resize)
+    document.addEventListener('touchmove', this._resize)
     document.addEventListener('mouseup', this._endResize)
+    document.addEventListener('touchend', this._endResize)
   }
 
   @action _startResize = (e) => {
@@ -39,7 +42,7 @@ class Resizer extends Component {
     if (this._isDragging) {
       e.preventDefault()
 
-      let height = e.clientY
+      let height = e.pageY
       if (height < minHeight) height = minHeight
       if (height > maxHeight) height = maxHeight
 

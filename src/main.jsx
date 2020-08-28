@@ -23,6 +23,10 @@ const routerStore = new RouterStore()
 
 const history = syncHistoryWithStore(browserHistory, routerStore)
 
+document.addEventListener('touchstart', () => {
+  document.body.className = 'has-touch'
+})
+
 render(
   <Provider router={routerStore}>
     <DocumentTitle title='Videos' />
