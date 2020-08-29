@@ -39,9 +39,30 @@
     }
 
     button {
+      background: light-color;
+      border-bottom: solid 1px lighten(neutral-color, 40%);
       border-radius: 0;
       color: lighten(neutral-color, 40%);
       border-color: lighten(neutral-color, 40%);
+
+      &:first-of-type {
+        border-left: solid 1px lighten(neutral-color, 40%);
+        border-radius: 0 0 0 3px;
+      }
+
+      &:last-child {
+        border-right: solid 1px lighten(neutral-color, 40%);
+        border-radius: 0 0 3px 0;
+      }
+
+      &.enabled {
+        color: lighten(action-color, 20%);
+
+        &:hover,
+        &:focus {
+          color: action-color;
+        }
+      }
     }
 
     .close {
@@ -54,29 +75,6 @@
       &:focus {
         background: #555;
         color: #FFF;
-      }
-    }
-
-    button {
-      border-bottom: solid 1px lighten(neutral-color, 40%);
-    }
-
-    button:first-of-type {
-      border-left: solid 1px lighten(neutral-color, 40%);
-      border-radius: 0 0 0 3px;
-    }
-
-    button:last-child {
-      border-right: solid 1px lighten(neutral-color, 40%);
-      border-radius: 0 0 3px 0;
-    }
-
-    button.enabled {
-      color: lighten(action-color, 20%);
-
-      &:hover,
-      &:focus {
-        color: action-color;
       }
     }
   }
