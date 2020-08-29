@@ -90,21 +90,30 @@ const NowPlaying = observer((props) => {
       />
       <div className='cover' />
       <div className='controls'>
-        <Link className='close button' to={props.closeLink}>{icon('remove')}</Link>
+        <Link
+          className='close button'
+          title='Close Video'
+          to={props.closeLink}
+        >
+          {icon('remove')}
+        </Link>
         <button
           className={cs('toggle-auto-play', { enabled: props.autoPlayEnabled })}
+          title='Toggle Auto Play'
           onClick={props.onToggleAutoPlay}
         >
-          {icon('refresh')}
+          {icon('forward')}
         </button>
         <button
           className={cs('toggle-description', { enabled: state.isShowingDescription })}
+          title='Toggle Description'
           onClick={state.toggleShowingDescription}
         >
           {icon('info')}
         </button>
         <button
           className={cs('toggle-playlists', { enabled: state.isShowingPlaylists })}
+          title='Toggle Playlists'
           onClick={state.toggleShowingPlaylists}
         >
           {icon('list-ul')}
