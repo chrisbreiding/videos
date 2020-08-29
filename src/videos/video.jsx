@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { SortableHandle } from 'react-sortable-hoc'
 
 import { icon, duration, date } from '../lib/util'
-import PlaylistPicker from './playlist-picker/playlist-picker'
+import PlaylistPicker from '../playlist-picker/playlist-picker'
 
 const SortHandle = SortableHandle(() => (
   <div className='video-sort-handle'>
@@ -16,15 +16,13 @@ const SortHandle = SortableHandle(() => (
 ))
 
 const Video = observer((props) => {
-  const playlists = _.filter(props.subs, (sub) => sub.isCustom)
-
-  function playlistPicker () {
-    if (!playlists.length) return null
+  const playlistPicker = () => {
+    if (!props.playlists.length) return null
 
     return (
       <PlaylistPicker
         videoId={props.video.id}
-        playlists={playlists}
+        playlists={props.playlists}
         addedToPlaylist={props.addedToPlaylist}
         removedFromPlaylist={props.removedFromPlaylist}
       />

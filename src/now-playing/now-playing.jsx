@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import cs from 'classnames'
 import MarkDown from 'markdown-it'
 import { action } from 'mobx'
@@ -11,6 +12,7 @@ import appState from '../app/app-state'
 import { icon } from '../lib/util'
 import videosStore from '../videos/videos-store'
 import videosService from '../videos/videos-service'
+import PlaylistPicker from '../playlist-picker/playlist-picker'
 
 const md = new MarkDown({ linkify: true })
 
@@ -24,6 +26,7 @@ const NowPlaying = observer((props) => {
     title: '...',
     description: 'Loading description...',
     isShowingDescription: false,
+    isShowingPlaylists: false,
     setTitle: action((title) => {
       state.title = title
     }),
@@ -31,10 +34,18 @@ const NowPlaying = observer((props) => {
       state.description = description
     }),
     setShowingDescription: action((isShowingDescription) => {
+      if (isShowingDescription) state.isShowingPlaylists = false
       state.isShowingDescription = isShowingDescription
+    }),
+    setShowingPlaylists: action((isShowingPlaylists) => {
+      if (isShowingPlaylists) state.isShowingDescription = false
+      state.isShowingPlaylists = isShowingPlaylists
     }),
     toggleShowingDescription: () => {
       state.setShowingDescription(!state.isShowingDescription)
+    },
+    toggleShowingPlaylists: () => {
+      state.setShowingPlaylists(!state.isShowingPlaylists)
     },
   }))
 
@@ -66,6 +77,7 @@ const NowPlaying = observer((props) => {
     <div
       className={cs('now-playing', {
         'is-showing-description': state.isShowingDescription,
+        'is-showing-playlists': state.isShowingPlaylists,
       })}
       style={{ height: appState.nowPlayingHeight }}
     >
@@ -91,11 +103,27 @@ const NowPlaying = observer((props) => {
         >
           {icon('info')}
         </button>
+        <button
+          className={cs('toggle-playlists', { enabled: state.isShowingPlaylists })}
+          onClick={state.toggleShowingPlaylists}
+        >
+          {icon('list-ul')}
+        </button>
       </div>
       <div
         className='description'
         dangerouslySetInnerHTML={{ __html: description }}
       />
+      <div className='playlists'>
+        {state.isShowingPlaylists &&
+          <PlaylistPicker
+            videoId={props.id}
+            playlists={props.playlists}
+            addedToPlaylist={props.addedToPlaylist}
+            removedFromPlaylist={props.removedFromPlaylist}
+          />
+        }
+      </div>
     </div>
   )
 })

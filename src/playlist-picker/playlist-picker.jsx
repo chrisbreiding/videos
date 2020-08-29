@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { icon } from '../../lib/util'
+import { icon } from '../lib/util'
 
 const PlaylistPicker = observer((props) => {
   function setPlaylist (playlist, inPlaylist) {

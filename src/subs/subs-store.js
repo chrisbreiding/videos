@@ -25,6 +25,10 @@ class SubsStore {
     return _.take(channels, 4)
   }
 
+  @computed get playlists () {
+    return _.filter(this.subs, (sub) => sub.isCustom)
+  }
+
   getSubById (id) {
     return this._subs.get(id)
   }

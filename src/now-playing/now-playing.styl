@@ -20,23 +20,23 @@
     }
   }
 
-  button,
-  .button {
-    border: none;
-    height: 2.2em;
-    width: 2.4em;
-
-    i {
-      font-size: 1.4em;
-    }
-  }
-
   .controls {
     display: flex;
     position: absolute;
     left: 0;
     top: 100%;
     z-index: 101;
+
+    button,
+    .button {
+      border: none;
+      height: 2.2em;
+      width: 2.4em;
+
+      i {
+        font-size: 1.4em;
+      }
+    }
 
     button {
       border-radius: 0;
@@ -57,22 +57,21 @@
       }
     }
 
-    button:first-of-type {
+    button {
       border-bottom: solid 1px lighten(neutral-color, 40%);
+    }
+
+    button:first-of-type {
       border-left: solid 1px lighten(neutral-color, 40%);
       border-radius: 0 0 0 3px;
     }
 
     button:last-child {
-      border-bottom: solid 1px lighten(neutral-color, 40%);
       border-right: solid 1px lighten(neutral-color, 40%);
       border-radius: 0 0 3px 0;
     }
-  }
 
-  .toggle-auto-play,
-  .toggle-description {
-    &.enabled {
+    button.enabled {
       color: lighten(action-color, 20%);
 
       &:hover,
@@ -82,7 +81,8 @@
     }
   }
 
-  .description {
+  .description,
+  .playlists {
     background: #f8f8f8;
     border-bottom: solid 1px #d3d3d3;
     display: none;
@@ -94,7 +94,12 @@
     z-index: 100;
   }
 
-  &.is-showing-description .description {
+  .playlists {
+    padding-top: 2.2em;
+  }
+
+  &.is-showing-description .description,
+  &.is-showing-playlists .playlists {
     display: block;
   }
 }

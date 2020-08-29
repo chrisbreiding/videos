@@ -83,6 +83,8 @@ class App extends Component {
       return <Migrate />
     }
 
+    const nowPlayingId = this._nowPlayingId()
+
     return (
       <div
         className={cs('app', {
@@ -93,10 +95,13 @@ class App extends Component {
       >
         <NowPlaying
           autoPlayEnabled={appState.autoPlayEnabled}
-          id={this._nowPlayingId()}
+          id={nowPlayingId}
+          playlists={subsStore.playlists}
           closeLink={this._closeNowPlayingLink}
           onEnd={this._onVideoEnded}
           onToggleAutoPlay={appState.toggleAutoPlay}
+          addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, nowPlayingId)}
+          removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, nowPlayingId)}
         />
         <Resizer
           height={appState.nowPlayingHeight}
