@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { action, observable } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
+import { matchPath } from 'react-router'
 import { Route, Switch } from 'react-router-dom'
 
 import appState from './app-state'
@@ -143,13 +144,26 @@ class App extends Component {
     if (!appState.autoPlayEnabled) return
 
     const nextVideoId = videosStore.nextVideoId(this._nowPlayingId())
-    if (nextVideoId) {
-      // TODO: update video mark
+    if (!nextVideoId) return
 
-      this.props.router.push(updatedLink(this.props.location, {
-        search: { nowPlaying: nextVideoId },
-      }))
+    const match = matchPath(this.props.location.pathname, {
+      path: '/subs/:id',
+    })
+
+    if (match) {
+      const subId = match.params.id
+      const sub = subsStore.getSubById(subId)
+
+      if (!subId) {
+        appState.setAllSubsMarkedVideoId(nextVideoId)
+      } else if (sub) {
+        subsStore.update(sub.id, { markedVideoId: nextVideoId })
+      }
     }
+
+    this.props.router.push(updatedLink(this.props.location, {
+      search: { nowPlaying: nextVideoId },
+    }))
   }
 
   @action _startResizing = () => {
