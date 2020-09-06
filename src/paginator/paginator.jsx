@@ -1,40 +1,26 @@
 import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { icon, updatedLink } from '../lib/util'
+import { icon } from '../lib/util'
 
 @observer
 class Paginator extends Component {
   render () {
     return (
       <div className='paginator'>
-        {this._prev()}
+        {this._linkTo(this.props.prevLink, 'left', 'Newer')}
         {this.props.children}
-        {this._next()}
+        {this._linkTo(this.props.nextLink, 'right', null, 'Older')}
       </div>
     )
   }
 
-  _prev () {
-    const prev = this.props.prevPageToken
-    if (!prev) return <span />
-
-    return this._linkTo(prev ? '' : 'disabled', prev, icon('angle-left', 'Newer'))
-  }
-
-  _next () {
-    const next = this.props.nextPageToken
-    if (!next) return <span />
-
-    return this._linkTo(next ? '' : 'disabled', next, icon('angle-right', null, 'Older'))
-  }
-
-  _linkTo (className, pageToken, children) {
-    const link = updatedLink({ pathname: `/subs/${this.props.subId}/page/${pageToken}` })
+  _linkTo (link, direction, leftText, rightText) {
+    if (!link) return <span />
 
     return (
-      <Link className={`paginator-button ${className}`} to={link}>
-        {children}
+      <Link className={'paginator-button'} to={link}>
+        {icon(`angle-${direction}`, leftText, rightText)}
       </Link>
     )
   }

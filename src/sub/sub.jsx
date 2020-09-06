@@ -114,34 +114,36 @@ class Sub extends Component {
   }
 
   render () {
-    const sub = this._getSub()
-
     if (!subsStore.subs.length) return null
 
-    const { isLoading, prevPageToken, nextPageToken } = videosStore
+    const sub = this._getSub()
     const nowPlaying = this._getQuery().nowPlaying
+    const subId = this._getParam('id')
+    const { isLoading, prevPageToken, nextPageToken } = videosStore
+    const prevLink = this._paginatorLink(subId, prevPageToken)
+    const nextLink = this._paginatorLink(subId, nextPageToken)
 
     return (
       <main className='videos'>
         {!nowPlaying && (
           <DocumentTitle title={`${sub?.title || 'All Subs'} | Videos`} />
         )}
-        <Paginator
-          subId={this._getParam('id')}
-          prevPageToken={prevPageToken}
-          nextPageToken={nextPageToken}
-        >
+        <Paginator prevLink={prevLink} nextLink={nextLink}>
           {this._search(sub)}
           {this._bookmark(sub)}
         </Paginator>
         {isLoading ? this._loader() : this._videos(sub)}
-        <Paginator
-          subId={this._getParam('id')}
-          prevPageToken={prevPageToken}
-          nextPageToken={nextPageToken}
-        />
+        <Paginator prevLink={prevLink} nextLink={nextLink} />
       </main>
     )
+  }
+
+  _paginatorLink (subId, pageToken) {
+    if (!pageToken) return
+
+    return updatedLink(this.props.location, {
+      pathname: `/subs/${subId}/page/${pageToken}`,
+    })
   }
 
   _search (sub) {
