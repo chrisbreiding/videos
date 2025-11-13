@@ -41,6 +41,8 @@ export function icon (iconName, rightText, leftText) {
 }
 
 export function duration (duration) {
+  if (!duration) return
+
   const parsed = parseIso8601Duration(duration)
   let parts = _.map(parsed.slice(1), toTwoDigits)
   parts.unshift(parsed[0])

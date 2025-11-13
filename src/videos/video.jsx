@@ -36,6 +36,7 @@ const Video = observer((props) => {
   }
 
   const videoMarkerName = 'video-marker'
+  const durationDisplay = duration(props.video.duration)
 
   return (
     <div className={cs('video', { 'is-marked': props.isMarked })}>
@@ -62,7 +63,7 @@ const Video = observer((props) => {
         <main>
           <h4>{props.video.title}</h4>
           <div>
-            <p className='duration'>{icon('clock-o', duration(props.video.duration))}</p>
+            {durationDisplay && <p className='duration'>{icon('clock-o', durationDisplay)}</p>}
             <p className='pub-date'>{date(props.video.published)}</p>
           </div>
         </main>
