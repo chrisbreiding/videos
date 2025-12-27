@@ -13,6 +13,7 @@ import videosStore from '../videos/videos-store'
 import { onAuthStateChanged, watchDoc } from '../lib/firebase'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
 
+import AddToPlaylist from '../playlist-picker/add-to-playlist'
 import Migrate from './migrate'
 import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
@@ -120,6 +121,7 @@ class App extends Component {
             <Route exact path='/' component={Sub} />
             <Route path='/subs/:id/page/:pageToken' component={Sub} />
             <Route path='/subs/:id' component={Sub} />
+            <Route path='/add-to-playlist' component={AddToPlaylist} />
           </Switch>
         </div>
       </div>

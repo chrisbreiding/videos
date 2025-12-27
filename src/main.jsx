@@ -1,4 +1,4 @@
-import { configure as configureMobx } from 'mobx'
+// import { configure as configureMobx } from 'mobx'
 import { Provider } from 'mobx-react'
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router'
 import React from 'react'
@@ -37,6 +37,7 @@ render(
         <Route exact path="/login" component={Login} />
         <Route exact path="/logout" component={Logout} />
         <Route path="/subs" component={App} />
+        <Route path="/add-to-playlist" component={App} />
         <Route
           component={() => (
             <div>
