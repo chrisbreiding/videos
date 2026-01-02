@@ -36,7 +36,7 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
   }
 
   return (
-    <span className='channel-sub-item'>
+    <span className={`${sub.type}-sub-item`}>
       <SortHandle thumb={sub.thumb} />
       <Title sub={sub} link={link} />
       <input ref={inputRef} onChange={onChange} value={sub.title || sub.author} />

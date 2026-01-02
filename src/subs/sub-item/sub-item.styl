@@ -15,7 +15,7 @@ remove-width = 28px;
     background: darken(light-color, 10%);
     color: dark-color;
     flex-grow: 2;
-    height: thumb-size;
+    height: square-thumb-height;
     outline: none;
     text-decoration: none;
 
@@ -70,7 +70,8 @@ remove-width = 28px;
     }
   }
 
-  .editing & .channel-sub-item {
+  .editing & .channel-sub-item,
+  .editing & .playlist-sub-item {
     a {
       display: none;
     }
@@ -79,7 +80,7 @@ remove-width = 28px;
   input {
     border-radius: 0;
     box-sizing: border-box;
-    width: sidebar-width - thumb-size - remove-width;
+    width: sidebar-width - thumb-width - remove-width;
   }
 
   input {
@@ -111,17 +112,18 @@ remove-width = 28px;
   }
 
   img {
-    height: thumb-size;
-    width: thumb-size;
+    width: thumb-width;
   }
 
   .sub-item-icon {
-    background: light-color;
+    background: dark-color;
+    align-items: center;
     cursor: grab;
+    display: flex;
     flex-grow: 0;
-    height: thumb-size;
+    height: square-thumb-height;
     position: relative;
-    width: thumb-size;
+    width: thumb-width;
 
     // <img /> messes up drag-n-drop sorting, so need to cover it
     &:after {
