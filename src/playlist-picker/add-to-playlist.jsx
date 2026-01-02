@@ -14,7 +14,7 @@ const AddToPlaylist = inject('router')(observer((props) => {
 
   useEffect(() => {
     const { playlistId, videoId } = parseQueryString(props.location.search)
-    const playlist = subsStore.playlists.find((playlist) => {
+    const playlist = subsStore.customPlaylists.find((playlist) => {
       return playlist.id === playlistId
     })
 

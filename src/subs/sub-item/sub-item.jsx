@@ -54,7 +54,9 @@ const SubItem = observer((props) => {
 
   return (
     <li className='sub-item'>
-      {props.sub.isCustom ? <CustomPlaylist {...props} /> : <Channel {...props} onUpdate={props.onUpdate} />}
+      {props.sub.type === 'custom'
+        ? <CustomPlaylist {...props} />
+        : <Channel {...props} onUpdate={props.onUpdate} />}
       <button className='remove' onClick={remove}>{icon('minus-circle')}</button>
     </li>
   )

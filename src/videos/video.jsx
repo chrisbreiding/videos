@@ -17,12 +17,12 @@ const SortHandle = SortableHandle(() => (
 
 const Video = observer((props) => {
   const playlistPicker = () => {
-    if (!props.playlists.length) return null
+    if (!props.customPlaylists.length) return null
 
     return (
       <PlaylistPicker
         videoId={props.video.id}
-        playlists={props.playlists}
+        customPlaylists={props.customPlaylists}
         addedToPlaylist={props.addedToPlaylist}
         removedFromPlaylist={props.removedFromPlaylist}
       />

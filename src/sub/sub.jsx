@@ -73,7 +73,7 @@ class Sub extends Component {
 
       if (newSearchQuery) {
         videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
-      } else if (sub.isCustom) {
+      } else if (sub.type === 'custom') {
         videosStore.getVideosDataForCustomPlaylist(sub)
       } else {
         videosStore.getVideosDataForPlaylist(newPlaylistId, newToken)
@@ -147,7 +147,7 @@ class Sub extends Component {
   }
 
   _search (sub) {
-    if (!sub || sub.isCustom) return null
+    if (!sub || sub.type === 'custom') return null
 
     return (
       <Search
@@ -185,7 +185,7 @@ class Sub extends Component {
       )
     }
 
-    const isCustom = sub?.isCustom || false
+    const isCustom = sub?.type === 'custom'
 
     return (
       <Videos

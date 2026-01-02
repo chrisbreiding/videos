@@ -127,7 +127,7 @@ const NowPlaying = observer((props) => {
         {state.isShowingPlaylists &&
           <PlaylistPicker
             videoId={props.id}
-            playlists={props.playlists}
+            customPlaylists={props.customPlaylists}
             addedToPlaylist={props.addedToPlaylist}
             removedFromPlaylist={props.removedFromPlaylist}
           />

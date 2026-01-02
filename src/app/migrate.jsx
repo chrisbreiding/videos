@@ -1,30 +1,39 @@
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 
-import { getItem } from '../lib/local-data'
-import { update } from '../lib/remote-data'
+import { fetch, update } from '../lib/remote-data'
 import { icon } from '../lib/util'
 
-const Migrate = inject('router')(observer(({ router }) => {
+const Migrate = observer(({ onComplete }) => {
   useEffect(() => {
     (async () => {
-      const subs = getItem('subs')
-      const youtubeApiKey = getItem('apiKey')
-      const allSubsMarkedVideoId = getItem('allSubsMarkedVideoId')
+      console.log('migrating sub types...')
+      const data = await fetch()
+      const subs = data.subs || {}
 
-      await update({ subs, youtubeApiKey, allSubsMarkedVideoId })
+      const updatedSubs = Object.fromEntries(
+        Object.entries(subs).map(([id, sub]) => {
+          const type = sub.isCustom || id.startsWith('custom-') ? 'custom' : 'channel'
+          delete sub.isCustom
 
-      router.push({ pathname: '/' })
+          return [id, { ...sub, type }]
+        }),
+      )
+
+      await update({ subs: updatedSubs })
+
+      onComplete()
+      console.log('migration complete')
     })()
   }, [true])
 
   return (
     <div className='migrate'>
       <div className='loader'>
-        {icon('sign-out')} Migrating data from local storage to firebase...
+        {icon('refresh')} Migrating sub types...
       </div>
     </div>
   )
-}))
+})
 
 export default Migrate

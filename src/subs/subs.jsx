@@ -103,6 +103,8 @@ class Subs extends Component {
   }
 
   _addSubButtons (hasNoSubs) {
+    if (subsStore.isLoading) return null
+
     return (
       <div className='add-sub-buttons'>
         {hasNoSubs && <p className='add-sub-buttons-prompt'>Add a channel to get started</p>}

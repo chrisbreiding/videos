@@ -16,7 +16,7 @@ const PlaylistPicker = observer((props) => {
     <div className='playlist-picker'>
       <span>Playlists:</span>
       <ul>
-        {props.playlists.map((playlist) => {
+        {props.customPlaylists.map((playlist) => {
           const inPlaylist = playlist.videos.has(props.videoId)
 
           return (

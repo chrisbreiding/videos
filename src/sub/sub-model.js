@@ -7,7 +7,7 @@ class SubModel {
   @observable author
   @observable icon
   @observable id
-  @observable isCustom
+  @observable type
   @observable order
   @observable playlistId
   @observable thumb
@@ -24,7 +24,7 @@ class SubModel {
     this.author = props.author
     this.icon = props.icon
     this.id = props.id
-    this.isCustom = props.isCustom || props.custom
+    this.type = props.type
     this.order = props.order
     this.playlistId = props.playlistId
     this.thumb = props.thumb
@@ -53,10 +53,9 @@ class SubModel {
   }
 
   serialize () {
-    const props = _.pick(this, 'id', 'markedVideoId', 'order', 'playlistId', 'title', 'bookmarkedPageToken')
+    const props = _.pick(this, 'id', 'type', 'markedVideoId', 'order', 'playlistId', 'title', 'bookmarkedPageToken')
 
-    if (this.isCustom) {
-      props.isCustom = this.isCustom
+    if (this.type === 'custom') {
       props.icon = _.pick(this.icon, 'backgroundColor', 'foregroundColor', 'icon')
       props.videos = mapObject(toJS(this.videos), ({ id, order }) => ({ id, order }))
     } else {

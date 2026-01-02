@@ -10,23 +10,26 @@ import { getPlaylistIdForChannel, searchChannels } from '../lib/youtube'
 class SubsStore {
   @observable _subs = observable.map()
   @observable.ref searchResults = []
+  @observable isLoading = true
 
   @computed get subs () {
     return _.sortBy(values(this._subs), 'order')
   }
 
+  @computed get channels () {
+    return _.filter(this.subs, (sub) => sub.type === 'channel')
+  }
+
   @computed get channelIds () {
-    const channels = _.reject(this.subs, { isCustom: true })
-    return _.map(channels, 'playlistId')
+    return _.map(this.channels, 'playlistId')
   }
 
   @computed get fourChannels () {
-    const channels = _.reject(this.subs, { isCustom: true })
-    return _.take(channels, 4)
+    return _.take(this.channels, 4)
   }
 
-  @computed get playlists () {
-    return _.filter(this.subs, (sub) => sub.isCustom)
+  @computed get customPlaylists () {
+    return _.filter(this.subs, (sub) => sub.type === 'custom')
   }
 
   getSubById (id) {
@@ -54,6 +57,8 @@ class SubsStore {
     _.each(missingIds, (id) => {
       this._subs.delete(id)
     })
+
+    this.isLoading = false
   }
 
   update (id, props) {
@@ -78,14 +83,14 @@ class SubsStore {
 
     this._addSub(channel, {
       playlistId,
-      isCustom: false,
+      type: 'channel',
     })
   }
 
   addPlaylist (playlist) {
     this._addSub(playlist, {
       playlistId: playlist.id,
-      isCustom: false,
+      type: 'playlist',
     })
   }
 
@@ -94,10 +99,10 @@ class SubsStore {
     const id = `custom-${idNumber}`
 
     this._addSub(playlist, {
-      isCustom: true,
       id,
       playlistId: `playlist-${idNumber}`,
       videos: {},
+      type: 'custom',
     })
 
     return id

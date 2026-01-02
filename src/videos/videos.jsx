@@ -38,7 +38,7 @@ const VideosList = observer((props) => {
             onPlay={_.partial(onPlay, id)}
             playLink={playVideoLink}
             addVideoMarkerLink={onUpdateVideoMarkerLink}
-            playlists={subsStore.playlists}
+            customPlaylists={subsStore.customPlaylists}
             video={video}
             isMarked={id === markedVideoId}
             onRemoveMark={onRemoveMark}

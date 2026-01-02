@@ -26,6 +26,7 @@ import AddChannel from '../subs/add-sub/add-channel'
 @observer
 class App extends Component {
   @observable isResizing = false
+  @observable needsMigration = false
   unsubscribers = []
 
   componentDidMount () {
@@ -50,14 +51,6 @@ class App extends Component {
 
   async _getApiKey () {
     const unsubscribe = watchDoc(async (data) => {
-      if (data.subs) {
-        subsStore.setSubs(data.subs)
-      }
-
-      if (data.allSubsMarkedVideoId) {
-        appState.setAllSubsMarkedVideoId(data.allSubsMarkedVideoId, false)
-      }
-
       const apiKey = data.youtubeApiKey
 
       if (apiKey) {
@@ -66,9 +59,24 @@ class App extends Component {
         if (isValid) {
           authStore.setApiKey(apiKey)
         }
+        // TODO: handle missing or invalid api key
       }
 
-      // TODO: handle missing or invalid api key
+      if (data.subs) {
+        const needsMigration = Object.values(data.subs).some((sub) => !sub.type)
+
+        if (needsMigration) {
+          this.needsMigration = true
+
+          return
+        }
+
+        subsStore.setSubs(data.subs)
+      }
+
+      if (data.allSubsMarkedVideoId) {
+        appState.setAllSubsMarkedVideoId(data.allSubsMarkedVideoId, false)
+      }
     })
 
     this.unsubscribers.push(unsubscribe)
@@ -83,8 +91,8 @@ class App extends Component {
       )
     }
 
-    if (this.props.location.pathname === '/migrate') {
-      return <Migrate />
+    if (this.needsMigration) {
+      return <Migrate onComplete={this._onMigrationComplete} />
     }
 
     const nowPlayingId = this._nowPlayingId()
@@ -100,7 +108,7 @@ class App extends Component {
         <NowPlaying
           autoPlayEnabled={appState.autoPlayEnabled}
           id={nowPlayingId}
-          playlists={subsStore.playlists}
+          customPlaylists={subsStore.customPlaylists}
           closeLink={this._closeNowPlayingLink}
           onEnd={this._onVideoEnded}
           onToggleAutoPlay={appState.toggleAutoPlay}
@@ -184,6 +192,10 @@ class App extends Component {
 
   @action _endResizing = () => {
     this.isResizing = false
+  }
+
+  @action _onMigrationComplete = () => {
+    this.needsMigration = false
   }
 
   _onSortStart = () => {
