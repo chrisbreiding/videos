@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { SortableHandle } from 'react-sortable-hoc'
 import { NavLink } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
+import youtube from '../../lib/youtube'
 
 import Title from './title'
 import CustomPlaylist from './custom-playlist'
@@ -30,14 +31,41 @@ const BookmarkLink = observer(({ link }) => {
 
 const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
   const inputRef = useRef()
+  const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
 
   const onChange = () => {
     onUpdate({ title: inputRef.current.value })
   }
 
+  const onThumbClick = async () => {
+    if (isUpdatingThumb) return
+
+    setIsUpdatingThumb(true)
+
+    try {
+      const getDetails = sub.type === 'channel'
+        ? youtube.getChannelDetails(sub.id)
+        : youtube.getPlaylistDetails(sub.playlistId)
+
+      const details = await getDetails
+      onUpdate({ thumb: details.thumb })
+    } catch (err) {
+      console.error('Failed to update thumbnail:', err)
+    } finally {
+      setIsUpdatingThumb(false)
+    }
+  }
+
   return (
     <span className={`${sub.type}-sub-item`}>
       <SortHandle thumb={sub.thumb} />
+      <button
+        className='sub-item-icon editable'
+        onClick={onThumbClick}
+        disabled={isUpdatingThumb}
+      >
+        <img src={sub.thumb} />
+      </button>
       <Title sub={sub} link={link} />
       <input ref={inputRef} onChange={onChange} value={sub.title || sub.author} />
       <BookmarkLink link={bookmarkLink} />

@@ -172,6 +172,34 @@ function getPlaylistIdForChannel (channelId) {
   }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads)
 }
 
+function getChannelDetails (channelId) {
+  return queryYouTube('channels', {
+    id: channelId,
+    part: 'snippet',
+  }).then((result) => {
+    const item = result.items[0]
+    return {
+      id: item.id,
+      title: item.snippet.title,
+      thumb: item.snippet.thumbnails.medium.url,
+    }
+  })
+}
+
+function getPlaylistDetails (playlistId) {
+  return queryYouTube('playlists', {
+    id: playlistId,
+    part: 'snippet',
+  }).then((result) => {
+    const item = result.items[0]
+    return {
+      id: item.id,
+      title: item.snippet.title,
+      thumb: item.snippet.thumbnails.medium.url,
+    }
+  })
+}
+
 function getPlaylistsForChannel (channelId, pageToken) {
   const params = {
     channelId,
@@ -212,4 +240,6 @@ export default {
   getPlaylistIdForChannel,
   getPlaylistsForChannel,
   getVideos,
+  getChannelDetails,
+  getPlaylistDetails,
 }

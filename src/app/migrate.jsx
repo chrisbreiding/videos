@@ -7,7 +7,6 @@ import { icon } from '../lib/util'
 const Migrate = observer(({ onComplete }) => {
   useEffect(() => {
     (async () => {
-      console.log('migrating sub types...')
       const data = await fetch()
       const subs = data.subs || {}
 
@@ -23,7 +22,6 @@ const Migrate = observer(({ onComplete }) => {
       await update({ subs: updatedSubs })
 
       onComplete()
-      console.log('migration complete')
     })()
   }, [true])
 
