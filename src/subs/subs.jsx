@@ -125,7 +125,6 @@ class Subs extends Component {
   }
 
   @action _removeSub = (id) => {
-    this.isEditing = false
     subsStore.remove(id)
   }
 }
