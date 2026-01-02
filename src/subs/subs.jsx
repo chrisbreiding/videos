@@ -7,9 +7,8 @@ import { NavLink } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
 import subsStore from './subs-store'
-import { parseQueryString, updatedLink } from '../lib/util'
+import { icon, updatedLink } from '../lib/util'
 
-import AddSub from './add-sub/add-sub'
 import SubItem from './sub-item/sub-item'
 
 const SortableSubItem = SortableElement(SubItem)
@@ -20,7 +19,6 @@ class Subs extends Component {
   @observable isEditing = false
 
   render () {
-    const query = this._getQuery()
     const hasNoSubs = !subsStore.subs.length
 
     return (
@@ -29,16 +27,7 @@ class Subs extends Component {
           {this._editButton()}
         </header>
         {this._subs()}
-        <AddSub
-          clearSearch={this._clearAddSearch}
-          linkTo={this._linkToAdding}
-          onAdd={this._onAdd}
-          type={hasNoSubs ? 'channel' : query.adding}
-          query={query.q}
-          search={this._search}
-          searchResults={subsStore.searchResults}
-          updateSearch={this._updateSearch}
-        />
+        {this._addSubButtons(hasNoSubs)}
       </aside>
     )
   }
@@ -55,9 +44,7 @@ class Subs extends Component {
 
   _subs () {
     if (!subsStore.subs.length) {
-      return (
-        <p className='subs-empty'>Add a channel to get started</p>
-      )
+      return null
     }
 
     const { location } = this.props
@@ -115,43 +102,15 @@ class Subs extends Component {
     )
   }
 
-  _clearAddSearch = () => {
-    subsStore.setSearchResults([])
-
-    this.props.router.push(
-      updatedLink(this.props.location, { search: { q: undefined } }),
-    )
-  }
-
-  _linkToAdding = (type) => {
-    return updatedLink(this.props.location, {
-      search: { adding: type },
-    })
-  }
-
-  _getQuery () {
-    return parseQueryString(this.props.location.search)
-  }
-
-  _onAdd = (type, sub) => {
-    if (type === 'channel') {
-      subsStore.addChannel(sub)
-    } else {
-      subsStore.addCustomPlaylist(sub)
-    }
-
-    this.props.router.push(this._linkToAdding())
-  }
-
-  _search = (query) => {
-    subsStore.search(query)
-  }
-
-  _updateSearch = (search) => {
-    this.props.router.push(
-      updatedLink(this.props.location, {
-        search: { q: search },
-      }),
+  _addSubButtons (hasNoSubs) {
+    return (
+      <div className='add-sub-buttons'>
+        {hasNoSubs && <p className='add-sub-buttons-prompt'>Add a channel to get started</p>}
+        <div className='add-sub-buttons-links'>
+          <NavLink to='/add-channel'>{icon('plus', 'Channel')}</NavLink>
+          <NavLink to='/add-custom-playlist'>{icon('plus', 'Custom Playlist')}</NavLink>
+        </div>
+      </div>
     )
   }
 

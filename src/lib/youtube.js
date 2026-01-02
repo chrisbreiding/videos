@@ -134,6 +134,36 @@ function getPlaylistIdForChannel (channelId) {
   }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads)
 }
 
+function getPlaylistsForChannel (channelId, pageToken) {
+  const params = {
+    channelId,
+    part: 'contentDetails,snippet',
+    maxResults: 50,
+  }
+  if (pageToken) params.pageToken = pageToken
+
+  return queryYouTube('playlists', params).then((result) => {
+    // there seems to be a bug with the youtube api where it returns
+    // a nextPageToken even if there are no more results after this page
+    const nextPageToken = result.items.length < RESULTS_PER_PAGE ? undefined : result.nextPageToken
+
+    return {
+      nextPageToken,
+      totalResults: result.pageInfo.totalResults,
+      videos: result.items.map((playlist) => ({
+        author: playlist.snippet.title,
+        channelId,
+        count: playlist.contentDetails.itemCount,
+        description: playlist.snippet.description,
+        id: playlist.id,
+        published: playlist.snippet.publishedAt,
+        thumb: playlist.snippet.thumbnails.medium.url,
+        title: playlist.snippet.title,
+      })),
+    }
+  })
+}
+
 export default {
   checkApiKey,
   searchChannels,
@@ -141,5 +171,6 @@ export default {
   getVideosDataForPlaylist,
   getVideosDataForAllPlaylists,
   getPlaylistIdForChannel,
+  getPlaylistsForChannel,
   getVideos,
 }

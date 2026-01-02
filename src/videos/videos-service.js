@@ -3,6 +3,7 @@ import {
   getVideosDataForPlaylist,
   getVideosDataForAllPlaylists,
   getVideos,
+  getPlaylistsForChannel,
 } from '../lib/youtube'
 
 class VideosService {
@@ -22,6 +23,10 @@ class VideosService {
     if (!playlist.videos.size) return Promise.resolve([])
 
     return getVideos(playlist.videoIds)
+  }
+
+  getPlaylistsForChannel (channelId, pageToken) {
+    return getPlaylistsForChannel(channelId, pageToken)
   }
 
   getVideo (id) {

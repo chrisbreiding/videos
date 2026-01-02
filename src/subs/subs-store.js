@@ -82,15 +82,25 @@ class SubsStore {
     })
   }
 
+  addPlaylist (playlist) {
+    this._addSub(playlist, {
+      playlistId: playlist.id,
+      isCustom: false,
+    })
+  }
+
   addCustomPlaylist (playlist) {
-    const id = this._newId(this._subs.toJSON())
+    const idNumber = this._newId(this._subs.toJSON())
+    const id = `custom-${idNumber}`
 
     this._addSub(playlist, {
       isCustom: true,
-      id: `custom-${id}`,
-      playlistId: `playlist-${id}`,
+      id,
+      playlistId: `playlist-${idNumber}`,
       videos: {},
     })
+
+    return id
   }
 
   @action _addSub = (base, props) => {

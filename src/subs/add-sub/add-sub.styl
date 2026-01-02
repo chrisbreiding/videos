@@ -1,12 +1,8 @@
-.add-sub {
-  > header {
+.add-sub-buttons {
+  .add-sub-buttons-links {
     display: flex;
     margin: 1em 0;
     padding-right: 0.4em;
-
-    .is-empty & {
-      display: none;
-    }
 
     a {
       @extends .button;
@@ -21,22 +17,9 @@
       font-size: 0.8em;
     }
   }
+}
 
-  main {
-    margin: 0.8em;
-
-    header {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 0.8em;
-
-      .is-empty & {
-        display: none;
-      }
-
-      a {
-        color: dark-color;
-      }
-    }
-  }
+.add-sub {
+  flex-grow: 2;
+  padding: 2em;
 }

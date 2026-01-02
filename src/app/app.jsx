@@ -19,6 +19,8 @@ import NowPlaying from '../now-playing/now-playing'
 import Resizer from './resizer'
 import Subs from '../subs/subs'
 import Sub from '../sub/sub'
+import AddCustomPlaylist from '../subs/add-sub/add-custom-playlist'
+import AddChannel from '../subs/add-sub/add-channel'
 
 @inject('router')
 @observer
@@ -105,12 +107,14 @@ class App extends Component {
           addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, nowPlayingId)}
           removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, nowPlayingId)}
         />
-        <Resizer
-          height={appState.nowPlayingHeight}
-          onResizeStart={this._startResizing}
-          onResize={this._updateNowPlayingHeight}
-          onResizeEnd={this._endResizing}
-        />
+        {nowPlayingId && (
+          <Resizer
+            height={appState.nowPlayingHeight}
+            onResizeStart={this._startResizing}
+            onResize={this._updateNowPlayingHeight}
+            onResizeEnd={this._endResizing}
+          />
+        )}
         <div className='subs'>
           <Subs
             {...this.props}
@@ -119,9 +123,11 @@ class App extends Component {
           />
           <Switch>
             <Route exact path='/' component={Sub} />
+            <Route exact path='/add-custom-playlist' component={AddCustomPlaylist} />
+            <Route exact path='/add-to-playlist' component={AddToPlaylist} />
+            <Route path='/add-channel/:query?' component={AddChannel} />
             <Route path='/subs/:id/page/:pageToken' component={Sub} />
             <Route path='/subs/:id' component={Sub} />
-            <Route path='/add-to-playlist' component={AddToPlaylist} />
           </Switch>
         </div>
       </div>

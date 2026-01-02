@@ -36,8 +36,10 @@ render(
         <Route exact path="/migrate" component={App} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/logout" component={Logout} />
+        <Route exact path="/add-channel/:query?" component={App} />
+        <Route exact path="/add-custom-playlist" component={App} />
+        <Route exact path="/add-to-playlist" component={App} />
         <Route path="/subs" component={App} />
-        <Route path="/add-to-playlist" component={App} />
         <Route
           component={() => (
             <div>

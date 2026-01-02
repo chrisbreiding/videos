@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { useRef } from 'react'
 import { SortableHandle } from 'react-sortable-hoc'
 import { NavLink } from 'react-router-dom'
 
@@ -28,13 +28,22 @@ const BookmarkLink = observer(({ link }) => {
   )
 })
 
-const Channel = observer(({ sub, link, bookmarkLink }) => (
-  <span>
-    <SortHandle thumb={sub.thumb} />
-    <Title sub={sub} link={link} />
-    <BookmarkLink link={bookmarkLink} />
-  </span>
-))
+const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
+  const inputRef = useRef()
+
+  const onChange = () => {
+    onUpdate({ title: inputRef.current.value })
+  }
+
+  return (
+    <span className='channel-sub-item'>
+      <SortHandle thumb={sub.thumb} />
+      <Title sub={sub} link={link} />
+      <input ref={inputRef} onChange={onChange} value={sub.title || sub.author} />
+      <BookmarkLink link={bookmarkLink} />
+    </span>
+  )
+})
 
 const SubItem = observer((props) => {
   function remove () {
@@ -45,7 +54,7 @@ const SubItem = observer((props) => {
 
   return (
     <li className='sub-item'>
-      {props.sub.isCustom ? <CustomPlaylist {...props} /> : <Channel {...props} /> }
+      {props.sub.isCustom ? <CustomPlaylist {...props} /> : <Channel {...props} onUpdate={props.onUpdate} />}
       <button className='remove' onClick={remove}>{icon('minus-circle')}</button>
     </li>
   )
