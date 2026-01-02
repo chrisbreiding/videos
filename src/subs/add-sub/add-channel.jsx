@@ -1,5 +1,6 @@
-import { inject, observer } from 'mobx-react'
+import cs from 'classnames'
 import _ from 'lodash'
+import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 
 import { icon } from '../../lib/util'
@@ -62,9 +63,10 @@ class AddChannel extends Component {
     return subsStore.searchResults.map((channel) => {
       const channelPlaylistData = this.state.playlists[channel.id]
       const isLoading = this.state.loadingPlaylists[channel.id]
+      const isSubscribed = subsStore.isChannelSubscribed(channel.id)
 
       return (
-        <li key={channel.id} className='channel-item'>
+        <li key={channel.id} className={cs('channel-item', { 'is-subscribed': isSubscribed })}>
           <div className='channel-info'>
             <img src={channel.thumb} />
             <div className='channel-details'>
@@ -77,7 +79,11 @@ class AddChannel extends Component {
                 {isLoading ? 'Loading...' : channelPlaylistData ? 'Hide playlists' : 'Load playlists'}
               </button>
             </div>
-            <button className='add-button' onClick={_.partial(this._onAddChannel, channel)}>{icon('plus')}</button>
+            {isSubscribed ? (
+              <span className='subscribed-indicator'>{icon('check')}</span>
+            ) : (
+              <button className='add-button' onClick={_.partial(this._onAddChannel, channel)}>{icon('plus')}</button>
+            )}
           </div>
           {channelPlaylistData && this._renderPlaylists(channel.id, channelPlaylistData)}
         </li>
@@ -105,16 +111,24 @@ class AddChannel extends Component {
           )}
         </div>
         <ul className='playlists-list'>
-          {filteredPlaylists.map((playlist) => (
-            <li key={playlist.id} className='playlist-item'>
-              <img src={playlist.thumb} />
-              <div className='playlist-details'>
-                <h4>{playlist.title}</h4>
-                <span className='playlist-count'>{playlist.count} videos</span>
-              </div>
-              <button onClick={_.partial(this._onAddPlaylist, playlist)}>{icon('plus')}</button>
-            </li>
-          ))}
+          {filteredPlaylists.map((playlist) => {
+            const isPlaylistSubscribed = subsStore.isPlaylistSubscribed(playlist.id)
+
+            return (
+              <li key={playlist.id} className={`playlist-item${isPlaylistSubscribed ? ' is-subscribed' : ''}`}>
+                <img src={playlist.thumb} />
+                <div className='playlist-details'>
+                  <h4>{playlist.title}</h4>
+                  <span className='playlist-count'>{playlist.count} videos</span>
+                </div>
+                {isPlaylistSubscribed ? (
+                  <span className='subscribed-indicator'>{icon('check')}</span>
+                ) : (
+                  <button onClick={_.partial(this._onAddPlaylist, playlist)}>{icon('plus')}</button>
+                )}
+              </li>
+            )
+          })}
         </ul>
         {playlistData.nextPageToken && (
           <div className='load-more-button-container'>

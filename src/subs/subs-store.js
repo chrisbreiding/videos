@@ -32,6 +32,22 @@ class SubsStore {
     return _.filter(this.subs, (sub) => sub.type === 'custom')
   }
 
+  @computed get subscribedChannelIds () {
+    return new Set(_.map(_.filter(this.subs, (sub) => sub.type === 'channel'), 'id'))
+  }
+
+  @computed get subscribedPlaylistIds () {
+    return new Set(_.map(_.filter(this.subs, (sub) => sub.type === 'playlist'), 'playlistId'))
+  }
+
+  isChannelSubscribed (channelId) {
+    return this.subscribedChannelIds.has(channelId)
+  }
+
+  isPlaylistSubscribed (playlistId) {
+    return this.subscribedPlaylistIds.has(playlistId)
+  }
+
   getSubById (id) {
     return this._subs.get(id)
   }

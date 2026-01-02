@@ -35,6 +35,10 @@
     background: #FFF;
     margin: 0.6em 0;
 
+    &.is-subscribed {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    }
+
     .channel-info {
       display: flex;
       justify-content: space-between;
@@ -94,6 +98,15 @@
         &:focus {
           color: darken(action-color, 20%);
         }
+      }
+
+      .subscribed-indicator {
+        align-items: center;
+        color: #28a745;
+        display: flex;
+        flex-shrink: 0;
+        justify-content: center;
+        width: 2em;
       }
     }
   }
@@ -178,6 +191,10 @@
       border-top: none;
     }
 
+    &.is-subscribed {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    }
+
     img {
       flex-shrink: 0;
       max-height: 4em;
@@ -216,6 +233,16 @@
         background: #d4d4d4;
         color: darken(action-color, 20%);
       }
+    }
+
+    .subscribed-indicator {
+      align-items: center;
+      align-self: stretch;
+      color: #28a745;
+      display: flex;
+      flex-shrink: 0;
+      justify-content: center;
+      width: 2em;
     }
   }
 
