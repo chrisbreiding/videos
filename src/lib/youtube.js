@@ -118,6 +118,44 @@ function getVideosDataForPlaylist (playlistId, pageToken, maxResults = RESULTS_P
   })
 }
 
+function getAllVideosFromPlaylist (playlistId, pageToken = null, accumulatedVideos = []) {
+  const params = {
+    playlistId,
+    part: 'snippet,contentDetails',
+    maxResults: 50,
+  }
+  if (pageToken) params.pageToken = pageToken
+
+  return queryYouTube('playlistItems', params)
+  .then(({ items, nextPageToken }) => {
+    return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
+      const allVideos = accumulatedVideos.concat(videos)
+
+      if (nextPageToken) {
+        return getAllVideosFromPlaylist(playlistId, nextPageToken, allVideos)
+      }
+
+      return allVideos
+    })
+  })
+}
+
+function getVideosDataForPlaylistSearch (playlistId, query) {
+  return getAllVideosFromPlaylist(playlistId).then((videos) => {
+    const lowerQuery = query.toLowerCase()
+    const filteredVideos = videos.filter((video) => {
+      return video.title.toLowerCase().includes(lowerQuery) ||
+             video.description.toLowerCase().includes(lowerQuery)
+    })
+
+    return {
+      videos: filteredVideos,
+      prevPageToken: null,
+      nextPageToken: null,
+    }
+  })
+}
+
 function getVideosDataForAllPlaylists (playlistIds) {
   const getVideos = _.map(playlistIds, (playlistId) => {
     return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
@@ -169,6 +207,7 @@ export default {
   searchChannels,
   getVideosDataForChannelSearch,
   getVideosDataForPlaylist,
+  getVideosDataForPlaylistSearch,
   getVideosDataForAllPlaylists,
   getPlaylistIdForChannel,
   getPlaylistsForChannel,

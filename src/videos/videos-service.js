@@ -1,6 +1,7 @@
 import {
   getVideosDataForChannelSearch,
   getVideosDataForPlaylist,
+  getVideosDataForPlaylistSearch,
   getVideosDataForAllPlaylists,
   getVideos,
   getPlaylistsForChannel,
@@ -17,6 +18,10 @@ class VideosService {
 
   getVideosDataForChannelSearch (channelId, query, pageToken) {
     return getVideosDataForChannelSearch(channelId, query, pageToken)
+  }
+
+  getVideosDataForPlaylistSearch (playlistId, query) {
+    return getVideosDataForPlaylistSearch(playlistId, query)
   }
 
   getVideosDataForCustomPlaylist (playlist) {

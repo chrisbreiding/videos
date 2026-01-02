@@ -67,6 +67,16 @@ class VideosStore {
     })
   }
 
+  @action getVideosDataForPlaylistSearch (playlistId, query) {
+    this._beforeLoad()
+
+    return videosService.getVideosDataForPlaylistSearch(playlistId, query)
+    .then((videosData) => {
+      this._updateVideosData(videosData)
+      this._afterLoad(false)
+    })
+  }
+
   @action getVideosDataForCustomPlaylist (playlist) {
     this._beforeLoad()
 

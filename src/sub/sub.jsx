@@ -72,7 +72,11 @@ class Sub extends Component {
       this._isAllSubs = false
 
       if (newSearchQuery) {
-        videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+        if (sub.type === 'playlist') {
+          videosStore.getVideosDataForPlaylistSearch(sub.playlistId, newSearchQuery)
+        } else {
+          videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+        }
       } else if (sub.type === 'custom') {
         videosStore.getVideosDataForCustomPlaylist(sub)
       } else {
