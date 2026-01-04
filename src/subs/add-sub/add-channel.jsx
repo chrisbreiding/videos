@@ -1,102 +1,107 @@
 import cs from 'classnames'
 import _ from 'lodash'
 import { inject, observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { icon } from '../../lib/util'
 import videosService from '../../videos/videos-service'
 import subsStore from '../subs-store'
 
-@inject('router')
-@observer
-class AddChannel extends Component {
-  state = {
-    loadingPlaylists: {},
-    loadingMorePlaylists: {},
-    playlists: {},
-    playlistFilters: {},
-  }
+export const AddChannel = inject('router')(observer(({ router, match }) => {
+  const [loadingPlaylists, setLoadingPlaylists] = useState({})
+  const [loadingMorePlaylists, setLoadingMorePlaylists] = useState({})
+  const [playlists, setPlaylists] = useState({})
+  const [playlistFilters, setPlaylistFilters] = useState({})
 
-  componentDidMount () {
-    this._search()
-    this.refs.query.focus()
-  }
+  const queryInputRef = useRef(null)
+  const prevQueryRef = useRef('')
 
-  componentDidUpdate () {
-    this._search()
-  }
+  const getQuery = () => match.params.query || ''
 
-  componentWillUnmount () {
-    subsStore.setSearchResults([])
-  }
-
-  _getQuery () {
-    return this.props.match.params.query || ''
-  }
-
-  _search () {
-    const query = this._getQuery()
-    const oldQuery = this.query
+  const search = () => {
+    const query = getQuery()
+    const oldQuery = prevQueryRef.current
     if (!query || query === oldQuery) return
-    this.query = query
-    this.refs.query.value = query
+    prevQueryRef.current = query
+    queryInputRef.current.value = query
     subsStore.search(query)
   }
 
-  _updateSearch = (search) => {
-    this.props.router.push(`/add-channel/${encodeURIComponent(search)}`)
+  useEffect(() => {
+    queryInputRef.current.focus()
+    return () => {
+      subsStore.setSearchResults([])
+    }
+  }, [])
+
+  useEffect(() => {
+    search()
+  })
+
+  const updateSearch = (searchTerm) => {
+    router.push(`/add-channel/${encodeURIComponent(searchTerm)}`)
   }
 
-  render () {
-    return (
-      <div className='add-sub add-channel'>
-        <form onSubmit={this._searchSubs}>
-          <input ref='query' placeholder='Search Channels' defaultValue={this._getQuery()} />
-          <button>{icon('search')}</button>
-        </form>
-        <ul className='channels-list'>{this._results()}</ul>
-      </div>
-    )
+  const searchSubs = (e) => {
+    e.preventDefault()
+    updateSearch(queryInputRef.current.value)
   }
 
-  _results () {
-    return subsStore.searchResults.map((channel) => {
-      const channelPlaylistData = this.state.playlists[channel.id]
-      const isLoading = this.state.loadingPlaylists[channel.id]
-      const isSubscribed = subsStore.isChannelSubscribed(channel.id)
+  const onAddChannel = (channel) => {
+    subsStore.addChannel(channel)
+  }
 
-      return (
-        <li key={channel.id} className={cs('channel-item', { 'is-subscribed': isSubscribed })}>
-          <div className='channel-info'>
-            <img src={channel.thumb} />
-            <div className='channel-details'>
-              <h3>{channel.title || channel.author}</h3>
-              <button
-                className='load-playlists-button'
-                onClick={() => channelPlaylistData ? this._hidePlaylists(channel.id) : this._loadPlaylists(channel.id)}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Loading...' : channelPlaylistData ? 'Hide playlists' : 'Load playlists'}
-              </button>
-            </div>
-            {isSubscribed ? (
-              <span className='subscribed-indicator'>{icon('check')}</span>
-            ) : (
-              <button className='add-button' onClick={_.partial(this._onAddChannel, channel)}>{icon('plus')}</button>
-            )}
-          </div>
-          {channelPlaylistData && this._renderPlaylists(channel.id, channelPlaylistData)}
-        </li>
-      )
+  const onAddPlaylist = (playlist) => {
+    subsStore.addPlaylist(playlist)
+  }
+
+  const onFilterChange = (channelId, value) => {
+    setPlaylistFilters((prev) => ({ ...prev, [channelId]: value }))
+  }
+
+  const loadPlaylists = (channelId) => {
+    setLoadingPlaylists((prev) => ({ ...prev, [channelId]: true }))
+
+    videosService.getPlaylistsForChannel(channelId).then((playlistsData) => {
+      setLoadingPlaylists((prev) => ({ ...prev, [channelId]: false }))
+      setPlaylists((prev) => ({ ...prev, [channelId]: playlistsData }))
     })
   }
 
-  _renderPlaylists (channelId, playlistData) {
-    const filter = this.state.playlistFilters[channelId] || ''
+  const loadMorePlaylists = (channelId, pageToken) => {
+    setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: true }))
+
+    videosService.getPlaylistsForChannel(channelId, pageToken).then((newPlaylists) => {
+      setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: false }))
+      setPlaylists((prev) => ({
+        ...prev,
+        [channelId]: {
+          ...newPlaylists,
+          videos: [...prev[channelId].videos, ...newPlaylists.videos],
+        },
+      }))
+    })
+  }
+
+  const hidePlaylists = (channelId) => {
+    setPlaylists((prev) => {
+      const updated = { ...prev }
+      delete updated[channelId]
+      return updated
+    })
+    setPlaylistFilters((prev) => {
+      const updated = { ...prev }
+      delete updated[channelId]
+      return updated
+    })
+  }
+
+  const renderPlaylists = (channelId, playlistData) => {
+    const filter = playlistFilters[channelId] || ''
     const filteredPlaylists = filter
       ? playlistData.videos.filter((p) => p.title.toLowerCase().includes(filter.toLowerCase()))
       : playlistData.videos
-    const isLoadingMore = this.state.loadingMorePlaylists[channelId]
+    const isLoadingMore = loadingMorePlaylists[channelId]
 
     return (
       <div className='playlists-section'>
@@ -104,7 +109,7 @@ class AddChannel extends Component {
           <input
             placeholder='Filter playlists'
             value={filter}
-            onChange={(e) => this._onFilterChange(channelId, e.target.value)}
+            onChange={(e) => onFilterChange(channelId, e.target.value)}
           />
           {filter && (
             <span className='filter-count'>{filteredPlaylists.length} matching</span>
@@ -124,7 +129,7 @@ class AddChannel extends Component {
                 {isPlaylistSubscribed ? (
                   <span className='subscribed-indicator'>{icon('check')}</span>
                 ) : (
-                  <button onClick={_.partial(this._onAddPlaylist, playlist)}>{icon('plus')}</button>
+                  <button onClick={_.partial(onAddPlaylist, playlist)}>{icon('plus')}</button>
                 )}
               </li>
             )
@@ -134,7 +139,7 @@ class AddChannel extends Component {
           <div className='load-more-button-container'>
             <button
               className='load-more-button'
-              onClick={() => this._loadMorePlaylists(channelId, playlistData.nextPageToken)}
+              onClick={() => loadMorePlaylists(channelId, playlistData.nextPageToken)}
               disabled={isLoadingMore}
             >
               {isLoadingMore ? 'Loading...' : 'Load more'}
@@ -145,67 +150,45 @@ class AddChannel extends Component {
     )
   }
 
-  _onFilterChange = (channelId, value) => {
-    this.setState({
-      playlistFilters: { ...this.state.playlistFilters, [channelId]: value },
+  const renderResults = () => {
+    return subsStore.searchResults.map((channel) => {
+      const channelPlaylistData = playlists[channel.id]
+      const isLoading = loadingPlaylists[channel.id]
+      const isSubscribed = subsStore.isChannelSubscribed(channel.id)
+
+      return (
+        <li key={channel.id} className={cs('channel-item', { 'is-subscribed': isSubscribed })}>
+          <div className='channel-info'>
+            <img src={channel.thumb} />
+            <div className='channel-details'>
+              <h3>{channel.title || channel.author}</h3>
+              <button
+                className='load-playlists-button'
+                onClick={() => channelPlaylistData ? hidePlaylists(channel.id) : loadPlaylists(channel.id)}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : channelPlaylistData ? 'Hide playlists' : 'Load playlists'}
+              </button>
+            </div>
+            {isSubscribed ? (
+              <span className='subscribed-indicator'>{icon('check')}</span>
+            ) : (
+              <button className='add-button' onClick={_.partial(onAddChannel, channel)}>{icon('plus')}</button>
+            )}
+          </div>
+          {channelPlaylistData && renderPlaylists(channel.id, channelPlaylistData)}
+        </li>
+      )
     })
   }
 
-  _loadPlaylists = (channelId) => {
-    this.setState({
-      loadingPlaylists: { ...this.state.loadingPlaylists, [channelId]: true },
-    })
-
-    videosService.getPlaylistsForChannel(channelId).then((playlists) => {
-      this.setState({
-        loadingPlaylists: { ...this.state.loadingPlaylists, [channelId]: false },
-        playlists: { ...this.state.playlists, [channelId]: playlists },
-      })
-    })
-  }
-
-  _loadMorePlaylists = (channelId, pageToken) => {
-    this.setState({
-      loadingMorePlaylists: { ...this.state.loadingMorePlaylists, [channelId]: true },
-    })
-
-    videosService.getPlaylistsForChannel(channelId, pageToken).then((newPlaylists) => {
-      const existingData = this.state.playlists[channelId]
-      this.setState({
-        loadingMorePlaylists: { ...this.state.loadingMorePlaylists, [channelId]: false },
-        playlists: {
-          ...this.state.playlists,
-          [channelId]: {
-            ...newPlaylists,
-            videos: [...existingData.videos, ...newPlaylists.videos],
-          },
-        },
-      })
-    })
-  }
-
-  _hidePlaylists = (channelId) => {
-    const playlists = { ...this.state.playlists }
-    const playlistFilters = { ...this.state.playlistFilters }
-
-    delete playlists[channelId]
-    delete playlistFilters[channelId]
-
-    this.setState({ playlists, playlistFilters })
-  }
-
-  _searchSubs = (e) => {
-    e.preventDefault()
-    this._updateSearch(this.refs.query.value)
-  }
-
-  _onAddChannel = (channel) => {
-    subsStore.addChannel(channel)
-  }
-
-  _onAddPlaylist = (playlist) => {
-    subsStore.addPlaylist(playlist)
-  }
-}
-
-export default AddChannel
+  return (
+    <div className='add-sub add-channel'>
+      <form onSubmit={searchSubs}>
+        <input ref={queryInputRef} placeholder='Search Channels' defaultValue={getQuery()} />
+        <button>{icon('search')}</button>
+      </form>
+      <ul className='channels-list'>{renderResults()}</ul>
+    </div>
+  )
+}))
