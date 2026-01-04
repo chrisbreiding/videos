@@ -9,7 +9,7 @@ import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 
 import { Paginator } from '../paginator/paginator'
-import Search from '../search/search'
+import { Search } from '../search/search'
 import Videos from '../videos/videos'
 
 @inject('router')

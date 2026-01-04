@@ -1,31 +1,29 @@
-import React, { Component } from 'react'
+import React, { useRef, useEffect } from 'react'
 
 import { icon } from '../lib/util'
 
-class Search extends Component {
-  componentDidUpdate () {
-    if (!this.props.query) {
-      this.refs.query.value = ''
+export const Search = ({ query, onSearch }) => {
+  const queryRef = useRef(null)
+
+  useEffect(() => {
+    if (!query) {
+      queryRef.current.value = ''
     }
-  }
+  }, [query])
 
-  render () {
-    return (
-      <form className="search" onSubmit={this._onSubmit}>
-        <input
-          ref='query'
-          defaultValue={this.props.query}
-          placeholder="Search Channel"
-        />
-        <button>{icon('search')}</button>
-      </form>
-    )
-  }
-
-  _onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault()
-    this.props.onSearch(this.refs.query.value)
+    onSearch(queryRef.current.value)
   }
-}
 
-export default Search
+  return (
+    <form className="search" onSubmit={onSubmit}>
+      <input
+        ref={queryRef}
+        defaultValue={query}
+        placeholder="Search Channel"
+      />
+      <button>{icon('search')}</button>
+    </form>
+  )
+}
