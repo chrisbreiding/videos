@@ -7,7 +7,7 @@ import { SortableHandle } from 'react-sortable-hoc'
 import Title from './title'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import IconThumb from '../../icon-thumb/icon-thumb'
-import Modal from '../../modal/modal'
+import { Modal } from '../../modal/modal'
 
 const SortHandle = SortableHandle(({ icon }) => (
   <span className='sub-item-icon'>

@@ -1,40 +1,34 @@
-import React, { Component } from 'react'
-import { render } from 'react-dom'
+import React, { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import cs from 'classnames'
 import { icon } from '../lib/util'
 
-class Modal extends Component {
-  componentDidMount () {
-    const el = this.el = document.createElement('div')
-    el.className = cs('modal', this.props.className)
+export const Modal = ({ className, onClose, children }) => {
+  const elRef = useRef(null)
+
+  if (!elRef.current) {
+    elRef.current = document.createElement('div')
+  }
+
+  useEffect(() => {
+    const el = elRef.current
+    el.className = cs('modal', className)
     document.body.appendChild(el)
-    this._render()
-  }
 
-  componentDidUpdate () {
-    this._render()
-  }
+    return () => {
+      el.remove()
+    }
+  }, [className])
 
-  componentWillUnmount () {
-    this.el.remove()
-  }
-
-  _render () {
-    render(
-      <div className='modal-box'>
-        <button className='modal-close' onClick={this.props.onClose}>
-          {icon('remove')}
-        </button>
-        <div className='modal-content'>
-          {this.props.children}
-        </div>
+  return createPortal(
+    <div className='modal-box'>
+      <button className='modal-close' onClick={onClose}>
+        {icon('remove')}
+      </button>
+      <div className='modal-content'>
+        {children}
       </div>
-    , this.el)
-  }
-
-  render () {
-    return null
-  }
+    </div>,
+    elRef.current,
+  )
 }
-
-export default Modal

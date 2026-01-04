@@ -1,29 +1,24 @@
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { icon } from '../lib/util'
 
-@observer
-class Paginator extends Component {
-  render () {
-    return (
-      <div className='paginator'>
-        {this._linkTo(this.props.prevLink, 'left', 'Newer')}
-        {this.props.children}
-        {this._linkTo(this.props.nextLink, 'right', null, 'Older')}
-      </div>
-    )
-  }
+const LinkTo = ({ link, direction, leftText, rightText }) => {
+  if (!link) return <span />
 
-  _linkTo (link, direction, leftText, rightText) {
-    if (!link) return <span />
-
-    return (
-      <Link className={'paginator-button'} to={link}>
-        {icon(`angle-${direction}`, leftText, rightText)}
-      </Link>
-    )
-  }
+  return (
+    <Link className={'paginator-button'} to={link}>
+      {icon(`angle-${direction}`, leftText, rightText)}
+    </Link>
+  )
 }
 
-export default Paginator
+export const Paginator = observer(({ prevLink, nextLink, children }) => {
+  return (
+    <div className='paginator'>
+      <LinkTo link={prevLink} direction='left' leftText='Newer' />
+      {children}
+      <LinkTo link={nextLink} direction='right' rightText='Older' />
+    </div>
+  )
+})

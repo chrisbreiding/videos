@@ -8,7 +8,7 @@ import { icon, parseQueryString, updatedLink } from '../lib/util'
 import subsStore from '../subs/subs-store'
 import videosStore from '../videos/videos-store'
 
-import Paginator from '../paginator/paginator'
+import { Paginator } from '../paginator/paginator'
 import Search from '../search/search'
 import Videos from '../videos/videos'
 

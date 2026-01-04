@@ -9,7 +9,7 @@ import subsStore from '../subs-store'
 
 import IconThumb from '../../icon-thumb/icon-thumb'
 import { IconPicker } from '../../icon-picker/icon-picker'
-import Modal from '../../modal/modal'
+import { Modal } from '../../modal/modal'
 
 export const AddCustomPlaylist = inject('router')(observer(({ router }) => {
   const titleRef = useRef()
