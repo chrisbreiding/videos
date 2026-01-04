@@ -1,7 +1,6 @@
 import _ from 'lodash'
-import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React, { useRef, useState } from 'react'
 import { SortableHandle } from 'react-sortable-hoc'
 
 import Title from './title'
@@ -15,55 +14,36 @@ const SortHandle = SortableHandle(({ icon }) => (
   </span>
 ))
 
-@observer
-class CustomPlaylist extends Component {
-  @observable isPickingIcon = false
+export const CustomPlaylist = observer(({ sub, link, onUpdate }) => {
+  const [isPickingIcon, setIsPickingIcon] = useState(false)
+  const titleRef = useRef()
 
-  render () {
-    return (
-      <span className='custom-sub-item'>
-        <SortHandle icon={this.props.sub.icon} />
-        <button className='sub-item-icon editable' onClick={_.partial(this._setPickingIcon, true)} >
-          <IconThumb {...this.props.sub.icon} />
-        </button>
-        <Title sub={this.props.sub} link={this.props.link} />
-        <input ref='title' onChange={this._onChange} value={this.props.sub.title} />
-        {this._iconPicker()}
-      </span>
-    )
+  const handleChange = () => {
+    onUpdate({ title: titleRef.current.value })
   }
 
-  _iconPicker () {
-    if (!this.isPickingIcon) return null
-
-    return (
-      <Modal className='icon-picker-modal' onClose={_.partial(this._setPickingIcon, false)}>
-        <IconPicker
-          ref='iconPicker'
-          onUpdate={this._iconUpdated}
-          icon={this.props.sub.icon}
-        />
-      </Modal>
-    )
-  }
-
-  _onChange = () => {
-    this._update({ title: this.refs.title.value })
-  }
-
-  @action _iconUpdated = (key, value) => {
-    this._update({
-      icon: _.extend(this.props.sub.icon, { [key]: value }),
+  const handleIconUpdated = (key, value) => {
+    onUpdate({
+      icon: _.extend(sub.icon, { [key]: value }),
     })
   }
 
-  _update (props) {
-    this.props.onUpdate(props)
-  }
-
-  @action _setPickingIcon = (isPickingIcon) => {
-    this.isPickingIcon = isPickingIcon
-  }
-}
-
-export default CustomPlaylist
+  return (
+    <span className='custom-sub-item'>
+      <SortHandle icon={sub.icon} />
+      <button className='sub-item-icon editable' onClick={() => setIsPickingIcon(true)} >
+        <IconThumb {...sub.icon} />
+      </button>
+      <Title sub={sub} link={link} />
+      <input ref={titleRef} onChange={handleChange} value={sub.title} />
+      {isPickingIcon && (
+        <Modal className='icon-picker-modal' onClose={() => setIsPickingIcon(false)}>
+          <IconPicker
+            onUpdate={handleIconUpdated}
+            icon={sub.icon}
+          />
+        </Modal>
+      )}
+    </span>
+  )
+})

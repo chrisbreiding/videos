@@ -7,7 +7,7 @@ import { icon } from '../../lib/util'
 import youtube from '../../lib/youtube'
 
 import Title from './title'
-import CustomPlaylist from './custom-playlist'
+import { CustomPlaylist } from './custom-playlist'
 
 const SortHandle = SortableHandle(({ thumb }) => (
   <span className='sub-item-icon'>
