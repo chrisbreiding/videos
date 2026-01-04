@@ -1,75 +1,66 @@
-import { action, observable } from 'mobx'
 import { inject, observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { onAuthStateChanged } from '../lib/firebase'
 import appState from '../app/app-state'
 import authStore from './auth-store'
 import { icon } from '../lib/util'
 
-@inject('router')
-@observer
-class Login extends Component {
-  @observable loginFailed
+export const Login = inject('router')(observer(({ router }) => {
+  const [loginFailed, setLoginFailed] = useState(false)
+  const emailRef = useRef(null)
+  const passwordRef = useRef(null)
 
-  componentDidMount () {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged((user) => {
       unsubscribe()
 
       if (user) {
-        this.props.router.push({ pathname: '/' })
+        router.push({ pathname: '/' })
       }
     })
 
-    this.refs.email.focus()
-  }
+    emailRef.current.focus()
+  }, [router])
 
-  render () {
-    return (
-      <div className='login'>
-        <form onSubmit={this._login}>
-          <h2>Please Log In</h2>
-          {this.loginFailed && <p>Login failed. Try again.</p>}
-          <fieldset>
-            <label htmlFor="email">Email</label>
-            <input ref="email" name="email" />
-          </fieldset>
-          <fieldset>
-            <label htmlFor="password">Password</label>
-            <input ref="password" name="password" type='password' />
-          </fieldset>
-          <fieldset className='controls'>
-            <button type="submit">{icon('sign-in')} Log In</button>
-          </fieldset>
-        </form>
-      </div>
-    )
-  }
-
-  _login = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
 
-    const email = this.refs.email.value
-    const password = this.refs.password.value
+    const email = emailRef.current.value
+    const password = passwordRef.current.value
 
     try {
       await authStore.login(email, password)
 
-      this._setFailed(false)
+      setLoginFailed(false)
       const location = appState.savedLocation || { pathname: '/' }
-      this.props.router.push(location)
+      router.push(location)
       appState.setSavedLocation()
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log('error logging in:', err.message)
 
-      this._setFailed(true)
+      setLoginFailed(true)
     }
   }
 
-  @action _setFailed (failed) {
-    this.loginFailed = failed
-  }
-}
-
-export default Login
+  return (
+    <div className='login'>
+      <form onSubmit={handleLogin}>
+        <h2>Please Log In</h2>
+        {loginFailed && <p>Login failed. Try again.</p>}
+        <fieldset>
+          <label htmlFor="email">Email</label>
+          <input ref={emailRef} name="email" />
+        </fieldset>
+        <fieldset>
+          <label htmlFor="password">Password</label>
+          <input ref={passwordRef} name="password" type='password' />
+        </fieldset>
+        <fieldset className='controls'>
+          <button type="submit">{icon('sign-in')} Log In</button>
+        </fieldset>
+      </form>
+    </div>
+  )
+}))

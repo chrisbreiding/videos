@@ -11,8 +11,8 @@ import DocumentTitle from 'react-document-title'
 import 'mobx-react-lite/batchingForReactDom'
 
 import { App } from './app/app'
-import Login from './login/login'
-import Logout from './login/logout'
+import { Login } from './login/login'
+import { Logout } from './login/logout'
 
 // TODO: need to figure out why mobx thinks it's in production mode
 // when developing. it makes errors from this impossible to debug
