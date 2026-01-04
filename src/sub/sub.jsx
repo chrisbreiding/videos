@@ -1,6 +1,6 @@
 import cs from 'classnames'
 import { inject, observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import DocumentTitle from 'react-document-title'
 
 import appState from '../app/app-state'
@@ -12,53 +12,68 @@ import { Paginator } from '../paginator/paginator'
 import { Search } from '../search/search'
 import Videos from '../videos/videos'
 
-@inject('router')
-@observer
-class Sub extends Component {
-  componentDidMount () {
-    this._getVideos()
-    this.previousLoadingValue = videosStore.isLoading
+export const Sub = inject('router')(observer(({ router, match, location }) => {
+  const previousLoadingValueRef = useRef(videosStore.isLoading)
+  const searchQueryRef = useRef(null)
+  const pageTokenRef = useRef(null)
+  const playlistIdRef = useRef(null)
+  const isAllSubsRef = useRef(false)
+
+  const getParam = (key) => {
+    return match.params[key]
   }
 
-  componentDidUpdate () {
-    this._getVideos()
-
-    const marker = this._getQuery().marker
-
-    if (marker && this._finishedLoadingVideos()) {
-      this._scrollToMarker(marker)
-    }
-
-    this.previousLoadingValue = videosStore.isLoading
+  const getQuery = () => {
+    return parseQueryString(location.search)
   }
 
-  _finishedLoadingVideos () {
-    return this.previousLoadingValue === true && videosStore.isLoading === false
+  const getPageToken = () => {
+    return getParam('pageToken')
   }
 
-  _scrollToMarker (marker) {
+  const getSearchQuery = () => {
+    return getQuery().search
+  }
+
+  const getSub = () => {
+    return subsStore.getSubById(getParam('id'))
+  }
+
+  const scrollToMarker = (marker) => {
     document.querySelector(`#${marker}`)?.scrollIntoView()
   }
 
-  _getVideos () {
+  const finishedLoadingVideos = () => {
+    return previousLoadingValueRef.current === true && videosStore.isLoading === false
+  }
+
+  const shouldLoadAllPlaylists = (sub, oldPlaylistId, newPlaylistId) => {
+    if (sub) return false
+    if (oldPlaylistId && !newPlaylistId) return true
+    if (videosStore.hasLoadedAllPlaylists) return false
+
+    return true
+  }
+
+  const getVideos = () => {
     if (videosStore.isLoading) return
 
-    const sub = this._getSub()
+    const sub = getSub()
 
-    const oldSearchQuery = this.searchQuery
-    const newSearchQuery = this._getSearchQuery()
-    this.searchQuery = newSearchQuery
+    const oldSearchQuery = searchQueryRef.current
+    const newSearchQuery = getSearchQuery()
+    searchQueryRef.current = newSearchQuery
 
-    const oldToken = this.pageToken
-    const newToken = this._getPageToken()
-    this.pageToken = newToken
+    const oldToken = pageTokenRef.current
+    const newToken = getPageToken()
+    pageTokenRef.current = newToken
 
-    const oldPlaylistId = this.playlistId
+    const oldPlaylistId = playlistIdRef.current
     const newPlaylistId = sub && sub.playlistId
-    this.playlistId = newPlaylistId
+    playlistIdRef.current = newPlaylistId
 
-    if (this._shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
-      this._isAllSubs = true
+    if (shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
+      isAllSubsRef.current = true
       videosStore.getVideosDataForAllPlaylists(subsStore.channelIds)
 
       return
@@ -69,7 +84,7 @@ class Sub extends Component {
       || oldToken !== newToken
       || oldSearchQuery !== newSearchQuery
     ) {
-      this._isAllSubs = false
+      isAllSubsRef.current = false
 
       if (newSearchQuery) {
         if (sub.type === 'playlist') {
@@ -85,100 +100,106 @@ class Sub extends Component {
     }
   }
 
-  _getSub () {
-    return subsStore.getSubById(this._getParam('id'))
-  }
-
-  _getParam (key) {
-    return this.props.match.params[key]
-  }
-
-  _getQuery () {
-    return parseQueryString(this.props.location.search)
-  }
-
-  _getPageToken () {
-    return this._getParam('pageToken')
-  }
-
-  _getSearchQuery () {
-    return this._getQuery().search
-  }
-
-  _isAllSubs () {
-    return !this._getParam('id')
-  }
-
-  _shouldLoadAllPlaylists (sub, oldPlaylistId, newPlaylistId) {
-    if (sub) return false
-    if (oldPlaylistId && !newPlaylistId) return true
-    if (videosStore.hasLoadedAllPlaylists) return false
-
-    return true
-  }
-
-  render () {
-    if (!subsStore.subs.length) return null
-
-    const sub = this._getSub()
-    const nowPlaying = this._getQuery().nowPlaying
-    const subId = this._getParam('id')
-    const { isLoading, prevPageToken, nextPageToken } = videosStore
-    const prevLink = this._paginatorLink(subId, prevPageToken)
-    const nextLink = this._paginatorLink(subId, nextPageToken)
-
-    return (
-      <main className='videos'>
-        {!nowPlaying && (
-          <DocumentTitle title={`${sub?.title || 'All Subs'} | Videos`} />
-        )}
-        <Paginator prevLink={prevLink} nextLink={nextLink}>
-          {this._search(sub)}
-          {this._bookmark(sub)}
-        </Paginator>
-        {isLoading ? this._loader() : this._videos(sub)}
-        <Paginator prevLink={prevLink} nextLink={nextLink} />
-      </main>
-    )
-  }
-
-  _paginatorLink (subId, pageToken) {
+  const paginatorLink = (subId, pageToken) => {
     if (!pageToken) return
 
-    return updatedLink(this.props.location, {
+    return updatedLink(location, {
       pathname: `/subs/${subId}/page/${pageToken}`,
     })
   }
 
-  _search (sub) {
+  const isPageBookMarked = (sub) => {
+    return sub.bookmarkedPageToken === pageTokenRef.current
+  }
+
+  const getMarkedVideoId = (sub) => {
+    if (isAllSubsRef.current) return appState.allSubsMarkedVideoId
+
+    return sub ? sub.markedVideoId : null
+  }
+
+  const updateVideoMark = (id) => {
+    const sub = getSub()
+
+    if (isAllSubsRef.current) {
+      appState.setAllSubsMarkedVideoId(id)
+    } else if (sub) {
+      subsStore.update(sub.id, { markedVideoId: id })
+    }
+  }
+
+  const updateVideoMarkerLink = useCallback((marker) => {
+    router.replace(updatedLink(location, {
+      search: { marker },
+    }))
+    scrollToMarker(marker)
+  }, [router, location])
+
+  const updateBookmark = useCallback((sub) => () => {
+    const bookmarkedPageToken = isPageBookMarked(sub) ? null : pageTokenRef.current
+    sub.update({ bookmarkedPageToken })
+    subsStore.save()
+  }, [])
+
+  const playVideo = useCallback((id) => {
+    updateVideoMark(id)
+  }, [])
+
+  const removeVideoMark = useCallback(() => {
+    updateVideoMark()
+    updateVideoMarkerLink()
+  }, [updateVideoMarkerLink])
+
+  const onSortStart = useCallback(() => {
+    appState.setSorting(true)
+  }, [])
+
+  const onSortEnd = useCallback((sortProps) => {
+    appState.setSorting(false)
+    const changed = videosStore.sort(sortProps)
+
+    if (changed) {
+      subsStore.updatePlaylistVideosOrder(getParam('id'), videosStore.videos)
+      subsStore.save()
+    }
+  }, [])
+
+  const onSearchUpdate = useCallback((searchTerm) => {
+    router.push(updatedLink({
+      pathname: `/subs/${getParam('id')}`,
+    }, {
+      search: {
+        search: searchTerm || undefined,
+        pageToken: undefined,
+      },
+    }))
+  }, [router])
+
+  const renderSearch = (sub) => {
     if (!sub || sub.type === 'custom') return null
 
     return (
       <Search
-        query={this._getSearchQuery()}
-        onSearch={this._onSearchUpdate}
+        query={getSearchQuery()}
+        onSearch={onSearchUpdate}
       />
     )
   }
 
-  _bookmark (sub) {
-    if (!sub || !this.pageToken) return null
+  const renderBookmark = (sub) => {
+    if (!sub || !pageTokenRef.current) return null
 
     return (
       <button
-        className={cs('bookmark', { 'is-bookmarked': this._isPageBookMarked(sub) })}
-        onClick={this._updateBookmark(sub)}
+        className={cs('bookmark', { 'is-bookmarked': isPageBookMarked(sub) })}
+        onClick={updateBookmark(sub)}
       >
         {icon('bookmark')}
       </button>
     )
   }
 
-  _isPageBookMarked (sub) {
-    return sub.bookmarkedPageToken === this.pageToken
-  }
-
-  _videos (sub) {
+  const renderVideos = (sub) => {
     if (!videosStore.videos.length) {
       return (
         <div className='videos-empty'>
@@ -193,26 +214,20 @@ class Sub extends Component {
 
     return (
       <Videos
-        showChannelImage={this._isAllSubs || isCustom}
+        showChannelImage={isAllSubsRef.current || isCustom}
         isCustom={isCustom}
-        location={this.props.location}
-        markedVideoId={this._getMarkedVideoId(sub)}
-        onPlay={this._playVideo}
-        onRemoveMark={this._removeVideoMark}
-        onSortStart={this._onSortStart}
-        onSortEnd={this._onSortEnd}
-        onUpdateVideoMarkerLink={this._updateVideoMarkerLink}
+        location={location}
+        markedVideoId={getMarkedVideoId(sub)}
+        onPlay={playVideo}
+        onRemoveMark={removeVideoMark}
+        onSortStart={onSortStart}
+        onSortEnd={onSortEnd}
+        onUpdateVideoMarkerLink={updateVideoMarkerLink}
       />
     )
   }
 
-  _getMarkedVideoId (sub) {
-    if (this._isAllSubs) return appState.allSubsMarkedVideoId
-
-    return sub ? sub.markedVideoId : null
-  }
-
-  _loader () {
+  const renderLoader = () => {
     return (
       <div className='loader'>
         {icon('spin fa-play-circle')}
@@ -222,62 +237,38 @@ class Sub extends Component {
     )
   }
 
-  _updateBookmark = (sub) => () => {
-    const bookmarkedPageToken = this._isPageBookMarked(sub) ? null : this.pageToken
-    sub.update({ bookmarkedPageToken })
-    subsStore.save()
-  }
+  useEffect(() => {
+    getVideos()
 
-  _playVideo = (id) => {
-    this._updateVideoMark(id)
-  }
+    const marker = getQuery().marker
 
-  _removeVideoMark = () => {
-    this._updateVideoMark()
-    this._updateVideoMarkerLink()
-  }
-
-  _updateVideoMarkerLink = (marker) => {
-    this.props.router.replace(updatedLink(this.props.location, {
-      search: { marker },
-    }))
-    this._scrollToMarker(marker)
-  }
-
-  _updateVideoMark (id) {
-    const sub = this._getSub()
-
-    if (this._isAllSubs) {
-      appState.setAllSubsMarkedVideoId(id)
-    } else if (sub) {
-      subsStore.update(sub.id, { markedVideoId: id })
+    if (marker && finishedLoadingVideos()) {
+      scrollToMarker(marker)
     }
-  }
 
-  _onSortStart = () => {
-    appState.setSorting(true)
-  }
+    previousLoadingValueRef.current = videosStore.isLoading
+  })
 
-  _onSortEnd = (sortProps) => {
-    appState.setSorting(false)
-    const changed = videosStore.sort(sortProps)
+  if (!subsStore.subs.length) return null
 
-    if (changed) {
-      subsStore.updatePlaylistVideosOrder(this._getParam('id'), videosStore.videos)
-      subsStore.save()
-    }
-  }
+  const sub = getSub()
+  const nowPlaying = getQuery().nowPlaying
+  const subId = getParam('id')
+  const { isLoading, prevPageToken, nextPageToken } = videosStore
+  const prevLink = paginatorLink(subId, prevPageToken)
+  const nextLink = paginatorLink(subId, nextPageToken)
 
-  _onSearchUpdate = (searchTerm) => {
-    this.props.router.push(updatedLink({
-      pathname: `/subs/${this._getParam('id')}`,
-    }, {
-      search: {
-        search: searchTerm || undefined,
-        pageToken: undefined,
-      },
-    }))
-  }
-}
-
-export default Sub
+  return (
+    <main className='videos'>
+      {!nowPlaying && (
+        <DocumentTitle title={`${sub?.title || 'All Subs'} | Videos`} />
+      )}
+      <Paginator prevLink={prevLink} nextLink={nextLink}>
+        {renderSearch(sub)}
+        {renderBookmark(sub)}
+      </Paginator>
+      {isLoading ? renderLoader() : renderVideos(sub)}
+      <Paginator prevLink={prevLink} nextLink={nextLink} />
+    </main>
+  )
+}))
