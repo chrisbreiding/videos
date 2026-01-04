@@ -7,7 +7,7 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import DocumentTitle from 'react-document-title'
 
-import YoutubePlayer from '../lib/youtube-player'
+import { YoutubePlayer } from '../lib/youtube-player'
 import appState from '../app/app-state'
 import { icon } from '../lib/util'
 import videosStore from '../videos/videos-store'

@@ -1,34 +1,35 @@
 /* global YT */
 // https://developers.google.com/youtube/iframe_api_reference
 
-import React, { Component } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 const SCRIPT_ID = 'youtube-player-api-script'
 const PLAYER_ID = 'youtube-player'
 
-class YoutubePlayer extends Component {
-  componentDidMount () {
-    window.onYouTubeIframeAPIReady = this._initPlayer
-    this._loadScript()
+export const YoutubePlayer = ({ id, width, height, onEnd }) => {
+  const playerRef = useRef(null)
+
+  const scriptLoaded = () => {
+    return !!document.getElementById(SCRIPT_ID)
   }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps.id !== this.props.id) {
-      this._updatePlayerId()
-    }
+  const initPlayer = () => {
+    playerRef.current = new YT.Player(PLAYER_ID, {
+      videoId: id,
+      playerVars: { autoplay: 1 },
+      width,
+      height,
+    })
 
-    if (prevProps.width !== this.props.width || prevProps.height !== this.props.height) {
-      this._updatePlayerDimensions()
-    }
+    playerRef.current.addEventListener('onStateChange', (e) => {
+      if (e.data === YT.PlayerState.ENDED) {
+        onEnd()
+      }
+    })
   }
 
-  componentWillUnmount () {
-    this._player.destroy()
-    window.onYouTubeIframeAPIReady = null
-  }
-
-  _loadScript () {
-    if (this._scriptLoaded()) return this._initPlayer()
+  const loadScript = () => {
+    if (scriptLoaded()) return initPlayer()
 
     let script = document.createElement('script')
     script.id = SCRIPT_ID
@@ -37,39 +38,28 @@ class YoutubePlayer extends Component {
     document.body.appendChild(script)
   }
 
-  _scriptLoaded = () => {
-    return !!document.getElementById(SCRIPT_ID)
-  }
+  useEffect(() => {
+    window.onYouTubeIframeAPIReady = initPlayer
+    loadScript()
 
-  _initPlayer = () => {
-    this._player = new YT.Player(PLAYER_ID, {
-      videoId: this.props.id,
-      playerVars: { autoplay: 1 },
-      width: this.props.width,
-      height: this.props.height,
-    })
+    return () => {
+      playerRef.current.destroy()
+      window.onYouTubeIframeAPIReady = null
+    }
+  }, [])
 
-    this._player.addEventListener('onStateChange', (e) => {
-      if (e.data === YT.PlayerState.ENDED) {
-        this.props.onEnd()
-      }
-    })
-  }
+  useEffect(() => {
+    if (!playerRef.current) return
 
-  _updatePlayerId () {
-    if (!this._player) return
+    playerRef.current.stopVideo()
+    playerRef.current.loadVideoById(id)
+  }, [id])
 
-    this._player.stopVideo()
-    this._player.loadVideoById(this.props.id)
-  }
+  useEffect(() => {
+    if (!playerRef.current) return
 
-  _updatePlayerDimensions () {
-    this._player.setSize(this.props.width, this.props.height)
-  }
+    playerRef.current.setSize(width, height)
+  }, [width, height])
 
-  render () {
-    return <div className={PLAYER_ID} id={PLAYER_ID} />
-  }
+  return <div className={PLAYER_ID} id={PLAYER_ID} />
 }
-
-export default YoutubePlayer
