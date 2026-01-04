@@ -18,7 +18,7 @@ import NowPlaying from '../now-playing/now-playing'
 import { Resizer } from './resizer'
 import Subs from '../subs/subs'
 import Sub from '../sub/sub'
-import AddCustomPlaylist from '../subs/add-sub/add-custom-playlist'
+import { AddCustomPlaylist } from '../subs/add-sub/add-custom-playlist'
 import AddChannel from '../subs/add-sub/add-channel'
 
 export const App = inject('router')(observer(({ router, location }) => {

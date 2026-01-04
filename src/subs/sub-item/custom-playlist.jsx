@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 import { SortableHandle } from 'react-sortable-hoc'
 
 import Title from './title'
-import IconPicker from '../../icon-picker/icon-picker'
+import { IconPicker } from '../../icon-picker/icon-picker'
 import IconThumb from '../../icon-thumb/icon-thumb'
 import Modal from '../../modal/modal'
 

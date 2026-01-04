@@ -1,90 +1,80 @@
-import { action, observable, toJS } from 'mobx'
+import { toJS } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import _ from 'lodash'
-import React, { Component } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { icon } from '../../lib/util'
 import icons from '../../lib/icons-list'
 import subsStore from '../subs-store'
 
 import IconThumb from '../../icon-thumb/icon-thumb'
-import IconPicker from '../../icon-picker/icon-picker'
+import { IconPicker } from '../../icon-picker/icon-picker'
 import Modal from '../../modal/modal'
 
-@inject('router')
-@observer
-class AddCustomPlaylist extends Component {
-  @observable icon = {
+export const AddCustomPlaylist = inject('router')(observer(({ router }) => {
+  const titleRef = useRef()
+  const [iconState, setIconState] = useState({
     icon: icons[0],
     foregroundColor: '#FFFFFF',
     backgroundColor: '#333333',
-  }
-  @observable isPickingIcon = false
+  })
+  const [isPickingIcon, setIsPickingIcon] = useState(false)
 
-  componentDidMount () {
-    this.refs.title.focus()
-  }
+  useEffect(() => {
+    titleRef.current.focus()
+  }, [])
 
-  render () {
-    return (
-      <form className='add-sub add-custom-playlist' onSubmit={this._add}>
-        <fieldset>
-          <label>Title</label>
-          <input ref='title' />
-        </fieldset>
-        <fieldset>
-          <label>Thumbnail</label>
-          <button className='pick-icon' onClick={this._toggleIconPicker}>
-            <IconThumb {...this.icon} />
-          </button>
-        </fieldset>
-        <fieldset className='controls'>
-          <button className='submit'>{icon('plus', 'Add Custom Playlist')}</button>
-        </fieldset>
-        {this._iconPicker()}
-      </form>
-    )
+  const iconUpdated = (key, value) => {
+    setIconState((prev) => ({ ...prev, [key]: value }))
   }
 
-  _iconPicker () {
-    if (!this.isPickingIcon) return
+  const toggleIconPicker = (e) => {
+    e.preventDefault()
+    setIsPickingIcon(!isPickingIcon)
+  }
+
+  const add = (e) => {
+    e.preventDefault()
+
+    const title = titleRef.current.value
+    if (!title) return
+
+    const id = subsStore.addCustomPlaylist({ title, icon: toJS(iconState) })
+    router.push(`/subs/${id}`)
+  }
+
+  const renderIconPicker = () => {
+    if (!isPickingIcon) return null
 
     return (
       <Modal
         className='icon-picker-modal'
-        onClose={_.partial(this._setPickingIcon, false)}
+        onClose={_.partial(setIsPickingIcon, false)}
       >
         <IconPicker
-          ref='iconPicker'
-          onUpdate={this._iconUpdated}
-          icon={this.icon}
+          onUpdate={iconUpdated}
+          icon={iconState}
         />
       </Modal>
     )
   }
 
-  @action _iconUpdated = (key, value) => {
-    this.icon[key] = value
-  }
-
-  @action _toggleIconPicker = (e) => {
-    e.preventDefault()
-    this._setPickingIcon(!this.isPickingIcon)
-  }
-
-  @action _setPickingIcon = (isPickingIcon) => {
-    this.isPickingIcon = isPickingIcon
-  }
-
-  _add = (e) => {
-    e.preventDefault()
-
-    const title = this.refs.title.value
-    if (!title) return
-
-    const id = subsStore.addCustomPlaylist({ title, icon: toJS(this.icon) })
-    this.props.router.push(`/subs/${id}`)
-  }
-}
-
-export default AddCustomPlaylist
+  return (
+    <form className='add-sub add-custom-playlist' onSubmit={add}>
+      <fieldset>
+        <label>Title</label>
+        <input ref={titleRef} />
+      </fieldset>
+      <fieldset>
+        <label>Thumbnail</label>
+        <button className='pick-icon' onClick={toggleIconPicker}>
+          <IconThumb {...iconState} />
+        </button>
+      </fieldset>
+      <fieldset className='controls'>
+        <button className='submit'>{icon('plus', 'Add Custom Playlist')}</button>
+      </fieldset>
+      {renderIconPicker()}
+    </form>
+  )
+}))
