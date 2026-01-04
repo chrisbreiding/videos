@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import req from 'reqwest'
 import { getItem } from './local-data'
 import { authStore } from '../login/auth-store'
 
@@ -13,10 +12,9 @@ function queryYouTube (url, data) {
   const baseUrl = getBaseUrl()
 
   return authStore.getApiKey().then((apiKey) => {
-    return req({
-      url: `${baseUrl}${url}`,
-      data: _.extend({ key: apiKey }, data),
-    })
+    const params = new URLSearchParams({ key: apiKey, ...data })
+    return fetch(`${baseUrl}${url}?${params}`)
+    .then((response) => response.json())
   })
 }
 

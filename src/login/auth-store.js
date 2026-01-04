@@ -4,14 +4,20 @@ import { getDoc, signIn, signOut } from '../lib/firebase'
 import { checkApiKey as checkApiKeyYoutube } from '../lib/youtube'
 
 class AuthStore {
-  @observable userId
-  @observable youtubeApiKey
+  userId
+  youtubeApiKey
 
   constructor () {
-    makeObservable(this)
+    makeObservable(this, {
+      userId: observable,
+      youtubeApiKey: observable,
+      isAuthenticated: computed,
+      setUserId: action,
+      setApiKey: action,
+    })
   }
 
-  @computed get isAuthenticated () {
+  get isAuthenticated () {
     return !!this.userId && !!this.youtubeApiKey
   }
 
@@ -25,11 +31,11 @@ class AuthStore {
     return youtubeApiKey
   }
 
-  @action setUserId (userId) {
+  setUserId (userId) {
     this.userId = userId
   }
 
-  @action setApiKey (youtubeApiKey) {
+  setApiKey (youtubeApiKey) {
     if (!youtubeApiKey) return
 
     this.youtubeApiKey = youtubeApiKey

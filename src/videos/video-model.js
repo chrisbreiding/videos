@@ -1,18 +1,28 @@
-import { makeObservable, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import moment from 'moment'
 
 export class VideoModel {
-  @observable duration
-  @observable id
-  @observable channelId
-  @observable.ref published = null
-  @observable description
-  @observable order
-  @observable thumb
-  @observable title
+  duration
+  id
+  channelId
+  published = null
+  description
+  order
+  thumb
+  title
 
   constructor (props) {
-    makeObservable(this)
+    makeObservable(this, {
+      duration: observable,
+      id: observable,
+      channelId: observable,
+      published: observable.ref,
+      description: observable,
+      order: observable,
+      thumb: observable,
+      title: observable,
+      update: action,
+    })
 
     this.duration = props.duration
     this.id = props.id

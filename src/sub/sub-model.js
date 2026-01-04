@@ -4,24 +4,41 @@ import { action, computed, makeObservable, observable, toJS } from 'mobx'
 import { convertMapToObject, transformObject } from '../lib/util'
 
 export class SubModel {
-  @observable author
-  @observable icon
-  @observable id
-  @observable type
-  @observable order
-  @observable playlistId
-  @observable thumb
-  @observable title
-  @observable markedVideoId = null
-  @observable bookmarkedPageToken = null
-  @observable videos = observable.map()
+  author
+  icon
+  id
+  type
+  order
+  playlistId
+  thumb
+  title
+  markedVideoId = null
+  bookmarkedPageToken = null
+  videos = observable.map()
 
-  @computed get videoIds () {
+  get videoIds () {
     return Array.from(this.videos.keys())
   }
 
   constructor (props) {
-    makeObservable(this)
+    makeObservable(this, {
+      author: observable,
+      icon: observable,
+      id: observable,
+      type: observable,
+      order: observable,
+      playlistId: observable,
+      thumb: observable,
+      title: observable,
+      markedVideoId: observable,
+      bookmarkedPageToken: observable,
+      videos: observable,
+      videoIds: computed,
+      update: action,
+      addVideo: action,
+      removeVideo: action,
+      updateVideosOrder: action,
+    })
 
     this.author = props.author
     this.icon = props.icon
@@ -36,19 +53,19 @@ export class SubModel {
     this.videos = observable.map(props.videos)
   }
 
-  @action update (props) {
+  update (props) {
     _.extend(this, props)
   }
 
-  @action addVideo (video) {
+  addVideo (video) {
     this.videos.set(video.id, video)
   }
 
-  @action removeVideo (videoId) {
+  removeVideo (videoId) {
     this.videos.delete(videoId)
   }
 
-  @action updateVideosOrder (videosWithNewOrders) {
+  updateVideosOrder (videosWithNewOrders) {
     _.map(videosWithNewOrders, ({ id, order }) => {
       this.videos.get(id).order = order
     })

@@ -9,14 +9,29 @@ const maxNowPlayingHeightOffset = 10
 const nowPlayingSizeRatio = 1080 / 1920
 
 class AppState {
-  @observable _nowPlayingHeight = 540
-  @observable autoPlayEnabled = true
-  @observable isSorting = false
-  @observable windowHeight = window.innerHeight
-  @observable allSubsMarkedVideoId
+  _nowPlayingHeight = 540
+  autoPlayEnabled = true
+  isSorting = false
+  windowHeight = window.innerHeight
+  allSubsMarkedVideoId
 
   constructor () {
-    makeObservable(this)
+    makeObservable(this, {
+      _nowPlayingHeight: observable,
+      autoPlayEnabled: observable,
+      isSorting: observable,
+      windowHeight: observable,
+      allSubsMarkedVideoId: observable,
+      _maxNowPlayingHeight: computed,
+      nowPlayingHeight: computed,
+      nowPlayingWidth: computed,
+      _setProp: action,
+      setSorting: action,
+      setAllSubsMarkedVideoId: action,
+      _onWindowResize: action,
+      updateNowPlayingHeight: action,
+      toggleAutoPlay: action,
+    })
 
     window.addEventListener('resize', this._onWindowResize)
 
@@ -24,11 +39,11 @@ class AppState {
     this._setProp('_nowPlayingHeight', getItem('nowPlayingHeight'))
   }
 
-  @computed get _maxNowPlayingHeight () {
+  get _maxNowPlayingHeight () {
     return this.windowHeight - maxNowPlayingHeightOffset
   }
 
-  @computed get nowPlayingHeight () {
+  get nowPlayingHeight () {
     let height = this._nowPlayingHeight
     if (height > this._maxNowPlayingHeight) height = this._maxNowPlayingHeight
     if (height < minNowPlayingHeight) height = minNowPlayingHeight
@@ -36,31 +51,31 @@ class AppState {
     return height
   }
 
-  @computed get nowPlayingWidth () {
+  get nowPlayingWidth () {
     return Math.floor(this.nowPlayingHeight / nowPlayingSizeRatio)
   }
 
-  @action _setProp (key, value) {
+  _setProp (key, value) {
     if (value == null) return
 
     this[key] = value
   }
 
-  @action setSorting (isSorting) {
+  setSorting (isSorting) {
     this.isSorting = isSorting
   }
 
-  @action setAllSubsMarkedVideoId (allSubsMarkedVideoId, save = true) {
+  setAllSubsMarkedVideoId (allSubsMarkedVideoId, save = true) {
     this.allSubsMarkedVideoId = allSubsMarkedVideoId
 
     if (save) this.save()
   }
 
-  @action _onWindowResize = () => {
+  _onWindowResize = () => {
     this.windowHeight = window.innerHeight
   }
 
-  @action updateNowPlayingHeight (height) {
+  updateNowPlayingHeight (height) {
     this._saveNowPlayingHeight(height)
     this._nowPlayingHeight = height
   }
@@ -69,7 +84,7 @@ class AppState {
     setItem('nowPlayingHeight', height)
   }, 500)
 
-  @action toggleAutoPlay = () => {
+  toggleAutoPlay = () => {
     this.autoPlayEnabled = !this.autoPlayEnabled
     this._saveAutoPlay(this.autoPlayEnabled)
   }

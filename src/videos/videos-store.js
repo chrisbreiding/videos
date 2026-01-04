@@ -7,18 +7,35 @@ import { videosService } from './videos-service'
 import { VideoModel } from './video-model'
 
 class VideosStore {
-  @observable _videos = []
-  @observable _isSortable = false
-  @observable hasLoadedAllPlaylists = false
-  @observable isLoading = false
-  @observable prevPageToken
-  @observable nextPageToken
+  _videos = []
+  _isSortable = false
+  hasLoadedAllPlaylists = false
+  isLoading = false
+  prevPageToken
+  nextPageToken
 
   constructor () {
-    makeObservable(this)
+    makeObservable(this, {
+      _videos: observable,
+      _isSortable: observable,
+      hasLoadedAllPlaylists: observable,
+      isLoading: observable,
+      prevPageToken: observable,
+      nextPageToken: observable,
+      videos: computed,
+      setHasLoadedAllPlaylists: action,
+      getVideosDataForPlaylist: action,
+      getVideosDataForAllPlaylists: action,
+      getVideosDataForChannelSearch: action,
+      getVideosDataForPlaylistSearch: action,
+      getVideosDataForCustomPlaylist: action,
+      _beforeLoad: action,
+      _afterLoad: action,
+      _updateVideosData: action,
+    })
   }
 
-  @computed get videos () {
+  get videos () {
     if (this._isSortable) {
       return _.sortBy(values(this._videos), 'order')
     }
@@ -30,11 +47,11 @@ class VideosStore {
     return _.take(sortedVideos, 25)
   }
 
-  @action setHasLoadedAllPlaylists (hasLoaded) {
+  setHasLoadedAllPlaylists (hasLoaded) {
     this.hasLoadedAllPlaylists = hasLoaded
   }
 
-  @action getVideosDataForPlaylist (playlistId, pageToken) {
+  getVideosDataForPlaylist (playlistId, pageToken) {
     this._beforeLoad()
 
     return videosService.getVideosDataForPlaylist(playlistId, pageToken)
@@ -44,7 +61,7 @@ class VideosStore {
     })
   }
 
-  @action getVideosDataForAllPlaylists (playlistIds) {
+  getVideosDataForAllPlaylists (playlistIds) {
     if (!playlistIds.length) return Promise.resolve([])
 
     this._beforeLoad()
@@ -61,7 +78,7 @@ class VideosStore {
     })
   }
 
-  @action getVideosDataForChannelSearch (channel, query, pageToken) {
+  getVideosDataForChannelSearch (channel, query, pageToken) {
     this._beforeLoad()
 
     return videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
@@ -71,7 +88,7 @@ class VideosStore {
     })
   }
 
-  @action getVideosDataForPlaylistSearch (playlistId, query) {
+  getVideosDataForPlaylistSearch (playlistId, query) {
     this._beforeLoad()
 
     return videosService.getVideosDataForPlaylistSearch(playlistId, query)
@@ -81,7 +98,7 @@ class VideosStore {
     })
   }
 
-  @action getVideosDataForCustomPlaylist (playlist) {
+  getVideosDataForCustomPlaylist (playlist) {
     this._beforeLoad()
 
     return videosService.getVideosDataForCustomPlaylist(playlist)
@@ -115,18 +132,18 @@ class VideosStore {
     return nextVideo.id
   }
 
-  @action _beforeLoad () {
+  _beforeLoad () {
     this.isLoading = true
     this.prevPageToken = null
     this.nextPageToken = null
   }
 
-  @action _afterLoad (isSortable) {
+  _afterLoad (isSortable) {
     this._isSortable = isSortable
     this.isLoading = false
   }
 
-  @action _updateVideosData ({ videos, prevPageToken, nextPageToken }) {
+  _updateVideosData ({ videos, prevPageToken, nextPageToken }) {
     if (videos) this._videos = _.map(videos, (video) => new VideoModel(video))
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken

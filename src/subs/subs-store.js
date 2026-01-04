@@ -8,39 +8,54 @@ import { convertMapEntriesToObject, transformObject } from '../lib/util'
 import { getPlaylistIdForChannel, searchChannels } from '../lib/youtube'
 
 class SubsStore {
-  @observable _subs = observable.map()
-  @observable.ref searchResults = []
-  @observable isLoading = true
+  _subs = observable.map()
+  searchResults = []
+  isLoading = true
 
   constructor () {
-    makeObservable(this)
+    makeObservable(this, {
+      _subs: observable,
+      searchResults: observable.ref,
+      isLoading: observable,
+      subs: computed,
+      channels: computed,
+      channelIds: computed,
+      fourChannels: computed,
+      customPlaylists: computed,
+      subscribedChannelIds: computed,
+      subscribedPlaylistIds: computed,
+      setSearchResults: action,
+      setSubs: action,
+      remove: action,
+      _addSub: action,
+    })
   }
 
-  @computed get subs () {
+  get subs () {
     return _.sortBy(values(this._subs), 'order')
   }
 
-  @computed get channels () {
+  get channels () {
     return _.filter(this.subs, (sub) => sub.type === 'channel')
   }
 
-  @computed get channelIds () {
+  get channelIds () {
     return _.map(this.channels, 'playlistId')
   }
 
-  @computed get fourChannels () {
+  get fourChannels () {
     return _.take(this.channels, 4)
   }
 
-  @computed get customPlaylists () {
+  get customPlaylists () {
     return _.filter(this.subs, (sub) => sub.type === 'custom')
   }
 
-  @computed get subscribedChannelIds () {
+  get subscribedChannelIds () {
     return new Set(_.map(_.filter(this.subs, (sub) => sub.type === 'channel'), 'id'))
   }
 
-  @computed get subscribedPlaylistIds () {
+  get subscribedPlaylistIds () {
     return new Set(_.map(_.filter(this.subs, (sub) => sub.type === 'playlist'), 'playlistId'))
   }
 
@@ -62,11 +77,11 @@ class SubsStore {
     return sub && sub.thumb
   }
 
-  @action setSearchResults (searchResults) {
+  setSearchResults (searchResults) {
     this.searchResults = searchResults
   }
 
-  @action setSubs (subs) {
+  setSubs (subs) {
     _.each(subs, (sub) => {
       this._subs.set(sub.id, new SubModel(sub))
     })
@@ -87,7 +102,7 @@ class SubsStore {
     this.save()
   }
 
-  @action remove (id) {
+  remove (id) {
     this._subs.delete(id)
     removeSub(id)
   }
@@ -128,7 +143,7 @@ class SubsStore {
     return id
   }
 
-  @action _addSub = (base, props) => {
+  _addSub = (base, props) => {
     const sub = _.extend(base, props, {
       order: this._newOrder(this._subsObject()),
     })
