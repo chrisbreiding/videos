@@ -1,66 +1,61 @@
-import { action } from 'mobx'
-import React, { Component } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 
-class Resizer extends Component {
-  static defaultProps = {
-    onResizeStart: () => {},
-    onResize: () => {},
-    onResizeEnd: () => {},
-  }
+export const Resizer = ({
+  height,
+  minHeight,
+  maxHeight,
+  onResizeStart = () => {},
+  onResize = () => {},
+  onResizeEnd = () => {},
+}) => {
+  const isDragging = useRef(false)
 
-  render () {
-    return (
-      <div
-        className='resizer'
-        style={{ top: this.props.height }}
-        onMouseDown={this._startResize}
-        onTouchStart={this._startResize}
-      />
-    )
-  }
-
-  componentDidMount () {
-    this._isDragging = false
-
-    document.addEventListener('mousemove', this._resize)
-    document.addEventListener('touchmove', this._resize)
-    document.addEventListener('mouseup', this._endResize)
-    document.addEventListener('touchend', this._endResize)
-  }
-
-  @action _startResize = (e) => {
+  const startResize = useCallback((e) => {
     e.preventDefault()
 
-    this._isDragging = true
-    this.props.onResizeStart()
-  }
+    isDragging.current = true
+    onResizeStart()
+  }, [onResizeStart])
 
-  @action _resize = (e) => {
-    const minHeight = this.props.minHeight
-    const maxHeight = this.props.maxHeight
-
-    if (this._isDragging) {
+  const resize = useCallback((e) => {
+    if (isDragging.current) {
       e.preventDefault()
 
       let height = e.pageY
       if (height < minHeight) height = minHeight
       if (height > maxHeight) height = maxHeight
 
-      this.props.onResize(height)
+      onResize(height)
     }
-  }
+  }, [minHeight, maxHeight, onResize])
 
-  @action _endResize = () => {
-    if (this._isDragging) {
-      this.props.onResizeEnd()
+  const endResize = useCallback(() => {
+    if (isDragging.current) {
+      onResizeEnd()
     }
-    this._isDragging = false
-  }
+    isDragging.current = false
+  }, [onResizeEnd])
 
-  componentWillUnmount () {
-    document.removeEventListener('mousemove', this._resize)
-    document.removeEventListener('mouseup', this._endResize)
-  }
+  useEffect(() => {
+    document.addEventListener('mousemove', resize)
+    document.addEventListener('touchmove', resize)
+    document.addEventListener('mouseup', endResize)
+    document.addEventListener('touchend', endResize)
+
+    return () => {
+      document.removeEventListener('mousemove', resize)
+      document.removeEventListener('touchmove', resize)
+      document.removeEventListener('mouseup', endResize)
+      document.removeEventListener('touchend', endResize)
+    }
+  }, [resize, endResize])
+
+  return (
+    <div
+      className='resizer'
+      style={{ top: height }}
+      onMouseDown={startResize}
+      onTouchStart={startResize}
+    />
+  )
 }
-
-export default Resizer
