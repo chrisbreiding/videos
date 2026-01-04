@@ -1,8 +1,7 @@
 import cs from 'classnames'
 import _ from 'lodash'
-import { action, observable } from 'mobx'
-import { inject, observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { observer } from 'mobx-react'
+import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
@@ -13,41 +12,36 @@ import SubItem from './sub-item/sub-item'
 
 const SortableSubItem = SortableElement(SubItem)
 
-@inject('router')
-@observer
-class Subs extends Component {
-  @observable isEditing = false
+const _Subs = observer(({ location }) => {
+  const [isEditing, setIsEditing] = useState(false)
 
-  render () {
-    const hasNoSubs = !subsStore.subs.length
-
-    return (
-      <aside className={cs('subs-list', { 'is-empty': hasNoSubs })}>
-        <header>
-          {this._editButton()}
-        </header>
-        {this._subs()}
-        {this._addSubButtons(hasNoSubs)}
-      </aside>
-    )
+  const toggleEditing = () => {
+    setIsEditing(!isEditing)
   }
 
-  _editButton () {
+  const updateSub = (id, props) => {
+    subsStore.update(id, props)
+  }
+
+  const removeSub = (id) => {
+    subsStore.remove(id)
+  }
+
+  const renderEditButton = () => {
     if (!subsStore.subs.length) return null
 
     return (
-      <button onClick={this._toggleEditing}>
-        {this.isEditing ? 'Done' : 'Edit'}
+      <button onClick={toggleEditing}>
+        {isEditing ? 'Done' : 'Edit'}
       </button>
     )
   }
 
-  _subs () {
+  const renderSubs = () => {
     if (!subsStore.subs.length) {
       return null
     }
 
-    const { location } = this.props
     const search = {
       search: undefined,
       marker: undefined,
@@ -59,7 +53,7 @@ class Subs extends Component {
 
     return (
       <ul className={cs({
-        'editing': this.isEditing,
+        'editing': isEditing,
         'has-subs': !!subsStore.subs.length,
       })}>
         <li className='sub-item all-subs'>
@@ -93,8 +87,8 @@ class Subs extends Component {
               sub={sub}
               link={link}
               bookmarkLink={bookmarkLink}
-              onUpdate={_.partial(this._updateSub, sub.id)}
-              onRemove={_.partial(this._removeSub, sub.id)}
+              onUpdate={_.partial(updateSub, sub.id)}
+              onRemove={_.partial(removeSub, sub.id)}
             />
           )
         })}
@@ -102,7 +96,7 @@ class Subs extends Component {
     )
   }
 
-  _addSubButtons (hasNoSubs) {
+  const renderAddSubButtons = (hasNoSubs) => {
     if (subsStore.isLoading) return null
 
     return (
@@ -116,22 +110,22 @@ class Subs extends Component {
     )
   }
 
-  @action _toggleEditing = () => {
-    this.isEditing = !this.isEditing
-  }
+  const hasNoSubs = !subsStore.subs.length
 
-  @action _updateSub = (id, props) => {
-    subsStore.update(id, props)
-  }
+  return (
+    <aside className={cs('subs-list', { 'is-empty': hasNoSubs })}>
+      <header>
+        {renderEditButton()}
+      </header>
+      {renderSubs()}
+      {renderAddSubButtons(hasNoSubs)}
+    </aside>
+  )
+})
 
-  @action _removeSub = (id) => {
-    subsStore.remove(id)
-  }
-}
+const SortableSubs = SortableContainer(_Subs)
 
-const SortableSubs = SortableContainer(Subs)
-
-const SortableSubsContainer = (props) => {
+export const Subs = (props) => {
   const onSortEnd = (sortProps) => {
     props.onSortEnd()
     subsStore.sort(sortProps)
@@ -146,5 +140,3 @@ const SortableSubsContainer = (props) => {
     />
   )
 }
-
-export default SortableSubsContainer
