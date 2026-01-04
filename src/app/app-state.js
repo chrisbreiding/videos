@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { action, computed, observable } from 'mobx'
+import { action, computed, makeObservable, observable } from 'mobx'
 
 import { getItem, setItem } from '../lib/local-data'
 import { update } from '../lib/remote-data'
@@ -16,6 +16,8 @@ class AppState {
   @observable allSubsMarkedVideoId
 
   constructor () {
+    makeObservable(this)
+
     window.addEventListener('resize', this._onWindowResize)
 
     this._setProp('autoPlayEnabled', getItem('autoPlayEnabled'))

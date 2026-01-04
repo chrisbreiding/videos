@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import authStore from './auth-store'
 import { icon } from '../lib/util'
 
-const Login = inject('router')(observer(({ router }) => {
+const Logout = inject('router')(observer(({ router }) => {
   useEffect(() => {
     (async () => {
       await authStore.logout()
@@ -21,4 +21,4 @@ const Login = inject('router')(observer(({ router }) => {
   )
 }))
 
-export default Login
+export default Logout

@@ -1,4 +1,4 @@
-import { action, computed, observable, values, toJS } from 'mobx'
+import { action, computed, makeObservable, observable, values, toJS } from 'mobx'
 import _ from 'lodash'
 import moment from 'moment'
 import arrayMove from 'array-move'
@@ -13,6 +13,10 @@ class VideosStore {
   @observable isLoading = false
   @observable prevPageToken
   @observable nextPageToken
+
+  constructor () {
+    makeObservable(this)
+  }
 
   @computed get videos () {
     if (this._isCustom) {

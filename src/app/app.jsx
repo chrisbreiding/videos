@@ -1,8 +1,7 @@
 import cs from 'classnames'
 import _ from 'lodash'
-import { action, observable } from 'mobx'
 import { inject, observer } from 'mobx-react'
-import React, { Component } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { matchPath } from 'react-router'
 import { Route, Switch } from 'react-router-dom'
 
@@ -22,34 +21,27 @@ import Sub from '../sub/sub'
 import AddCustomPlaylist from '../subs/add-sub/add-custom-playlist'
 import AddChannel from '../subs/add-sub/add-channel'
 
-@inject('router')
-@observer
-class App extends Component {
-  @observable isResizing = false
-  @observable needsMigration = false
-  unsubscribers = []
+export const App = inject('router')(observer(({ router, location }) => {
+  const [isResizing, setIsResizing] = useState(false)
+  const [needsMigration, setNeedsMigration] = useState(false)
 
-  componentDidMount () {
-    const unsubscribe = onAuthStateChanged((user) => {
-      if (user) {
-        authStore.setUserId(user.uid)
-        return this._getApiKey()
-      }
+  const unsubscribersRef = useRef([])
 
-      appState.setSavedLocation(this.props.location)
-      this.props.router.push({ pathname: '/login' })
-    })
-
-    this.unsubscribers.push(unsubscribe)
+  const getQuery = () => {
+    return parseQueryString(location.search)
   }
 
-  componentWillUnmount () {
-    _.each(this.unsubscribers, (unsubscribe) => {
-      unsubscribe()
+  const getNowPlayingId = () => {
+    return getQuery().nowPlaying
+  }
+
+  const getCloseNowPlayingLink = () => {
+    return updatedLink(location, {
+      search: { nowPlaying: undefined },
     })
   }
 
-  async _getApiKey () {
+  const getApiKey = async () => {
     const unsubscribe = watchDoc(async (data) => {
       const apiKey = data.youtubeApiKey
 
@@ -66,7 +58,7 @@ class App extends Component {
         const needsMigration = Object.values(data.subs).some((sub) => !sub.type)
 
         if (needsMigration) {
-          this.needsMigration = true
+          setNeedsMigration(true)
 
           return
         }
@@ -79,90 +71,16 @@ class App extends Component {
       }
     })
 
-    this.unsubscribers.push(unsubscribe)
+    unsubscribersRef.current.push(unsubscribe)
   }
 
-  render () {
-    if (!authStore.isAuthenticated) {
-      return (
-        <div className='loader'>
-          {icon('sign-in')} Authenticating...
-        </div>
-      )
-    }
-
-    if (this.needsMigration) {
-      return <Migrate onComplete={this._onMigrationComplete} />
-    }
-
-    const nowPlayingId = this._nowPlayingId()
-
-    return (
-      <div
-        className={cs('app', {
-          'is-resizing': this.isResizing,
-          'is-sorting': appState.isSorting,
-        })}
-        style={{ height: appState.windowHeight }}
-      >
-        <NowPlaying
-          autoPlayEnabled={appState.autoPlayEnabled}
-          id={nowPlayingId}
-          customPlaylists={subsStore.customPlaylists}
-          closeLink={this._closeNowPlayingLink}
-          onEnd={this._onVideoEnded}
-          onToggleAutoPlay={appState.toggleAutoPlay}
-          addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, nowPlayingId)}
-          removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, nowPlayingId)}
-        />
-        {nowPlayingId && (
-          <Resizer
-            height={appState.nowPlayingHeight}
-            onResizeStart={this._startResizing}
-            onResize={this._updateNowPlayingHeight}
-            onResizeEnd={this._endResizing}
-          />
-        )}
-        <div className='subs'>
-          <Subs
-            {...this.props}
-            onSortStart={this._onSortStart}
-            onSortEnd={this._onSortEnd}
-          />
-          <Switch>
-            <Route exact path='/' component={Sub} />
-            <Route exact path='/add-custom-playlist' component={AddCustomPlaylist} />
-            <Route exact path='/add-to-playlist' component={AddToPlaylist} />
-            <Route path='/add-channel/:query?' component={AddChannel} />
-            <Route path='/subs/:id/page/:pageToken' component={Sub} />
-            <Route path='/subs/:id' component={Sub} />
-          </Switch>
-        </div>
-      </div>
-    )
-  }
-
-  _nowPlayingId () {
-    return this._getQuery().nowPlaying
-  }
-
-  _closeNowPlayingLink = () => {
-    return updatedLink(this.props.location, {
-      search: { nowPlaying: undefined },
-    })
-  }
-
-  _getQuery () {
-    return parseQueryString(this.props.location.search)
-  }
-
-  _onVideoEnded = () => {
+  const onVideoEnded = () => {
     if (!appState.autoPlayEnabled) return
 
-    const nextVideoId = videosStore.nextVideoId(this._nowPlayingId())
+    const nextVideoId = videosStore.nextVideoId(getNowPlayingId())
     if (!nextVideoId) return
 
-    const match = matchPath(this.props.location.pathname, {
+    const match = matchPath(location.pathname, {
       path: '/subs/:id',
     })
 
@@ -177,34 +95,111 @@ class App extends Component {
       }
     }
 
-    this.props.router.push(updatedLink(this.props.location, {
+    router.push(updatedLink(location, {
       search: { nowPlaying: nextVideoId },
     }))
   }
 
-  @action _startResizing = () => {
-    this.isResizing = true
+  const startResizing = () => {
+    setIsResizing(true)
   }
 
-  _updateNowPlayingHeight = (height) => {
+  const updateNowPlayingHeight = (height) => {
     appState.updateNowPlayingHeight(height)
   }
 
-  @action _endResizing = () => {
-    this.isResizing = false
+  const endResizing = () => {
+    setIsResizing(false)
   }
 
-  @action _onMigrationComplete = () => {
-    this.needsMigration = false
+  const onMigrationComplete = () => {
+    setNeedsMigration(false)
   }
 
-  _onSortStart = () => {
+  const onSortStart = () => {
     appState.setSorting(true)
   }
 
-  _onSortEnd = () => {
+  const onSortEnd = () => {
     appState.setSorting(false)
   }
-}
 
-export default App
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged((user) => {
+      if (user) {
+        authStore.setUserId(user.uid)
+        return getApiKey()
+      }
+
+      appState.setSavedLocation(location)
+      router.push({ pathname: '/login' })
+    })
+
+    unsubscribersRef.current.push(unsubscribe)
+
+    return () => {
+      _.each(unsubscribersRef.current, (unsubscribe) => {
+        unsubscribe()
+      })
+    }
+  }, [])
+
+  if (!authStore.isAuthenticated) {
+    return (
+      <div className='loader'>
+        {icon('sign-in')} Authenticating...
+      </div>
+    )
+  }
+
+  if (needsMigration) {
+    return <Migrate onComplete={onMigrationComplete} />
+  }
+
+  const nowPlayingId = getNowPlayingId()
+
+  return (
+    <div
+      className={cs('app', {
+        'is-resizing': isResizing,
+        'is-sorting': appState.isSorting,
+      })}
+      style={{ height: appState.windowHeight }}
+    >
+      <NowPlaying
+        autoPlayEnabled={appState.autoPlayEnabled}
+        id={nowPlayingId}
+        customPlaylists={subsStore.customPlaylists}
+        closeLink={getCloseNowPlayingLink}
+        onEnd={onVideoEnded}
+        onToggleAutoPlay={appState.toggleAutoPlay}
+        addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, nowPlayingId)}
+        removedFromPlaylist={(playlist) => subsStore.removeVideoFromPlaylist(playlist, nowPlayingId)}
+      />
+      {nowPlayingId && (
+        <Resizer
+          height={appState.nowPlayingHeight}
+          onResizeStart={startResizing}
+          onResize={updateNowPlayingHeight}
+          onResizeEnd={endResizing}
+        />
+      )}
+      <div className='subs'>
+        <Subs
+          router={router}
+          location={location}
+          onSortStart={onSortStart}
+          onSortEnd={onSortEnd}
+        />
+        <Switch>
+          <Route exact path='/' component={Sub} />
+          <Route exact path='/add-custom-playlist' component={AddCustomPlaylist} />
+          <Route exact path='/add-to-playlist' component={AddToPlaylist} />
+          <Route path='/add-channel/:query?' component={AddChannel} />
+          <Route path='/subs/:id/page/:pageToken' component={Sub} />
+          <Route path='/subs/:id' component={Sub} />
+        </Switch>
+      </div>
+    </div>
+  )
+}))

@@ -10,7 +10,7 @@ import DocumentTitle from 'react-document-title'
 // https://github.com/mobxjs/mobx-react-lite/#observer-batching
 import 'mobx-react-lite/batchingForReactDom'
 
-import App from './app/app'
+import { App } from './app/app'
 import Login from './login/login'
 import Logout from './login/logout'
 

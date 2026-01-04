@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx'
+import { action, computed, makeObservable, observable } from 'mobx'
 
 import { getDoc, signIn, signOut } from '../lib/firebase'
 import youtube from '../lib/youtube'
@@ -6,6 +6,10 @@ import youtube from '../lib/youtube'
 class AuthStore {
   @observable userId
   @observable youtubeApiKey
+
+  constructor () {
+    makeObservable(this)
+  }
 
   @computed get isAuthenticated () {
     return !!this.userId && !!this.youtubeApiKey

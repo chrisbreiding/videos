@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { action, computed, observable, toJS } from 'mobx'
+import { action, computed, makeObservable, observable, toJS } from 'mobx'
 
 import { mapObject } from '../lib/util'
 
@@ -21,6 +21,8 @@ class SubModel {
   }
 
   constructor (props) {
+    makeObservable(this)
+
     this.author = props.author
     this.icon = props.icon
     this.id = props.id

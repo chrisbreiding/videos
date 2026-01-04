@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import moment from 'moment'
 
 class VideoModel {
@@ -12,6 +12,8 @@ class VideoModel {
   @observable title
 
   constructor (props) {
+    makeObservable(this)
+
     this.duration = props.duration
     this.id = props.id
     this.channelId = props.channelId

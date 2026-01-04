@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { action, computed, observable, values } from 'mobx'
+import { action, computed, makeObservable, observable, values } from 'mobx'
 import arrayMove from 'array-move'
 
 import SubModel from '../sub/sub-model'
@@ -11,6 +11,10 @@ class SubsStore {
   @observable _subs = observable.map()
   @observable.ref searchResults = []
   @observable isLoading = true
+
+  constructor () {
+    makeObservable(this)
+  }
 
   @computed get subs () {
     return _.sortBy(values(this._subs), 'order')
