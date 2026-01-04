@@ -4,8 +4,8 @@ import { inject, observer } from 'mobx-react'
 import React, { useState, useEffect, useRef } from 'react'
 
 import { icon } from '../../lib/util'
-import videosService from '../../videos/videos-service'
-import subsStore from '../subs-store'
+import { videosService } from '../../videos/videos-service'
+import { subsStore } from '../subs-store'
 
 export const AddChannel = inject('router')(observer(({ router, match }) => {
   const [loadingPlaylists, setLoadingPlaylists] = useState({})

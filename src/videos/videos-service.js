@@ -41,4 +41,4 @@ class VideosService {
   }
 }
 
-export default new VideosService()
+export const videosService = new VideosService()

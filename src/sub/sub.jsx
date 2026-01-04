@@ -3,14 +3,14 @@ import { inject, observer } from 'mobx-react'
 import React, { useEffect, useRef, useCallback } from 'react'
 import DocumentTitle from 'react-document-title'
 
-import appState from '../app/app-state'
+import { appState } from '../app/app-state'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
-import subsStore from '../subs/subs-store'
-import videosStore from '../videos/videos-store'
+import { subsStore } from '../subs/subs-store'
+import { videosStore } from '../videos/videos-store'
 
 import { Paginator } from '../paginator/paginator'
 import { Search } from '../search/search'
-import Videos from '../videos/videos'
+import { Videos } from '../videos/videos'
 
 export const Sub = inject('router')(observer(({ router, match, location }) => {
   const previousLoadingValueRef = useRef(videosStore.isLoading)
@@ -215,7 +215,7 @@ export const Sub = inject('router')(observer(({ router, match, location }) => {
     return (
       <Videos
         showChannelImage={isAllSubsRef.current || isCustom}
-        isCustom={isCustom}
+        isSortable={isCustom}
         location={location}
         markedVideoId={getMarkedVideoId(sub)}
         onPlay={playVideo}

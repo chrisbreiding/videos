@@ -1,4 +1,4 @@
-export default [
+export const iconsList = [
   'adjust',
   'adn',
   'align-center',

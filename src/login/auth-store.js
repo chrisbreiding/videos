@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable } from 'mobx'
 
 import { getDoc, signIn, signOut } from '../lib/firebase'
-import youtube from '../lib/youtube'
+import { checkApiKey as checkApiKeyYoutube } from '../lib/youtube'
 
 class AuthStore {
   @observable userId
@@ -38,7 +38,7 @@ class AuthStore {
   checkApiKey = (apiKey) => {
     if (!apiKey) return Promise.resolve(false)
 
-    return youtube.checkApiKey(apiKey)
+    return checkApiKeyYoutube(apiKey)
   }
 
   login (email, password) {
@@ -50,4 +50,4 @@ class AuthStore {
   }
 }
 
-export default new AuthStore()
+export const authStore = new AuthStore()

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { icon } from '../lib/util'
 
-const PlaylistPicker = observer((props) => {
+export const PlaylistPicker = observer((props) => {
   function setPlaylist (playlist, inPlaylist) {
     if (inPlaylist) {
       props.addedToPlaylist(playlist)
@@ -32,5 +32,3 @@ const PlaylistPicker = observer((props) => {
     </div>
   )
 })
-
-export default PlaylistPicker

@@ -2,8 +2,8 @@ import { inject, observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { onAuthStateChanged } from '../lib/firebase'
-import appState from '../app/app-state'
-import authStore from './auth-store'
+import { appState } from '../app/app-state'
+import { authStore } from './auth-store'
 import { icon } from '../lib/util'
 
 export const Login = inject('router')(observer(({ router }) => {

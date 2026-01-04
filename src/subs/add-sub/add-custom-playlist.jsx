@@ -4,17 +4,17 @@ import _ from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { icon } from '../../lib/util'
-import icons from '../../lib/icons-list'
-import subsStore from '../subs-store'
+import { iconsList } from '../../lib/icons-list'
+import { subsStore } from '../subs-store'
 
-import IconThumb from '../../icon-thumb/icon-thumb'
+import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import { Modal } from '../../modal/modal'
 
 export const AddCustomPlaylist = inject('router')(observer(({ router }) => {
   const titleRef = useRef()
   const [iconState, setIconState] = useState({
-    icon: icons[0],
+    icon: iconsList[0],
     foregroundColor: '#FFFFFF',
     backgroundColor: '#333333',
   })

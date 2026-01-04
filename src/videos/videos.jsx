@@ -5,17 +5,17 @@ import React from 'react'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
 import { updatedLink } from '../lib/util'
-import subsStore from '../subs/subs-store'
-import videosStore from '../videos/videos-store'
+import { subsStore } from '../subs/subs-store'
+import { videosStore } from '../videos/videos-store'
 
-import Video from './video'
+import { Video } from './video'
 
 const SortableVideo = SortableElement(Video)
 
 const VideosList = observer((props) => {
   const {
     showChannelImage,
-    isCustom,
+    isSortable,
     location,
     markedVideoId,
     onPlay,
@@ -23,10 +23,10 @@ const VideosList = observer((props) => {
     onUpdateVideoMarkerLink,
   } = props
 
-  const VideoItem = isCustom ? SortableVideo : Video
+  const VideoItem = isSortable ? SortableVideo : Video
 
   return (
-    <div className={cs('videos-list', { 'videos-is-custom': isCustom })}>
+    <div className={cs('videos-list', { 'videos-is-sortable': isSortable })}>
       {_.map(videosStore.videos, (video, index) => {
         const id = video.id
         const playVideoLink = updatedLink(location, { search: { nowPlaying: id } })
@@ -54,12 +54,12 @@ const VideosList = observer((props) => {
 
 const SortableVideos = SortableContainer(VideosList)
 
-const Videos = (props) => {
+export const Videos = (props) => {
   const onSortEnd = (sortProps) => {
     props.onSortEnd(sortProps)
   }
 
-  const TheVideos = props.isCustom ? SortableVideos : VideosList
+  const TheVideos = props.isSortable ? SortableVideos : VideosList
 
   return (
     <TheVideos
@@ -71,5 +71,3 @@ const Videos = (props) => {
     />
   )
 }
-
-export default Videos

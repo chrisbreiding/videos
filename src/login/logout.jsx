@@ -1,7 +1,7 @@
 import { inject, observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 
-import authStore from './auth-store'
+import { authStore } from './auth-store'
 import { icon } from '../lib/util'
 
 export const Logout = inject('router')(observer(({ router }) => {

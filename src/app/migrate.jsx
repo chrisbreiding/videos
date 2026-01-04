@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { fetch, update } from '../lib/remote-data'
 import { icon } from '../lib/util'
 
-const Migrate = observer(({ onComplete }) => {
+export const Migrate = observer(({ onComplete }) => {
   useEffect(() => {
     (async () => {
       const data = await fetch()
@@ -33,5 +33,3 @@ const Migrate = observer(({ onComplete }) => {
     </div>
   )
 })
-
-export default Migrate

@@ -3,8 +3,8 @@ import React, { useMemo, useState } from 'react'
 import cs from 'classnames'
 
 import { icon as renderIcon } from '../lib/util'
-import icons from '../lib/icons-list'
-import IconThumb from '../icon-thumb/icon-thumb'
+import { iconsList } from '../lib/icons-list'
+import { IconThumb } from '../icon-thumb/icon-thumb'
 
 export const IconPicker = ({ icon, onUpdate }) => {
   const [filter, setFilter] = useState('')
@@ -35,11 +35,11 @@ export const IconPicker = ({ icon, onUpdate }) => {
 
   const filteredIcons = useMemo(() => {
     return filter
-      ? _.filter(icons, (iconName) => iconName.includes(filter))
-      : icons
+      ? _.filter(iconsList, (iconName) => iconName.includes(filter))
+      : iconsList
   }, [filter])
 
-  const renderedIcons = useMemo(() => {
+  const icons = useMemo(() => {
     if (!filteredIcons.length) {
       return (
         <div className='empty-icons'>
@@ -108,7 +108,7 @@ export const IconPicker = ({ icon, onUpdate }) => {
         </fieldset>
       </form>
       <div className='icons'>
-        {renderedIcons}
+        {icons}
       </div>
     </div>
   )

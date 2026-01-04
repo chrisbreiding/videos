@@ -3,12 +3,12 @@ import _ from 'lodash'
 import moment from 'moment'
 import arrayMove from 'array-move'
 
-import videosService from './videos-service'
-import VideoModel from './video-model'
+import { videosService } from './videos-service'
+import { VideoModel } from './video-model'
 
 class VideosStore {
   @observable _videos = []
-  @observable _isCustom = false
+  @observable _isSortable = false
   @observable hasLoadedAllPlaylists = false
   @observable isLoading = false
   @observable prevPageToken
@@ -19,7 +19,7 @@ class VideosStore {
   }
 
   @computed get videos () {
-    if (this._isCustom) {
+    if (this._isSortable) {
       return _.sortBy(values(this._videos), 'order')
     }
 
@@ -121,8 +121,8 @@ class VideosStore {
     this.nextPageToken = null
   }
 
-  @action _afterLoad (isCustom) {
-    this._isCustom = isCustom
+  @action _afterLoad (isSortable) {
+    this._isSortable = isSortable
     this.isLoading = false
   }
 
@@ -146,4 +146,4 @@ class VideosStore {
   }
 }
 
-export default new VideosStore()
+export const videosStore = new VideosStore()

@@ -2,9 +2,9 @@ import _ from 'lodash'
 import { action, computed, makeObservable, observable, values } from 'mobx'
 import arrayMove from 'array-move'
 
-import SubModel from '../sub/sub-model'
+import { SubModel } from '../sub/sub-model'
 import { removeSub, removeVideoFromSub, update } from '../lib/remote-data'
-import { mapObject } from '../lib/util'
+import { convertMapEntriesToObject, transformObject } from '../lib/util'
 import { getPlaylistIdForChannel, searchChannels } from '../lib/youtube'
 
 class SubsStore {
@@ -71,7 +71,7 @@ class SubsStore {
       this._subs.set(sub.id, new SubModel(sub))
     })
 
-    const oldIds = _.map(this._subs.toJSON(), 'id')
+    const oldIds = _.map(this._subsObject(), 'id')
     const newIds = _.map(subs, 'id')
     const missingIds = _.difference(oldIds, newIds)
     _.each(missingIds, (id) => {
@@ -115,7 +115,7 @@ class SubsStore {
   }
 
   addCustomPlaylist (playlist) {
-    const idNumber = this._newId(this._subs.toJSON())
+    const idNumber = this._newId(this._subsObject())
     const id = `custom-${idNumber}`
 
     this._addSub(playlist, {
@@ -130,7 +130,7 @@ class SubsStore {
 
   @action _addSub = (base, props) => {
     const sub = _.extend(base, props, {
-      order: this._newOrder(this._subs.toJSON()),
+      order: this._newOrder(this._subsObject()),
     })
     this._subs.set(sub.id, new SubModel(sub))
     this.save()
@@ -142,7 +142,7 @@ class SubsStore {
 
   _newId (subs) {
     const customIds = _(subs)
-    .filter((sub) => sub.custom || sub.isCustom)
+    .filter((sub) => sub.type === 'custom')
     .map((playlist) => parseInt(playlist.id.match(/\d+/)[0], 10))
     .value()
 
@@ -158,7 +158,7 @@ class SubsStore {
     const sub = this.getSubById(playlist.id)
     const video = {
       id: videoId,
-      order: this._newOrder(sub.videos.toJSON()),
+      order: this._newOrder(sub.videosObject()),
     }
 
     sub.addVideo(video)
@@ -192,8 +192,12 @@ class SubsStore {
   }
 
   serialize () {
-    return mapObject(this._subs.toJSON(), (sub) => sub.serialize())
+    return transformObject(this._subsObject(), (sub) => sub.serialize())
+  }
+
+  _subsObject () {
+    return convertMapEntriesToObject(this._subs.toJSON())
   }
 }
 
-export default new SubsStore()
+export const subsStore = new SubsStore()

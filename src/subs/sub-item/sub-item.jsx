@@ -4,9 +4,9 @@ import { SortableHandle } from 'react-sortable-hoc'
 import { NavLink } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
-import youtube from '../../lib/youtube'
+import { getChannelDetails, getPlaylistDetails } from '../../lib/youtube'
 
-import Title from './title'
+import { Title } from './title'
 import { CustomPlaylist } from './custom-playlist'
 
 const SortHandle = SortableHandle(({ thumb }) => (
@@ -44,13 +44,13 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
 
     try {
       const getDetails = sub.type === 'channel'
-        ? youtube.getChannelDetails(sub.id)
-        : youtube.getPlaylistDetails(sub.playlistId)
+        ? getChannelDetails(sub.id)
+        : getPlaylistDetails(sub.playlistId)
 
       const details = await getDetails
       onUpdate({ thumb: details.thumb })
     } catch (err) {
-      console.error('Failed to update thumbnail:', err)
+      console.error('Failed to update thumbnail:', err) // eslint-disable-line no-console
     } finally {
       setIsUpdatingThumb(false)
     }
@@ -73,7 +73,7 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
   )
 })
 
-const SubItem = observer((props) => {
+export const SubItem = observer((props) => {
   function remove () {
     if (confirm(`Remove ${props.sub.title || props.sub.author}?`)) {
       props.onRemove()
@@ -89,5 +89,3 @@ const SubItem = observer((props) => {
     </li>
   )
 })
-
-export default SubItem

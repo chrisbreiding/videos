@@ -5,10 +5,10 @@ import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
-import subsStore from './subs-store'
+import { subsStore } from './subs-store'
 import { icon, updatedLink } from '../lib/util'
 
-import SubItem from './sub-item/sub-item'
+import { SubItem } from './sub-item/sub-item'
 
 const SortableSubItem = SortableElement(SubItem)
 
@@ -96,12 +96,19 @@ const _Subs = observer(({ location }) => {
     )
   }
 
-  const renderAddSubButtons = (hasNoSubs) => {
-    if (subsStore.isLoading) return null
+  const renderAddSubButtons = () => {
+    if (subsStore.isLoading) {
+      return null
+    }
+
+    if (!subsStore.subs.length) {
+      return (
+        <p className='empty-message'>Add a channel to get started {icon('arrow-right')}</p>
+      )
+    }
 
     return (
       <div className='add-sub-buttons'>
-        {hasNoSubs && <p className='add-sub-buttons-prompt'>Add a channel to get started</p>}
         <div className='add-sub-buttons-links'>
           <NavLink to='/add-channel'>{icon('plus', 'Channel')}</NavLink>
           <NavLink to='/add-custom-playlist'>{icon('plus', 'Custom Playlist')}</NavLink>
@@ -110,15 +117,17 @@ const _Subs = observer(({ location }) => {
     )
   }
 
-  const hasNoSubs = !subsStore.subs.length
+  // const hasNoSubs = !subsStore.subs.length
+
+  // TODO: if no subs, redirect to /add-channel and show nothing here
 
   return (
-    <aside className={cs('subs-list', { 'is-empty': hasNoSubs })}>
+    <aside className={cs('subs-list')}>
       <header>
         {renderEditButton()}
       </header>
       {renderSubs()}
-      {renderAddSubButtons(hasNoSubs)}
+      {renderAddSubButtons()}
     </aside>
   )
 })

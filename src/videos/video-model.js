@@ -1,7 +1,7 @@
 import { makeObservable, observable } from 'mobx'
 import moment from 'moment'
 
-class VideoModel {
+export class VideoModel {
   @observable duration
   @observable id
   @observable channelId
@@ -28,5 +28,3 @@ class VideoModel {
     this.order = order
   }
 }
-
-export default VideoModel

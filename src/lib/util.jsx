@@ -24,10 +24,26 @@ function toTwoDigits (num) {
   return num.length === 2 ? num : `0${num}`
 }
 
-export function mapObject (obj, fn) {
+export function transformObject (obj, fn) {
   return _.transform(obj, (memo, value, key) => {
     memo[key] = fn(value)
   }, {})
+}
+
+export function convertMapToObject (map) {
+  const obj = {}
+  map.forEach((value, key) => {
+    obj[key] = value
+  })
+  return obj
+}
+
+export function convertMapEntriesToObject (mapEntries) {
+  const obj = {}
+  mapEntries.forEach(([key, value]) => {
+    obj[key] = value
+  })
+  return obj
 }
 
 export function icon (iconName, rightText, leftText) {

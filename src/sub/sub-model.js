@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { action, computed, makeObservable, observable, toJS } from 'mobx'
 
-import { mapObject } from '../lib/util'
+import { convertMapToObject, transformObject } from '../lib/util'
 
-class SubModel {
+export class SubModel {
   @observable author
   @observable icon
   @observable id
@@ -54,12 +54,16 @@ class SubModel {
     })
   }
 
+  videosObject () {
+    return convertMapToObject(toJS(this.videos))
+  }
+
   serialize () {
     const props = _.pick(this, 'id', 'type', 'markedVideoId', 'order', 'playlistId', 'title', 'bookmarkedPageToken')
 
     if (this.type === 'custom') {
       props.icon = _.pick(this.icon, 'backgroundColor', 'foregroundColor', 'icon')
-      props.videos = mapObject(toJS(this.videos), ({ id, order }) => ({ id, order }))
+      props.videos = transformObject(this.videosObject(), ({ id, order }) => ({ id, order }))
     } else {
       _.extend(props, _.pick(this, 'author', 'thumb'))
     }
@@ -67,5 +71,3 @@ class SubModel {
     return props
   }
 }
-
-export default SubModel

@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import cs from 'classnames'
 import MarkDown from 'markdown-it'
 import { action } from 'mobx'
@@ -8,11 +7,11 @@ import { Link } from 'react-router-dom'
 import DocumentTitle from 'react-document-title'
 
 import { YoutubePlayer } from '../lib/youtube-player'
-import appState from '../app/app-state'
+import { appState } from '../app/app-state'
 import { icon } from '../lib/util'
-import videosStore from '../videos/videos-store'
-import videosService from '../videos/videos-service'
-import PlaylistPicker from '../playlist-picker/playlist-picker'
+import { videosStore } from '../videos/videos-store'
+import { videosService } from '../videos/videos-service'
+import { PlaylistPicker } from '../playlist-picker/playlist-picker'
 
 const md = new MarkDown({ linkify: true })
 
@@ -21,7 +20,7 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
   return self.renderToken(tokens, idx, options)
 }
 
-const NowPlaying = observer((props) => {
+export const NowPlaying = observer((props) => {
   const state = useLocalStore(() => ({
     title: '...',
     description: 'Loading description...',
@@ -136,5 +135,3 @@ const NowPlaying = observer((props) => {
     </div>
   )
 })
-
-export default NowPlaying

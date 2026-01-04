@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import req from 'reqwest'
 import { getItem } from './local-data'
-import authStore from '../login/auth-store'
+import { authStore } from '../login/auth-store'
 
 const RESULTS_PER_PAGE = 25
 
@@ -53,21 +53,21 @@ function mapVideoDetails (result) {
   })
 }
 
-function getVideos (ids) {
+export function getVideos (ids) {
   return queryYouTube('videos', {
     id: ids.join(),
     part: 'snippet,contentDetails',
   }).then(mapVideoDetails)
 }
 
-function checkApiKey (apiKey) {
+export function checkApiKey (apiKey) {
   const params = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' }
   return queryYouTube('activities', params)
   .then(() => true)
   .catch(() => false)
 }
 
-function searchChannels (query) {
+export function searchChannels (query) {
   return queryYouTube('search', {
     q: query,
     part: 'snippet',
@@ -76,7 +76,7 @@ function searchChannels (query) {
   }).then(mapChannelDetails)
 }
 
-function getVideosDataForChannelSearch (channelId, query, pageToken) {
+export function getVideosDataForChannelSearch (channelId, query, pageToken) {
   const params = {
     channelId,
     maxResults: RESULTS_PER_PAGE,
@@ -98,7 +98,7 @@ function getVideosDataForChannelSearch (channelId, query, pageToken) {
   })
 }
 
-function getVideosDataForPlaylist (playlistId, pageToken, maxResults = RESULTS_PER_PAGE) {
+export function getVideosDataForPlaylist (playlistId, pageToken, maxResults = RESULTS_PER_PAGE) {
   const params = {
     playlistId,
     part: 'snippet,contentDetails',
@@ -140,7 +140,7 @@ function getAllVideosFromPlaylist (playlistId, pageToken = null, accumulatedVide
   })
 }
 
-function getVideosDataForPlaylistSearch (playlistId, query) {
+export function getVideosDataForPlaylistSearch (playlistId, query) {
   return getAllVideosFromPlaylist(playlistId).then((videos) => {
     const lowerQuery = query.toLowerCase()
     const filteredVideos = videos.filter((video) => {
@@ -156,7 +156,7 @@ function getVideosDataForPlaylistSearch (playlistId, query) {
   })
 }
 
-function getVideosDataForAllPlaylists (playlistIds) {
+export function getVideosDataForAllPlaylists (playlistIds) {
   const getVideos = _.map(playlistIds, (playlistId) => {
     return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
   })
@@ -165,14 +165,14 @@ function getVideosDataForAllPlaylists (playlistIds) {
   .then((playlists) => _.flatMap(playlists, 'videos'))
 }
 
-function getPlaylistIdForChannel (channelId) {
+export function getPlaylistIdForChannel (channelId) {
   return queryYouTube('channels', {
     id: channelId,
     part: 'contentDetails',
   }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads)
 }
 
-function getChannelDetails (channelId) {
+export function getChannelDetails (channelId) {
   return queryYouTube('channels', {
     id: channelId,
     part: 'snippet',
@@ -186,7 +186,7 @@ function getChannelDetails (channelId) {
   })
 }
 
-function getPlaylistDetails (playlistId) {
+export function getPlaylistDetails (playlistId) {
   return queryYouTube('playlists', {
     id: playlistId,
     part: 'snippet',
@@ -200,7 +200,7 @@ function getPlaylistDetails (playlistId) {
   })
 }
 
-function getPlaylistsForChannel (channelId, pageToken) {
+export function getPlaylistsForChannel (channelId, pageToken) {
   const params = {
     channelId,
     part: 'contentDetails,snippet',
@@ -228,18 +228,4 @@ function getPlaylistsForChannel (channelId, pageToken) {
       })),
     }
   })
-}
-
-export default {
-  checkApiKey,
-  searchChannels,
-  getVideosDataForChannelSearch,
-  getVideosDataForPlaylist,
-  getVideosDataForPlaylistSearch,
-  getVideosDataForAllPlaylists,
-  getPlaylistIdForChannel,
-  getPlaylistsForChannel,
-  getVideos,
-  getChannelDetails,
-  getPlaylistDetails,
 }

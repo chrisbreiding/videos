@@ -1,10 +1,10 @@
 import { inject, observer, useLocalStore } from 'mobx-react'
 import React, { useEffect } from 'react'
-import subsStore from '../subs/subs-store'
+import { subsStore } from '../subs/subs-store'
 import { parseQueryString } from '../lib/util'
 import { action } from 'mobx'
 
-const AddToPlaylist = inject('router')(observer((props) => {
+export const AddToPlaylist = inject('router')(observer((props) => {
   const state = useLocalStore(() => ({
     error: null,
     setError: action((error) => {
@@ -40,5 +40,3 @@ const AddToPlaylist = inject('router')(observer((props) => {
     </div>
   )
 }))
-
-export default AddToPlaylist

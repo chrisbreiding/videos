@@ -87,4 +87,4 @@ class AppState {
   }
 }
 
-export default new AppState()
+export const appState = new AppState()

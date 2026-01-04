@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-const Title = observer(({ sub, link }) => (
+export const Title = observer(({ sub, link }) => (
   <NavLink to={link} className='sub-title' activeClassName='active'>
     <h3>{sub.title || sub.author}</h3>
     <p className='num-videos'>
@@ -10,5 +10,3 @@ const Title = observer(({ sub, link }) => (
     </p>
   </NavLink>
 ))
-
-export default Title

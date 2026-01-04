@@ -3,18 +3,18 @@ import _ from 'lodash'
 import { inject, observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { matchPath } from 'react-router'
-import { Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 
-import appState from './app-state'
-import authStore from '../login/auth-store'
-import subsStore from '../subs/subs-store'
-import videosStore from '../videos/videos-store'
+import { appState } from './app-state'
+import { authStore } from '../login/auth-store'
+import { subsStore } from '../subs/subs-store'
+import { videosStore } from '../videos/videos-store'
 import { onAuthStateChanged, watchDoc } from '../lib/firebase'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
 
-import AddToPlaylist from '../playlist-picker/add-to-playlist'
-import Migrate from './migrate'
-import NowPlaying from '../now-playing/now-playing'
+import { AddToPlaylist } from '../playlist-picker/add-to-playlist'
+import { Migrate } from './migrate'
+import { NowPlaying } from '../now-playing/now-playing'
 import { Resizer } from './resizer'
 import { Subs } from '../subs/subs'
 import { Sub } from '../sub/sub'
@@ -55,7 +55,8 @@ export const App = inject('router')(observer(({ router, location }) => {
       }
 
       if (data.subs) {
-        const needsMigration = Object.values(data.subs).some((sub) => !sub.type)
+        const subsArray = Object.values(data.subs)
+        const needsMigration = subsArray.length && subsArray.some((sub) => !sub.type)
 
         if (needsMigration) {
           setNeedsMigration(true)
@@ -150,6 +151,18 @@ export const App = inject('router')(observer(({ router, location }) => {
         {icon('sign-in')} Authenticating...
       </div>
     )
+  }
+
+  if (subsStore.isLoading) {
+    return (
+      <div className='loader'>
+        {icon('spin fa-play-circle')} Loading...
+      </div>
+    )
+  }
+
+  if (!subsStore.subs.length && !location.pathname.includes('/add-channel')) {
+    return <Redirect to='/add-channel' />
   }
 
   if (needsMigration) {

@@ -4,5 +4,8 @@
   },
   "parserOptions": {
     "ecmaVersion": 2019
+  },
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
   }
 }
