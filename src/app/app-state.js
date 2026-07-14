@@ -88,7 +88,7 @@ class AppState {
 
     const entry = {
       watchTimestamp,
-      updatedAt: Date.now(),
+      updatedAt: new Date().toISOString(),
     }
 
     this.watchedVideos[videoId] = entry
