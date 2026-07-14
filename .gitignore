@@ -13,3 +13,13 @@ _dev
 node_modules
 dist
 dist-prod
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Coverage
+/.nyc_output/
+/coverage/

@@ -36,7 +36,7 @@ export const AddChannel = inject('router')(observer(({ router, match }) => {
 
   useEffect(() => {
     search()
-  })
+  }, [match.params.query])
 
   const updateSearch = (searchTerm) => {
     router.push(`/add-channel/${encodeURIComponent(searchTerm)}`)
