@@ -5,8 +5,29 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { SortableHandle } from 'react-sortable-hoc'
 
-import { icon, duration, date } from '../lib/util'
+import { icon, duration, durationSeconds, date } from '../lib/util'
+import { appState } from '../app/app-state'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
+
+
+const WatchProgress = ({ id, duration }) => {
+  const watched = appState.watchedVideos[id]
+  if (!watched) return null
+
+  const length = durationSeconds(duration)
+  if (!length) return null
+
+  const percent = Math.min(100, (watched.watchTimestamp / length) * 100)
+
+  // don't show super-short progress bar
+  if (percent < 2) return null
+
+  return (
+    <div className='watch-progress'>
+      <div className='watch-progress-bar' style={{ width: `${percent}%` }} />
+    </div>
+  )
+}
 
 const SortHandle = SortableHandle(() => (
   <div className='video-sort-handle'>
@@ -57,7 +78,7 @@ export const Video = observer((props) => {
           <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
             <img src={props.video.thumb} />
             {props.channelImage && <img className='channel' src={props.channelImage} />}
-            {icon('youtube-play')}
+            <WatchProgress id={props.video.id} duration={props.video.duration} />
           </Link>
         </aside>
         <main>

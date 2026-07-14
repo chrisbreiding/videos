@@ -8,7 +8,7 @@ import DocumentTitle from 'react-document-title'
 
 import { YoutubePlayer } from '../lib/youtube-player'
 import { appState } from '../app/app-state'
-import { icon } from '../lib/util'
+import { icon, durationSeconds } from '../lib/util'
 import { videosStore } from '../videos/videos-store'
 import { videosService } from '../videos/videos-service'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
@@ -71,6 +71,14 @@ export const NowPlaying = observer((props) => {
   if (!props.id) return null
 
   const description = md.render(state.description)
+  const watched = appState.watchedVideos[props.id]
+  const video = videosStore.getVideoById(props.id)
+  const length = video ? durationSeconds(video.duration) : 0
+  // start from the beginning if progress is within 10% or 10s of end,
+  // whichever is greater
+  const endThreshold = Math.max(length * 0.1, 10)
+  const isNearEnd = length && watched && watched.watchTimestamp >= length - endThreshold
+  const startTime = watched && !isNearEnd ? watched.watchTimestamp : 0
 
   return (
     <div
@@ -85,7 +93,11 @@ export const NowPlaying = observer((props) => {
         id={props.id}
         width={appState.nowPlayingWidth}
         height={appState.nowPlayingHeight}
+        startTime={startTime}
         onEnd={props.onEnd}
+        onTime={(watchTimestamp, immediate) => (
+          appState.saveVideoProgress(props.id, watchTimestamp, immediate)
+        )}
       />
       <div className='cover' />
       <div className='controls'>

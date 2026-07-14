@@ -103,7 +103,7 @@ video-thumb-width = 160px;
 
 .play-video {
   background: none;
-  border: none;
+  border: solid 5px transparent;
   border-radius: 0;
   display: block;
   height: video-thumb-height;
@@ -148,10 +148,21 @@ video-thumb-width = 160px;
 
   &:hover,
   &:focus {
+    border-color: darken(warning-color, 20%);
+  }
 
-    i {
-      background: rgba(0,0,0,0.5);
-      visibility: visible;
-    }
+  .watch-progress {
+    background: rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    height: 4px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
+  }
+
+  .watch-progress-bar {
+    background: warning-color;
+    height: 100%;
   }
 }

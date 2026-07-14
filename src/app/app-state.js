@@ -14,6 +14,7 @@ class AppState {
   isSorting = false
   windowHeight = window.innerHeight
   allSubsMarkedVideoId
+  watchedVideos = {}
 
   constructor () {
     makeObservable(this, {
@@ -22,12 +23,15 @@ class AppState {
       isSorting: observable,
       windowHeight: observable,
       allSubsMarkedVideoId: observable,
+      watchedVideos: observable,
       _maxNowPlayingHeight: computed,
       nowPlayingHeight: computed,
       nowPlayingWidth: computed,
       _setProp: action,
       setSorting: action,
       setAllSubsMarkedVideoId: action,
+      setWatchedVideos: action,
+      saveVideoProgress: action,
       _onWindowResize: action,
       updateNowPlayingHeight: action,
       toggleAutoPlay: action,
@@ -70,6 +74,40 @@ class AppState {
 
     if (save) this.save()
   }
+
+  setWatchedVideos (watchedVideos) {
+    this.watchedVideos = watchedVideos || {}
+  }
+
+  saveVideoProgress (videoId, watchTimestamp, immediate) {
+    this._updateVideoProgress(videoId, watchTimestamp, immediate)
+  }
+
+  _updateVideoProgress (videoId, watchTimestamp, immediate) {
+    if (!videoId) return
+
+    const entry = {
+      watchTimestamp,
+      updatedAt: Date.now(),
+    }
+
+    this.watchedVideos[videoId] = entry
+
+    if (immediate) {
+      this._saveVideoProgressDebounced.cancel()
+      this._saveVideoProgress(videoId, entry)
+    } else {
+      this._saveVideoProgressDebounced(videoId, entry)
+    }
+  }
+
+  _saveVideoProgress = (videoId, entry) => {
+    update({ watchedVideos: { [videoId]: entry } })
+  }
+
+  _saveVideoProgressDebounced = _.debounce((videoId, entry) => {
+    update({ watchedVideos: { [videoId]: entry } })
+  }, 5000, { maxWait: 5000 })
 
   _onWindowResize = () => {
     this.windowHeight = window.innerHeight

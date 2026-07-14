@@ -70,6 +70,10 @@ export const App = inject('router')(observer(({ router, location }) => {
       if (data.allSubsMarkedVideoId) {
         appState.setAllSubsMarkedVideoId(data.allSubsMarkedVideoId, false)
       }
+
+      if (data.watchedVideos) {
+        appState.setWatchedVideos(data.watchedVideos)
+      }
     })
 
     unsubscribersRef.current.push(unsubscribe)

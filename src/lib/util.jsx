@@ -65,6 +65,19 @@ export function duration (duration) {
   return parts.join(':')
 }
 
+export function durationSeconds (duration) {
+  if (!duration) return 0
+
+  const matches = duration.match(re)
+  if (!matches) return 0
+
+  const hours = parseInt(matches[HR], 10) || 0
+  const mins = parseInt(matches[MIN], 10) || 0
+  const secs = parseInt(matches[S], 10) || 0
+
+  return hours * 3600 + mins * 60 + secs
+}
+
 export function date (date) {
   const mDate = moment(date)
   return (
