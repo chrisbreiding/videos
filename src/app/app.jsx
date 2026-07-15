@@ -13,7 +13,6 @@ import { onAuthStateChanged, watchDoc } from '../lib/firebase'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
 
 import { AddToPlaylist } from '../playlist-picker/add-to-playlist'
-import { Migrate } from './migrate'
 import { NowPlaying } from '../now-playing/now-playing'
 import { Resizer } from './resizer'
 import { Subs } from '../subs/subs'
@@ -23,7 +22,6 @@ import { AddChannel } from '../subs/add-sub/add-channel'
 
 export const App = inject('router')(observer(({ router, location }) => {
   const [isResizing, setIsResizing] = useState(false)
-  const [needsMigration, setNeedsMigration] = useState(false)
 
   const unsubscribersRef = useRef([])
 
@@ -55,15 +53,6 @@ export const App = inject('router')(observer(({ router, location }) => {
       }
 
       if (data.subs) {
-        const subsArray = Object.values(data.subs)
-        const needsMigration = subsArray.length && subsArray.some((sub) => !sub.type)
-
-        if (needsMigration) {
-          setNeedsMigration(true)
-
-          return
-        }
-
         subsStore.setSubs(data.subs)
       }
 
@@ -117,10 +106,6 @@ export const App = inject('router')(observer(({ router, location }) => {
     setIsResizing(false)
   }
 
-  const onMigrationComplete = () => {
-    setNeedsMigration(false)
-  }
-
   const onSortStart = () => {
     appState.setSorting(true)
   }
@@ -167,10 +152,6 @@ export const App = inject('router')(observer(({ router, location }) => {
 
   if (!subsStore.subs.length && !location.pathname.includes('/add-channel')) {
     return <Redirect to='/add-channel' />
-  }
-
-  if (needsMigration) {
-    return <Migrate onComplete={onMigrationComplete} />
   }
 
   const nowPlayingId = getNowPlayingId()
