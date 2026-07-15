@@ -1,13 +1,18 @@
+const admin = require('firebase-admin')
 const { onSchedule } = require('firebase-functions/v2/scheduler')
 const { logger } = require('firebase-functions')
 
 const { NINETY_DAYS_MS, MAX_BATCH_SIZE } = require('../constants')
 
+admin.initializeApp()
+
+const db = admin.firestore()
+
 // Runs every night at 3:00am Eastern Time and removes watchedVideos entries
 // whose most recent update (updatedAt, an ISO-8601 date string) is older than
 // 90 days. ISO-8601 strings compare lexicographically in chronological order,
 // so a plain string comparison against the cutoff is valid.
-exports.pruneWatchedVideos = (admin, db) => onSchedule(
+exports.pruneWatchedVideos = onSchedule(
   {
     schedule: '0 3 * * *',
     timeZone: 'America/New_York',
