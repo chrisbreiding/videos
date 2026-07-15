@@ -105,6 +105,52 @@ describe('Searching Within a Channel', () => {
 
     await expect(page).toHaveURL(/\/subs\/channel-1\?search=Playwright/)
   })
+
+  test('shows only the videos matching the channel search query', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Tech Reviews', playlistId: 'UU123', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'iPhone Review', channelId: 'channel-1' }),
+        createVideo({ id: 'video-2', title: 'Android Review', channelId: 'channel-1' }),
+      ],
+    })
+
+    await page.goto('/subs/channel-1')
+
+    const searchInput = page.locator('.search input[placeholder="Search Channel"]')
+    await expect(searchInput).toBeVisible({ timeout: 10000 })
+
+    await searchInput.fill('iPhone')
+    await page.locator('.search button').click()
+
+    await expect(page.getByText('iPhone Review')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Android Review')).not.toBeVisible()
+  })
+
+  test('shows only the videos matching a playlist search query', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'playlist-1': createPlaylist({ id: 'playlist-1', title: 'Cool Playlist', playlistId: 'PL123', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'iPhone Review' }),
+        createVideo({ id: 'video-2', title: 'Android Review' }),
+      ],
+    })
+
+    await page.goto('/subs/playlist-1')
+
+    const searchInput = page.locator('.search input[placeholder="Search Channel"]')
+    await expect(searchInput).toBeVisible({ timeout: 10000 })
+
+    await searchInput.fill('Android')
+    await page.locator('.search button').click()
+
+    await expect(page.getByText('Android Review')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('iPhone Review')).not.toBeVisible()
+  })
 })
 
 describe('Adding Videos to a Custom Playlist from a Channel', () => {
@@ -231,6 +277,52 @@ describe('Viewing a Custom Playlist With Videos', () => {
 
     // Custom playlists should have sortable class
     await expect(page.locator('.videos-is-sortable')).toBeVisible()
+  })
+
+  test('dragging a video by its handle reorders the custom playlist', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'My Playlist',
+          order: 0,
+          videos: {
+            'video-1': { id: 'video-1', order: 0 },
+            'video-2': { id: 'video-2', order: 1 },
+          },
+        }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'First Video' }),
+        createVideo({ id: 'video-2', title: 'Second Video' }),
+      ],
+    })
+
+    await page.goto('/subs/custom-0')
+
+    await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
+
+    const handles = page.locator('.video-sort-handle')
+    const firstHandleBox = await handles.nth(0).boundingBox()
+    const secondItemBox = await page.locator('.video').nth(1).boundingBox()
+
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + firstHandleBox.height / 2
+    )
+    await page.mouse.down()
+
+    // Move in small steps to give react-sortable-hoc a chance to track the drag
+    const steps = 10
+    for (let i = 1; i <= steps; i++) {
+      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
+    }
+
+    await page.mouse.up()
+
+    // The videos should now be swapped
+    await expect.poll(() => page.locator('.video h4').allTextContents()).not.toEqual(['First Video', 'Second Video'])
   })
 })
 

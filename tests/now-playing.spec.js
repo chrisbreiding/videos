@@ -100,6 +100,63 @@ describe('Playing a Video', () => {
     await expect(page.locator('.toggle-auto-play.enabled')).toBeVisible()
   })
 
+  test('can toggle playlist picker', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'playlists123', title: 'Video With Playlists' }),
+      ],
+    })
+
+    await page.goto('/subs/channel-1?nowPlaying=playlists123')
+
+    await expect(page.locator('.now-playing')).toBeVisible({ timeout: 10000 })
+
+    // Showing the description first should close it again when playlists open
+    await page.locator('.toggle-description').click()
+    await expect(page.locator('.now-playing.is-showing-description')).toBeVisible()
+
+    // Toggle playlists
+    await page.locator('.toggle-playlists').click()
+
+    // Playlists should be visible and description should be hidden
+    await expect(page.locator('.now-playing.is-showing-playlists')).toBeVisible()
+    await expect(page.locator('.now-playing.is-showing-description')).not.toBeVisible()
+
+    // Toggle playlists off
+    await page.locator('.toggle-playlists').click()
+
+    await expect(page.locator('.now-playing.is-showing-playlists')).not.toBeVisible()
+  })
+
+  test('renders description links so they open in a new tab', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+      },
+      videos: [
+        createVideo({
+          id: 'link123',
+          title: 'Video With Link',
+          description: 'Check out [this link](https://example.com)',
+        }),
+      ],
+    })
+
+    await page.goto('/subs/channel-1?nowPlaying=link123')
+
+    await expect(page.locator('.now-playing')).toBeVisible({ timeout: 10000 })
+
+    await page.locator('.toggle-description').click()
+
+    const link = page.locator('.now-playing .description a', { hasText: 'this link' })
+
+    await expect(link).toBeVisible()
+    await expect(link).toHaveAttribute('target', '_blank')
+  })
+
   test('updates page title when playing video', async ({ page }) => {
     await setupApp(page, {
       subs: {

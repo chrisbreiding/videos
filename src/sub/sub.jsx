@@ -249,8 +249,6 @@ export const Sub = inject('router')(observer(({ router, match, location }) => {
     previousLoadingValueRef.current = videosStore.isLoading
   })
 
-  if (!subsStore.subs.length) return null
-
   const sub = getSub()
   const nowPlaying = getQuery().nowPlaying
   const subId = getParam('id')

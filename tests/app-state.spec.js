@@ -101,4 +101,149 @@ describe('AppState#saveVideoProgress', () => {
     expect(result.after).toBe(result.before)
     expect(result.setCalls).toEqual([])
   })
+
+  test('flushes the debounced save on its own once the wait elapses', async ({ page }) => {
+    await setup(page)
+
+    const setCalls = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      window.__setCalls.length = 0
+      appState.saveVideoProgress('video-debounced', 7, false)
+
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(window.__setCalls), 5100)
+      })
+    })
+
+    expect(setCalls).toEqual([
+      { watchedVideos: { 'video-debounced': { watchTimestamp: 7, updatedAt: expect.any(String) } } },
+    ])
+  })
+})
+
+describe('AppState#setAllSubsMarkedVideoId', () => {
+  test('saves remotely by default', async ({ page }) => {
+    await setup(page)
+
+    const result = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      window.__setCalls.length = 0
+      appState.setAllSubsMarkedVideoId('video-marked')
+
+      return {
+        allSubsMarkedVideoId: appState.allSubsMarkedVideoId,
+        setCalls: window.__setCalls,
+      }
+    })
+
+    expect(result.allSubsMarkedVideoId).toBe('video-marked')
+    expect(result.setCalls).toEqual([{ allSubsMarkedVideoId: 'video-marked' }])
+  })
+
+  test('does not save remotely when save is false', async ({ page }) => {
+    await setup(page)
+
+    const result = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      window.__setCalls.length = 0
+      appState.setAllSubsMarkedVideoId('video-marked-local', false)
+
+      return {
+        allSubsMarkedVideoId: appState.allSubsMarkedVideoId,
+        setCalls: window.__setCalls,
+      }
+    })
+
+    expect(result.allSubsMarkedVideoId).toBe('video-marked-local')
+    expect(result.setCalls).toEqual([])
+  })
+})
+
+describe('AppState#setWatchedVideos', () => {
+  test('uses the given watched videos when present', async ({ page }) => {
+    await setup(page)
+
+    const result = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      appState.setWatchedVideos({ 'video-1': { watchTimestamp: 1 } })
+
+      return appState.watchedVideos
+    })
+
+    expect(result).toEqual({ 'video-1': { watchTimestamp: 1 } })
+  })
+
+  test('falls back to an empty object when none are given', async ({ page }) => {
+    await setup(page)
+
+    const result = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      appState.setWatchedVideos({ 'video-1': { watchTimestamp: 1 } })
+      appState.setWatchedVideos(undefined)
+
+      return appState.watchedVideos
+    })
+
+    expect(result).toEqual({})
+  })
+})
+
+describe('AppState#_onWindowResize', () => {
+  test('updates windowHeight when the window is resized', async ({ page }) => {
+    await setup(page)
+
+    const result = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      Object.defineProperty(window, 'innerHeight', { configurable: true, value: 555 })
+      window.dispatchEvent(new Event('resize'))
+
+      return appState.windowHeight
+    })
+
+    expect(result).toBe(555)
+  })
+})
+
+describe('AppState#updateNowPlayingHeight', () => {
+  test('persists the height to local storage once the debounce elapses', async ({ page }) => {
+    await setup(page)
+
+    const height = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      appState.updateNowPlayingHeight(321)
+
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(JSON.parse(localStorage.nowPlayingHeight)), 600)
+      })
+    })
+
+    expect(height).toBe(321)
+  })
+})
+
+describe('AppState#toggleAutoPlay', () => {
+  test('persists the toggled value to local storage once the debounce elapses', async ({ page }) => {
+    await setup(page)
+
+    const autoPlayEnabled = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+      const before = appState.autoPlayEnabled
+
+      appState.toggleAutoPlay()
+
+      return new Promise((resolve) => {
+        setTimeout(() => resolve({ before, after: appState.autoPlayEnabled, stored: JSON.parse(localStorage.autoPlayEnabled) }), 600)
+      })
+    })
+
+    expect(autoPlayEnabled.after).toBe(!autoPlayEnabled.before)
+    expect(autoPlayEnabled.stored).toBe(autoPlayEnabled.after)
+  })
 })

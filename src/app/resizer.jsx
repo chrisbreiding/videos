@@ -4,9 +4,9 @@ export const Resizer = ({
   height,
   minHeight,
   maxHeight,
-  onResizeStart = () => {},
-  onResize = () => {},
-  onResizeEnd = () => {},
+  onResizeStart,
+  onResize,
+  onResizeEnd,
 }) => {
   const isDragging = useRef(false)
 

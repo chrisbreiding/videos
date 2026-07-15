@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { matchPath } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
 
-import { appState } from './app-state'
+import { appState, minNowPlayingHeight } from './app-state'
 import { authStore } from '../login/auth-store'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
@@ -82,9 +82,7 @@ export const App = inject('router')(observer(({ router, location }) => {
       const subId = match.params.id
       const sub = subsStore.getSubById(subId)
 
-      if (!subId) {
-        appState.setAllSubsMarkedVideoId(nextVideoId)
-      } else if (sub) {
+      if (sub) {
         subsStore.update(sub.id, { markedVideoId: nextVideoId })
       }
     }
@@ -177,6 +175,8 @@ export const App = inject('router')(observer(({ router, location }) => {
       {nowPlayingId && (
         <Resizer
           height={appState.nowPlayingHeight}
+          minHeight={minNowPlayingHeight}
+          maxHeight={appState.maxNowPlayingHeight}
           onResizeStart={startResizing}
           onResize={updateNowPlayingHeight}
           onResizeEnd={endResizing}

@@ -23,7 +23,6 @@ class VideosStore {
       prevPageToken: observable,
       nextPageToken: observable,
       videos: computed,
-      setHasLoadedAllPlaylists: action,
       getVideosDataForPlaylist: action,
       getVideosDataForAllPlaylists: action,
       getVideosDataForChannelSearch: action,
@@ -45,10 +44,6 @@ class VideosStore {
     })
 
     return _.take(sortedVideos, 25)
-  }
-
-  setHasLoadedAllPlaylists (hasLoaded) {
-    this.hasLoadedAllPlaylists = hasLoaded
   }
 
   getVideosDataForPlaylist (playlistId, pageToken) {

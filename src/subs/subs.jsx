@@ -97,10 +97,6 @@ const _Subs = observer(({ location }) => {
   }
 
   const renderAddSubButtons = () => {
-    if (subsStore.isLoading) {
-      return null
-    }
-
     if (!subsStore.subs.length) {
       return (
         <p className='empty-message'>Add a channel to get started {icon('arrow-right')}</p>

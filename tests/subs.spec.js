@@ -50,6 +50,24 @@ describe('Adding a Channel', () => {
     // Channel should show as subscribed
     await expect(page.locator('.channel-item.is-subscribed').first()).toBeVisible()
   })
+
+  test('falls back to the channel author when the channel has no title', async ({ page }) => {
+    await setupApp(page, {
+      subs: {},
+      search: [
+        { id: 'channel-1', title: '', author: 'Author Only Channel', thumb: 'https://example.com/thumb.jpg' },
+      ],
+      channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
+    })
+
+    await page.goto('/add-channel')
+
+    const searchInput = page.locator('input[placeholder="Search Channels"]')
+    await searchInput.fill('Author')
+    await page.locator('.add-channel form button').click()
+
+    await expect(page.getByText('Author Only Channel')).toBeVisible({ timeout: 10000 })
+  })
 })
 
 describe('Adding Multiple Channels', () => {
@@ -206,6 +224,107 @@ describe('Loading Playlists and Adding a Playlist', () => {
     // Should only show matching playlists
     await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(2)
     await expect(page.getByText('2 matching')).toBeVisible()
+  })
+
+  test('can load more playlists when a next page is available', async ({ page }) => {
+    const firstPagePlaylists = Array.from({ length: 25 }, (_, i) => (
+      createSearchPlaylist({ id: `playlist-${i}`, title: `Playlist ${i}` })
+    ))
+
+    await setupApp(page, {
+      subs: {},
+      search: [
+        createChannel({ id: 'channel-1', title: 'Channel With More Playlists' }),
+      ],
+      playlists: firstPagePlaylists,
+      playlistsNextPageToken: 'page-2',
+    })
+
+    await page.goto('/add-channel')
+
+    const searchInput = page.locator('input[placeholder="Search Channels"]')
+    await searchInput.fill('More')
+    await page.locator('.add-channel form button').click()
+
+    await expect(page.getByText('Channel With More Playlists')).toBeVisible({ timeout: 10000 })
+
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Load playlists' }).click()
+      await expect(page.getByRole('button', { name: 'Hide playlists' })).toBeVisible({ timeout: 2000 })
+    }).toPass()
+
+    await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(25)
+
+    // Load more should fetch and append the next page of playlists
+    const loadMoreButton = page.locator('.load-more-button')
+    await expect(loadMoreButton).toBeVisible()
+    await loadMoreButton.click()
+
+    await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(50, { timeout: 10000 })
+  })
+
+  test('can hide playlists after loading them', async ({ page }) => {
+    await setupApp(page, {
+      subs: {},
+      search: [
+        createChannel({ id: 'channel-1', title: 'Channel To Hide' }),
+      ],
+      playlists: [
+        createSearchPlaylist({ id: 'playlist-1', title: 'A Playlist' }),
+      ],
+    })
+
+    await page.goto('/add-channel')
+
+    const searchInput = page.locator('input[placeholder="Search Channels"]')
+    await searchInput.fill('Hide')
+    await page.locator('.add-channel form button').click()
+
+    await expect(page.getByText('Channel To Hide')).toBeVisible({ timeout: 10000 })
+
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Load playlists' }).click()
+      await expect(page.getByRole('button', { name: 'Hide playlists' })).toBeVisible({ timeout: 2000 })
+    }).toPass()
+
+    await expect(page.locator('.playlists-section')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Hide playlists' }).click()
+
+    await expect(page.locator('.playlists-section')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Load playlists' })).toBeVisible()
+  })
+})
+
+describe('Leaving the Add Channel Page', () => {
+  test('clears search results when navigating away from add-channel', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Existing Channel', order: 0 }),
+      },
+      search: [
+        createChannel({ id: 'channel-2', title: 'Some Search Result' }),
+      ],
+      videos: [],
+    })
+
+    await page.goto('/add-channel')
+
+    const searchInput = page.locator('input[placeholder="Search Channels"]')
+    await searchInput.fill('Some')
+    await page.locator('.add-channel form button').click()
+
+    await expect(page.getByText('Some Search Result')).toBeVisible({ timeout: 10000 })
+
+    // Navigate away, unmounting the component and clearing search results
+    await page.getByRole('link', { name: /Custom Playlist/ }).click()
+    await expect(page).toHaveURL('/add-custom-playlist')
+
+    // Going back to add-channel (client-side, without a full reload) should
+    // not show the stale search results
+    await page.locator('.add-sub-buttons-links a[href="/add-channel"]').click()
+    await expect(page.locator('.add-channel')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Some Search Result')).not.toBeVisible()
   })
 })
 
@@ -368,5 +487,136 @@ describe('Editing a Custom Playlist Sub Item', () => {
     // Close the modal
     await page.locator('.modal-close').click()
     await expect(page.locator('.icon-picker-modal')).not.toBeVisible()
+  })
+})
+
+describe('Adding a Second Custom Playlist', () => {
+  test('derives a new id from an existing custom playlist', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'Existing Playlist', order: 0 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/add-custom-playlist')
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+
+    await page.locator('.add-custom-playlist input').fill('Second Playlist')
+    await page.locator('.add-custom-playlist button.submit').click()
+
+    // The new custom playlist's id is derived from the existing one
+    await expect(page).toHaveURL('/subs/custom-1')
+  })
+})
+
+describe('Remote Subs Changes', () => {
+  test('removes a sub when it is dropped from a remote update', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
+        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    const subItems = page.locator('.sub-item:not(.all-subs)')
+    await expect(subItems).toHaveCount(2)
+
+    // Simulate another client removing "Second Channel" from the shared doc
+    await page.evaluate(() => {
+      window.__triggerSnapshotUpdate({
+        youtubeApiKey: 'fake-api-key',
+        watchedVideos: {},
+        subs: {
+          'channel-1': {
+            id: 'channel-1',
+            title: 'First Channel',
+            playlistId: 'UU123',
+            type: 'channel',
+            order: 0,
+          },
+        },
+      })
+    })
+
+    await expect(subItems).toHaveCount(1)
+    await expect(subItems.first()).toContainText('First Channel')
+  })
+})
+
+describe('Reordering Subs', () => {
+  test('does not resave the order when a sub is dropped back in place', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
+        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    const subItems = page.locator('.sub-item:not(.all-subs)')
+    await expect(subItems).toHaveCount(2)
+    await expect(subItems.nth(0)).toContainText('First Channel')
+
+    const firstHandleBox = await subItems.nth(0).locator('span.sub-item-icon').boundingBox()
+
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + firstHandleBox.height / 2
+    )
+    await page.mouse.down()
+    // A tiny move that isn't enough to cross into the next item's position
+    await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, firstHandleBox.y + 2)
+    await page.mouse.up()
+
+    // Order should be unchanged since the drop landed at the same index
+    await expect(subItems.nth(0)).toContainText('First Channel')
+    await expect(subItems.nth(1)).toContainText('Second Channel')
+  })
+
+  test('dragging a sub by its handle reorders the subs list', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
+        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    const subItems = page.locator('.sub-item:not(.all-subs)')
+    await expect(subItems).toHaveCount(2)
+    await expect(subItems.nth(0)).toContainText('First Channel')
+
+    const firstHandleBox = await subItems.nth(0).locator('span.sub-item-icon').boundingBox()
+    const secondItemBox = await subItems.nth(1).boundingBox()
+
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + firstHandleBox.height / 2
+    )
+    await page.mouse.down()
+
+    // Move in small steps to give react-sortable-hoc a chance to track the drag
+    const steps = 10
+    for (let i = 1; i <= steps; i++) {
+      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
+    }
+
+    await page.mouse.up()
+
+    // The subs should now be swapped
+    await expect(subItems.nth(0)).toContainText('Second Channel')
+    await expect(subItems.nth(1)).toContainText('First Channel')
   })
 })

@@ -1,5 +1,5 @@
 import { test, expect } from './util/coverage-fixture'
-import { setupApp, createChannel, createPlaylist } from './util/helpers'
+import { setupApp, createChannel, createPlaylist, createCustomPlaylist } from './util/helpers'
 
 const { describe } = test
 
@@ -103,6 +103,83 @@ describe('Sub Item - Editing a Channel', () => {
     await expect(thumbButton.locator('img')).toHaveAttribute('src', 'https://example.com/new-channel-thumb.jpg')
   })
 
+  test('falls back to the author when the channel has no title', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': {
+          id: 'channel-1',
+          author: 'Author Only',
+          thumb: 'https://example.com/thumb.jpg',
+          playlistId: 'UU123',
+          type: 'channel',
+          order: 0,
+        },
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    await page.getByRole('button', { name: 'Edit' }).click()
+
+    // The title input and the remove confirmation both fall back to
+    // sub.author when sub.title is not set
+    const titleInput = page.locator('.channel-sub-item input')
+    await expect(titleInput).toHaveValue('Author Only')
+
+    page.once('dialog', (dialog) => {
+      expect(dialog.message()).toContain('Author Only')
+      dialog.dismiss()
+    })
+
+    await page.locator('.sub-item', { has: page.locator('.channel-sub-item') }).locator('.remove').click()
+  })
+
+  test('ignores a thumbnail click while an update is already in progress', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel',
+          thumb: 'https://example.com/old-thumb.jpg',
+          order: 0,
+        }),
+      },
+      videos: [],
+    })
+
+    // Slow down the channel details fetch so isUpdatingThumb stays true
+    // long enough to trigger a second click while it's in flight
+    await page.route('https://www.googleapis.com/youtube/v3/channels*', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          items: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
+        }),
+      })
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    await page.getByRole('button', { name: 'Edit' }).click()
+
+    const thumbButton = page.locator('.channel-sub-item .sub-item-icon.editable')
+    await thumbButton.click()
+    await expect(thumbButton).toBeDisabled()
+
+    // The button is disabled while updating, so invoke the handler directly
+    // (via React's internal props) to exercise the early-return guard
+    await page.evaluate(() => {
+      const el = document.querySelector('.channel-sub-item .sub-item-icon.editable')
+      const key = Object.keys(el).find((k) => k.startsWith('__reactProps$') || k.startsWith('__reactEventHandlers$'))
+      el[key].onClick()
+    })
+  })
+
   test('updates a playlist thumbnail from the playlist details', async ({ page }) => {
     await setupApp(page, {
       subs: {
@@ -169,6 +246,23 @@ describe('Sub Item - Editing a Channel', () => {
     // The failure is caught and logged, and the thumbnail is left unchanged
     await expect.poll(() => consoleErrors.some((t) => t.includes('Failed to update thumbnail'))).toBe(true)
     await expect(thumbButton.locator('img')).toHaveAttribute('src', 'https://example.com/old-thumb.jpg')
+  })
+})
+
+describe('Sub Item - Custom Playlist', () => {
+  test('renders the custom playlist item for a custom sub', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'My Favorites', order: 0 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    await expect(page.locator('.custom-sub-item')).toBeVisible()
+    await expect(page.locator('.channel-sub-item')).toHaveCount(0)
   })
 })
 

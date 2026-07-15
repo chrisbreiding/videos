@@ -4,7 +4,7 @@ import { action, computed, makeObservable, observable } from 'mobx'
 import { getItem, setItem } from '../lib/local-data'
 import { update } from '../lib/remote-data'
 
-const minNowPlayingHeight = 100
+export const minNowPlayingHeight = 100
 const maxNowPlayingHeightOffset = 10
 const nowPlayingSizeRatio = 1080 / 1920
 
@@ -24,7 +24,7 @@ class AppState {
       windowHeight: observable,
       allSubsMarkedVideoId: observable,
       watchedVideos: observable,
-      _maxNowPlayingHeight: computed,
+      maxNowPlayingHeight: computed,
       nowPlayingHeight: computed,
       nowPlayingWidth: computed,
       _setProp: action,
@@ -43,13 +43,13 @@ class AppState {
     this._setProp('_nowPlayingHeight', getItem('nowPlayingHeight'))
   }
 
-  get _maxNowPlayingHeight () {
+  get maxNowPlayingHeight () {
     return this.windowHeight - maxNowPlayingHeightOffset
   }
 
   get nowPlayingHeight () {
     let height = this._nowPlayingHeight
-    if (height > this._maxNowPlayingHeight) height = this._maxNowPlayingHeight
+    if (height > this.maxNowPlayingHeight) height = this.maxNowPlayingHeight
     if (height < minNowPlayingHeight) height = minNowPlayingHeight
 
     return height

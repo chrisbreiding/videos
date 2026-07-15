@@ -20,6 +20,18 @@ export async function stubFirebaseAuth(page, options = {}) {
 
   // Set up Firebase stubs before the app loads
   await page.addInitScript(({ userId, youtubeApiKey, subs, watchedVideos }) => {
+    let snapshotCallback
+
+    // Lets tests simulate a remote change to the user doc (e.g. another
+    // client editing subs) arriving over the real-time listener, independent
+    // of any local action.
+    window.__triggerSnapshotUpdate = (data) => {
+      snapshotCallback({
+        exists: true,
+        data: () => data,
+      })
+    }
+
     window.__firebaseStubs = {
       currentUser: { uid: userId },
 
@@ -40,6 +52,8 @@ export async function stubFirebaseAuth(page, options = {}) {
           data: () => ({ youtubeApiKey, subs, watchedVideos }),
         }),
         onSnapshot: (callback) => {
+          snapshotCallback = callback
+
           setTimeout(() => {
             callback({
               exists: true,
@@ -134,20 +148,40 @@ export async function setupApp(page, options = {}) {
     const url = request.url()
 
     if (url.includes('/search')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          items: search.map((channel) => ({
-            id: { channelId: channel.id },
-            snippet: {
-              channelTitle: channel.title,
-              title: channel.author || channel.title,
-              thumbnails: { medium: { url: channel.thumb || 'https://example.com/thumb.jpg' } },
-            },
-          })),
-        }),
-      })
+      const searchParams = new URL(url).searchParams
+      const channelId = searchParams.get('channelId')
+
+      if (channelId) {
+        // Searching for videos within a channel
+        const query = (searchParams.get('q') || '').toLowerCase()
+        const matchingVideos = videos.filter((video) => (
+          video.channelId === channelId && video.title.toLowerCase().includes(query)
+        ))
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            items: matchingVideos.map((video) => ({ id: { videoId: video.id } })),
+          }),
+        })
+      } else {
+        // Searching for channels to add as a subscription
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            items: search.map((channel) => ({
+              id: { channelId: channel.id },
+              snippet: {
+                channelTitle: channel.title,
+                title: channel.author || channel.title,
+                thumbnails: { medium: { url: channel.thumb || 'https://example.com/thumb.jpg' } },
+              },
+            })),
+          }),
+        })
+      }
     } else if (url.includes('/channels')) {
       const channelData = channels.length > 0 ? channels : [
         { contentDetails: { relatedPlaylists: { uploads: 'UU_uploads' } } },
