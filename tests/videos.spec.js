@@ -60,6 +60,53 @@ describe('Viewing a Channel and Its Videos', () => {
   })
 })
 
+describe('Searching Within a Channel', () => {
+  test('submits the channel search and updates the URL', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Tech Reviews', playlistId: 'UU123', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'iPhone Review' }),
+      ],
+    })
+
+    await page.goto('/subs/channel-1')
+
+    // Wait for the channel view (and its search box) to render
+    const searchInput = page.locator('.search input[placeholder="Search Channel"]')
+    await expect(searchInput).toBeVisible({ timeout: 10000 })
+
+    // Type a query and submit the form via the button
+    await searchInput.fill('React')
+    await page.locator('.search button').click()
+
+    // Submitting calls onSearch, which pushes the query into the URL
+    await expect(page).toHaveURL(/\/subs\/channel-1\?search=React/)
+  })
+
+  test('submits the search when pressing Enter in the input', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Tech Reviews', playlistId: 'UU123', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'iPhone Review' }),
+      ],
+    })
+
+    await page.goto('/subs/channel-1')
+
+    const searchInput = page.locator('.search input[placeholder="Search Channel"]')
+    await expect(searchInput).toBeVisible({ timeout: 10000 })
+
+    await searchInput.fill('Playwright')
+    await searchInput.press('Enter')
+
+    await expect(page).toHaveURL(/\/subs\/channel-1\?search=Playwright/)
+  })
+})
+
 describe('Adding Videos to a Custom Playlist from a Channel', () => {
   test('can add a video to a custom playlist', async ({ page }) => {
     await setupApp(page, {

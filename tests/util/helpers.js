@@ -15,10 +15,11 @@ export async function stubFirebaseAuth(page, options = {}) {
         order: 0,
       },
     },
+    watchedVideos = {},
   } = options
 
   // Set up Firebase stubs before the app loads
-  await page.addInitScript(({ userId, youtubeApiKey, subs }) => {
+  await page.addInitScript(({ userId, youtubeApiKey, subs, watchedVideos }) => {
     window.__firebaseStubs = {
       currentUser: { uid: userId },
 
@@ -36,13 +37,13 @@ export async function stubFirebaseAuth(page, options = {}) {
       userDoc: () => ({
         get: () => Promise.resolve({
           exists: true,
-          data: () => ({ youtubeApiKey, subs }),
+          data: () => ({ youtubeApiKey, subs, watchedVideos }),
         }),
         onSnapshot: (callback) => {
           setTimeout(() => {
             callback({
               exists: true,
-              data: () => ({ youtubeApiKey, subs }),
+              data: () => ({ youtubeApiKey, subs, watchedVideos }),
             })
           }, 0)
           return () => {}
@@ -53,7 +54,55 @@ export async function stubFirebaseAuth(page, options = {}) {
 
       deleteField: () => Promise.resolve(),
     }
-  }, { userId, youtubeApiKey, subs })
+  }, { userId, youtubeApiKey, subs, watchedVideos })
+}
+
+/**
+ * Intercepts the YouTube iframe API script with a fake implementation so
+ * tests can drive player events (ready, state changes) deterministically
+ * instead of depending on a real embedded video. Fake players are tracked on
+ * `window.__ytPlayers`, in creation order, with recorded method calls.
+ */
+export async function mockYoutubeIframeApi(page) {
+  await page.route('https://www.youtube.com/iframe_api', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/javascript',
+      body: `
+        window.__ytPlayers = window.__ytPlayers || [];
+
+        window.YT = {
+          PlayerState: { ENDED: 0, PLAYING: 1, PAUSED: 2 },
+          Player: function (elementId, config) {
+            const player = {
+              elementId: elementId,
+              config: config,
+              state: null,
+              currentTime: 0,
+              calls: { stopVideo: 0, loadVideoById: [], setSize: [], destroy: 0 },
+              getCurrentTime: function () { return player.currentTime },
+              getPlayerState: function () { return player.state },
+              stopVideo: function () { player.calls.stopVideo++ },
+              loadVideoById: function (opts) { player.calls.loadVideoById.push(opts) },
+              setSize: function (width, height) { player.calls.setSize.push([width, height]) },
+              destroy: function () { player.calls.destroy++ },
+              simulateReady: function () { config.events.onReady() },
+              simulateStateChange: function (state) {
+                player.state = state
+                config.events.onStateChange({ data: state })
+              },
+            }
+
+            window.__ytPlayers.push(player)
+
+            return player
+          },
+        }
+
+        if (typeof window.onYouTubeIframeAPIReady === 'function') window.onYouTubeIframeAPIReady()
+      `,
+    })
+  })
 }
 
 /**
@@ -68,10 +117,11 @@ export async function setupApp(page, options = {}) {
     search = [],
     playlists = [],
     channels = [],
+    watchedVideos = {},
   } = options
 
   // Set up Firebase stubs
-  await stubFirebaseAuth(page, { userId, youtubeApiKey, subs })
+  await stubFirebaseAuth(page, { userId, youtubeApiKey, subs, watchedVideos })
 
   // Convert videos array to a lookup for easy access
   const videosById = {}

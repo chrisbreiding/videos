@@ -4,6 +4,8 @@ import { subsStore } from '../subs/subs-store'
 import { parseQueryString } from '../lib/util'
 import { action } from 'mobx'
 
+// this route and component exist so a bookmarklet can be used to add a video
+// to a playlist directly from YouTube
 export const AddToPlaylist = inject('router')(observer((props) => {
   const state = useLocalStore(() => ({
     error: null,

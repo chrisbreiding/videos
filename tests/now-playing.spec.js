@@ -118,3 +118,55 @@ describe('Playing a Video', () => {
     await expect(page).toHaveTitle(/Amazing Video Title/)
   })
 })
+
+describe('Now Playing Height', () => {
+  // Seeds the stored now-playing height (read from localStorage on startup)
+  // and sizes the viewport so window.innerHeight (the max-height basis) is known
+  async function setup (page, { storedHeight, viewportHeight }) {
+    await page.addInitScript((height) => {
+      localStorage.nowPlayingHeight = JSON.stringify(height)
+    }, storedHeight)
+
+    await page.setViewportSize({ width: 1280, height: viewportHeight })
+
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'height123', title: 'Height Video' }),
+      ],
+    })
+
+    await page.goto('/subs/channel-1?nowPlaying=height123')
+
+    await expect(page.locator('.now-playing')).toBeVisible({ timeout: 10000 })
+  }
+
+  // The rendered inline `height` style reflects the clamped nowPlayingHeight
+  async function renderedHeight (page) {
+    return page.locator('.now-playing').evaluate((el) => parseInt(el.style.height, 10))
+  }
+
+  test('clamps to the max height when the stored height exceeds it', async ({ page }) => {
+    await setup(page, { storedHeight: 100000, viewportHeight: 800 })
+
+    // _maxNowPlayingHeight is window.innerHeight - 10
+    const innerHeight = await page.evaluate(() => window.innerHeight)
+
+    expect(await renderedHeight(page)).toBe(innerHeight - 10)
+  })
+
+  test('clamps to the min height when the stored height is below it', async ({ page }) => {
+    await setup(page, { storedHeight: 10, viewportHeight: 800 })
+
+    // minNowPlayingHeight is 100
+    expect(await renderedHeight(page)).toBe(100)
+  })
+
+  test('leaves the height unchanged when within the allowed range', async ({ page }) => {
+    await setup(page, { storedHeight: 400, viewportHeight: 800 })
+
+    expect(await renderedHeight(page)).toBe(400)
+  })
+})

@@ -1,5 +1,5 @@
 import { test, expect } from './util/coverage-fixture'
-import { setupApp, createChannel, createVideo, createSearchPlaylist } from './util/helpers'
+import { setupApp, createChannel, createVideo, createSearchPlaylist, createCustomPlaylist } from './util/helpers'
 
 const { describe } = test
 
@@ -253,6 +253,119 @@ describe('Adding a Custom Playlist', () => {
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
 
     // Close modal
+    await page.locator('.modal-close').click()
+    await expect(page.locator('.icon-picker-modal')).not.toBeVisible()
+  })
+
+  test('can filter icons and see an empty message when none match', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Channel', order: 0 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/add-custom-playlist')
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+
+    await page.locator('.pick-icon').click()
+    await expect(page.locator('.icon-picker-modal')).toBeVisible()
+
+    const filterInput = page.locator('.icon-picker fieldset', { hasText: 'Filter' }).locator('input')
+
+    // Filter down to matching icons
+    await filterInput.fill('adjust')
+    await expect(page.locator('.icon-picker .picker-icon')).toHaveCount(1)
+
+    // Filter to something that matches nothing
+    await filterInput.fill('not-a-real-icon-name')
+    await expect(page.locator('.icon-picker .empty-icons')).toBeVisible()
+    await expect(page.getByText("No icons matching filter 'not-a-real-icon-name'")).toBeVisible()
+
+    // Submitting the form should be prevented and not navigate away
+    await page.locator('.icon-picker form').evaluate((form) => form.requestSubmit())
+    await expect(page.locator('.icon-picker-modal')).toBeVisible()
+  })
+
+  test('can change the foreground and background colors', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Channel', order: 0 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/add-custom-playlist')
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+
+    await page.locator('.pick-icon').click()
+    await expect(page.locator('.icon-picker-modal')).toBeVisible()
+
+    const fgFieldset = page.locator('.icon-picker fieldset', { hasText: 'Foreground Color' })
+    const bgFieldset = page.locator('.icon-picker fieldset', { hasText: 'Background Color' })
+
+    // Text input (non-debounced) updates
+    await fgFieldset.locator('input:not([type="color"])').fill('#123456')
+    await expect(fgFieldset.locator('input[type="color"]')).toHaveValue('#123456')
+
+    await bgFieldset.locator('input:not([type="color"])').fill('#654321')
+    await expect(bgFieldset.locator('input[type="color"]')).toHaveValue('#654321')
+
+    // Color input (debounced) updates
+    await fgFieldset.locator('input[type="color"]').fill('#abcdef')
+    await expect(fgFieldset.locator('input:not([type="color"])')).toHaveValue('#abcdef', { timeout: 2000 })
+  })
+})
+
+describe('Editing a Custom Playlist Sub Item', () => {
+  test('renders a custom playlist in the subs list', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'My Favorites', order: 0 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    // The custom playlist renders with its icon and title
+    const customItem = page.locator('.custom-sub-item')
+    await expect(customItem).toBeVisible()
+    await expect(customItem.getByRole('heading', { name: 'My Favorites' })).toBeVisible()
+  })
+
+  test('can rename a custom playlist and update its icon while editing', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'My Favorites', order: 0 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    const customItem = page.locator('.custom-sub-item')
+    await expect(customItem).toBeVisible()
+
+    // Enter edit mode to reveal the title input and editable icon button
+    await page.getByRole('button', { name: 'Edit' }).click()
+
+    // Rename the playlist via the title input
+    const titleInput = customItem.locator('input')
+    await expect(titleInput).toBeVisible()
+    await titleInput.fill('Renamed Playlist')
+    await expect(titleInput).toHaveValue('Renamed Playlist')
+
+    // Open the icon picker modal from the editable icon button
+    await customItem.locator('.sub-item-icon.editable').click()
+    await expect(page.locator('.icon-picker-modal')).toBeVisible()
+
+    // Pick a different icon, which updates the sub's icon
+    await page.locator('.icon-picker .picker-icon').first().click()
+
+    // Close the modal
     await page.locator('.modal-close').click()
     await expect(page.locator('.icon-picker-modal')).not.toBeVisible()
   })

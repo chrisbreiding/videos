@@ -50,6 +50,21 @@ describe('Authenticated App', () => {
   })
 })
 
+describe('Touch support', () => {
+  test('adds has-touch class to body on touchstart', async ({ page }) => {
+    await page.goto('/login')
+
+    // The class is not applied until the user touches the screen
+    await expect(page.locator('body')).not.toHaveClass('has-touch')
+
+    await page.evaluate(() => {
+      document.dispatchEvent(new Event('touchstart'))
+    })
+
+    await expect(page.locator('body')).toHaveClass('has-touch')
+  })
+})
+
 describe('Login Page', () => {
   test('displays login page', async ({ page }) => {
     await page.goto('/login')

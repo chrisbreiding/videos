@@ -9,7 +9,6 @@ import { icon, duration, durationSeconds, date } from '../lib/util'
 import { appState } from '../app/app-state'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
 
-
 const WatchProgress = ({ id, duration }) => {
   const watched = appState.watchedVideos[id]
   if (!watched) return null
