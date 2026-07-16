@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { action, computed, makeObservable, observable } from 'mobx'
 
 import { getItem, setItem } from '../lib/local-data'
-import { update } from '../lib/remote-data'
+import { deleteField, update } from '../lib/remote-data'
 
 export const minNowPlayingHeight = 100
 const maxNowPlayingHeightOffset = 10
@@ -136,7 +136,11 @@ class AppState {
   }
 
   save () {
-    update({ allSubsMarkedVideoId: this.allSubsMarkedVideoId })
+    if (this.allSubsMarkedVideoId == null) {
+      deleteField('allSubsMarkedVideoId')
+    } else {
+      update({ allSubsMarkedVideoId: this.allSubsMarkedVideoId })
+    }
   }
 }
 

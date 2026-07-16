@@ -160,6 +160,59 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     expect(result.allSubsMarkedVideoId).toBe('video-marked-local')
     expect(result.setCalls).toEqual([])
   })
+
+  test('deletes the remote field instead of saving undefined when unmarked', async ({ page }) => {
+    await stubFirebaseAuth(page)
+
+    // Firestore's real setDoc()/updateDoc() throw when a field value is
+    // undefined, so mimic that here to reproduce the production error
+    // instead of silently accepting it like the plain stub does.
+    await page.addInitScript(() => {
+      window.__setCalls = []
+      window.__deleteFieldCalls = []
+      const originalUserDoc = window.__firebaseStubs.userDoc
+      window.__firebaseStubs.userDoc = () => {
+        const doc = originalUserDoc()
+        doc.set = (data) => {
+          for (const key in data) {
+            if (data[key] === undefined) {
+              throw new Error(`FirebaseError: Function setDoc() called with invalid data. Unsupported field value: undefined (found in field ${key})`)
+            }
+          }
+          window.__setCalls.push(data)
+          return Promise.resolve()
+        }
+        return doc
+      }
+      window.__firebaseStubs.deleteField = (fieldPath) => {
+        window.__deleteFieldCalls.push(fieldPath)
+        return Promise.resolve()
+      }
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
+
+    const result = await page.evaluate(async () => {
+      const { appState } = await import('/src/app/app-state.js')
+
+      appState.setAllSubsMarkedVideoId('video-marked')
+      window.__setCalls.length = 0
+      window.__deleteFieldCalls.length = 0
+
+      appState.setAllSubsMarkedVideoId(undefined)
+
+      return {
+        allSubsMarkedVideoId: appState.allSubsMarkedVideoId,
+        setCalls: window.__setCalls,
+        deleteFieldCalls: window.__deleteFieldCalls,
+      }
+    })
+
+    expect(result.allSubsMarkedVideoId).toBeUndefined()
+    expect(result.setCalls).toEqual([])
+    expect(result.deleteFieldCalls).toEqual(['allSubsMarkedVideoId'])
+  })
 })
 
 describe('AppState#setWatchedVideos', () => {

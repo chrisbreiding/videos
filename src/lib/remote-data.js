@@ -13,6 +13,8 @@ export const update = (data) => {
   return updateDoc(data)
 }
 
+export { deleteField }
+
 export const removeSub = (id) => {
   deleteField(`subs.${id}`)
 }
