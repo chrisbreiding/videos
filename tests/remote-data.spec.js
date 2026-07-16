@@ -23,7 +23,7 @@ describe('remote-data lib', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const data = await page.evaluate(async () => {
-      const { fetch } = await import('/src/lib/remote-data.js')
+      const { fetch } = await import('/src/lib/remote-data.ts')
 
       return fetch()
     })
@@ -37,7 +37,7 @@ describe('remote-data lib', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { listen } = await import('/src/lib/remote-data.js')
+      const { listen } = await import('/src/lib/remote-data.ts')
 
       return new Promise((resolve) => {
         listen((data) => resolve(data))

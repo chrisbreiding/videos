@@ -1,0 +1,247 @@
+import _ from 'lodash'
+import { getItem } from './local-data'
+import { authStore } from '../login/auth-store'
+import type {
+  ChannelDetails,
+  ChannelSearchResult,
+  PlaylistDetails,
+  PlaylistsForChannelResult,
+  VideoData,
+  VideosData,
+} from './types'
+
+const RESULTS_PER_PAGE = 25
+
+type QueryParams = Record<string, string | number>
+
+function getBaseUrl (): string {
+  return getItem<string>('youtubeBaseUrl') || 'https://www.googleapis.com/youtube/v3/'
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function queryYouTube (url: string, data: QueryParams): Promise<any> {
+  const baseUrl = getBaseUrl()
+
+  return authStore.getApiKey().then((apiKey) => {
+    const params = new URLSearchParams({ key: apiKey, ...data } as Record<string, string>)
+    return fetch(`${baseUrl}${url}?${params}`)
+    .then((response) => response.json())
+  })
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapChannelDetails (result: any): ChannelSearchResult[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return _.map(result.items, (item: any) => {
+    return {
+      id: item.id.channelId,
+      title: item.snippet.channelTitle,
+      author: item.snippet.title,
+      thumb: item.snippet.thumbnails.medium.url,
+    }
+  })
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function videoIdsFromContentDetails (videos: any): string[] {
+  return _(videos).map('contentDetails').map('videoId').value()
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function videoIdsFromId (videos: any): string[] {
+  return _(videos).map('id').map('videoId').value()
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapVideoDetails (result: any): VideoData[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return _.map(result.items, (video: any) => {
+    return {
+      id: video.id,
+      channelId: video.snippet.channelId,
+      title: video.snippet.title,
+      description: video.snippet.description,
+      published: video.snippet.publishedAt,
+      thumb: video.snippet.thumbnails.medium.url,
+      duration: video.contentDetails.duration,
+    }
+  })
+}
+
+export function getVideos (ids: string[]): Promise<VideoData[]> {
+  return queryYouTube('videos', {
+    id: ids.join(),
+    part: 'snippet,contentDetails',
+  }).then(mapVideoDetails)
+}
+
+export function checkApiKey (apiKey: string): Promise<boolean> {
+  const params = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' }
+  return queryYouTube('activities', params)
+  .then(() => true)
+  .catch(() => false)
+}
+
+export function searchChannels (query: string): Promise<ChannelSearchResult[]> {
+  return queryYouTube('search', {
+    q: query,
+    part: 'snippet',
+    type: 'channel',
+    maxResults: 10,
+  }).then(mapChannelDetails)
+}
+
+export function getVideosDataForChannelSearch (channelId: string, query: string, pageToken?: string | null): Promise<VideosData> {
+  const params: QueryParams = {
+    channelId,
+    maxResults: RESULTS_PER_PAGE,
+    order: 'date',
+    part: 'snippet',
+    q: query,
+  }
+  if (pageToken) params.pageToken = pageToken
+
+  return queryYouTube('search', params)
+  .then(({ items, prevPageToken, nextPageToken }) => {
+    // there seems to be a bug with the youtube api where it returns
+    // a nextPageToken even if there are no more results after this page
+    if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
+
+    return getVideos(videoIdsFromId(items)).then((videos) => {
+      return { videos, prevPageToken, nextPageToken }
+    })
+  })
+}
+
+export function getVideosDataForPlaylist (playlistId: string, pageToken?: string | null, maxResults: number = RESULTS_PER_PAGE): Promise<VideosData> {
+  const params: QueryParams = {
+    playlistId,
+    part: 'snippet,contentDetails',
+    maxResults,
+  }
+  if (pageToken) params.pageToken = pageToken
+
+  return queryYouTube('playlistItems', params)
+  .then(({ items, prevPageToken, nextPageToken }) => {
+    // there seems to be a bug with the youtube api where it returns
+    // a nextPageToken even if there are no more results after this page
+    if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
+
+    return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
+      return { videos, prevPageToken, nextPageToken }
+    })
+  })
+}
+
+function getAllVideosFromPlaylist (playlistId: string, pageToken: string | null = null, accumulatedVideos: VideoData[] = []): Promise<VideoData[]> {
+  const params: QueryParams = {
+    playlistId,
+    part: 'snippet,contentDetails',
+    maxResults: 50,
+  }
+  if (pageToken) params.pageToken = pageToken
+
+  return queryYouTube('playlistItems', params)
+  .then(({ items, nextPageToken }) => {
+    return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
+      const allVideos = accumulatedVideos.concat(videos)
+
+      if (nextPageToken) {
+        return getAllVideosFromPlaylist(playlistId, nextPageToken, allVideos)
+      }
+
+      return allVideos
+    })
+  })
+}
+
+export function getVideosDataForPlaylistSearch (playlistId: string, query: string): Promise<VideosData> {
+  return getAllVideosFromPlaylist(playlistId).then((videos) => {
+    const lowerQuery = query.toLowerCase()
+    const filteredVideos = videos.filter((video) => {
+      return video.title.toLowerCase().includes(lowerQuery) ||
+             video.description.toLowerCase().includes(lowerQuery)
+    })
+
+    return {
+      videos: filteredVideos,
+      prevPageToken: null,
+      nextPageToken: null,
+    }
+  })
+}
+
+export function getVideosDataForAllPlaylists (playlistIds: string[]): Promise<VideoData[]> {
+  const getVideos = _.map(playlistIds, (playlistId) => {
+    return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
+  })
+
+  return Promise.all(getVideos)
+  .then((playlists) => _.flatMap(playlists, 'videos'))
+}
+
+export function getPlaylistIdForChannel (channelId: string): Promise<string> {
+  return queryYouTube('channels', {
+    id: channelId,
+    part: 'contentDetails',
+  }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads)
+}
+
+export function getChannelDetails (channelId: string): Promise<ChannelDetails> {
+  return queryYouTube('channels', {
+    id: channelId,
+    part: 'snippet',
+  }).then((result) => {
+    const item = result.items[0]
+    return {
+      id: item.id,
+      title: item.snippet.title,
+      thumb: item.snippet.thumbnails.medium.url,
+    }
+  })
+}
+
+export function getPlaylistDetails (playlistId: string): Promise<PlaylistDetails> {
+  return queryYouTube('playlists', {
+    id: playlistId,
+    part: 'snippet',
+  }).then((result) => {
+    const item = result.items[0]
+    return {
+      id: item.id,
+      title: item.snippet.title,
+      thumb: item.snippet.thumbnails.medium.url,
+    }
+  })
+}
+
+export function getPlaylistsForChannel (channelId: string, pageToken?: string | null): Promise<PlaylistsForChannelResult> {
+  const params: QueryParams = {
+    channelId,
+    part: 'contentDetails,snippet',
+    maxResults: 50,
+  }
+  if (pageToken) params.pageToken = pageToken
+
+  return queryYouTube('playlists', params).then((result) => {
+    // there seems to be a bug with the youtube api where it returns
+    // a nextPageToken even if there are no more results after this page
+    const nextPageToken = result.items.length < RESULTS_PER_PAGE ? undefined : result.nextPageToken
+
+    return {
+      nextPageToken,
+      totalResults: result.pageInfo.totalResults,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      videos: result.items.map((playlist: any) => ({
+        author: playlist.snippet.title,
+        channelId,
+        count: playlist.contentDetails.itemCount,
+        description: playlist.snippet.description,
+        id: playlist.id,
+        published: playlist.snippet.publishedAt,
+        thumb: playlist.snippet.thumbnails.medium.url,
+        title: playlist.snippet.title,
+      })),
+    }
+  })
+}

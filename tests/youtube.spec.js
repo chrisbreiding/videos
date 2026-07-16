@@ -16,7 +16,7 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { checkApiKey } = await import('/src/lib/youtube.js')
+      const { checkApiKey } = await import('/src/lib/youtube.ts')
 
       return checkApiKey('some-api-key')
     })
@@ -47,7 +47,7 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     await page.evaluate(async () => {
-      const { getVideosDataForChannelSearch } = await import('/src/lib/youtube.js')
+      const { getVideosDataForChannelSearch } = await import('/src/lib/youtube.ts')
 
       return getVideosDataForChannelSearch('channel-1', 'query', 'page-token-abc')
     })
@@ -70,7 +70,7 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { getVideosDataForPlaylistSearch } = await import('/src/lib/youtube.js')
+      const { getVideosDataForPlaylistSearch } = await import('/src/lib/youtube.ts')
 
       return getVideosDataForPlaylistSearch('UU123', 'apple')
     })

@@ -9,7 +9,7 @@ const { describe } = test
 // instance (and runs the instrumented code so it counts toward coverage).
 async function callSaveVideoProgress (page, { videoId, watchTimestamp, immediate }) {
   return page.evaluate(async (args) => {
-    const { appState } = await import('/src/app/app-state.js')
+    const { appState } = await import('/src/app/app-state.ts')
 
     window.__setCalls.length = 0
     appState.saveVideoProgress(args.videoId, args.watchTimestamp, args.immediate)
@@ -85,7 +85,7 @@ describe('AppState#saveVideoProgress', () => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
       const before = Object.keys(appState.watchedVideos).length
 
       window.__setCalls.length = 0
@@ -106,7 +106,7 @@ describe('AppState#saveVideoProgress', () => {
     await setup(page)
 
     const setCalls = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       window.__setCalls.length = 0
       appState.saveVideoProgress('video-debounced', 7, false)
@@ -127,7 +127,7 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       window.__setCalls.length = 0
       appState.setAllSubsMarkedVideoId('video-marked')
@@ -146,7 +146,7 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       window.__setCalls.length = 0
       appState.setAllSubsMarkedVideoId('video-marked-local', false)
@@ -194,7 +194,7 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       appState.setAllSubsMarkedVideoId('video-marked')
       window.__setCalls.length = 0
@@ -220,7 +220,7 @@ describe('AppState#setWatchedVideos', () => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       appState.setWatchedVideos({ 'video-1': { watchTimestamp: 1 } })
 
@@ -234,7 +234,7 @@ describe('AppState#setWatchedVideos', () => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       appState.setWatchedVideos({ 'video-1': { watchTimestamp: 1 } })
       appState.setWatchedVideos(undefined)
@@ -251,7 +251,7 @@ describe('AppState#_onWindowResize', () => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       Object.defineProperty(window, 'innerHeight', { configurable: true, value: 555 })
       window.dispatchEvent(new Event('resize'))
@@ -268,7 +268,7 @@ describe('AppState#updateNowPlayingHeight', () => {
     await setup(page)
 
     const height = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
 
       appState.updateNowPlayingHeight(321)
 
@@ -286,7 +286,7 @@ describe('AppState#toggleAutoPlay', () => {
     await setup(page)
 
     const autoPlayEnabled = await page.evaluate(async () => {
-      const { appState } = await import('/src/app/app-state.js')
+      const { appState } = await import('/src/app/app-state.ts')
       const before = appState.autoPlayEnabled
 
       appState.toggleAutoPlay()

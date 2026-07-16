@@ -15,7 +15,7 @@ describe('videos/videos-store', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const titles = await page.evaluate(async () => {
-      const { videosStore } = await import('/src/videos/videos-store.js')
+      const { videosStore } = await import('/src/videos/videos-store.ts')
 
       videosStore._updateVideosData({
         videos: [
@@ -36,7 +36,7 @@ describe('videos/videos-store', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { videosStore } = await import('/src/videos/videos-store.js')
+      const { videosStore } = await import('/src/videos/videos-store.ts')
 
       videosStore._updateVideosData({
         videos: [
@@ -57,7 +57,7 @@ describe('videos/videos-store', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { videosStore } = await import('/src/videos/videos-store.js')
+      const { videosStore } = await import('/src/videos/videos-store.ts')
 
       videosStore._updateVideosData({
         videos: [

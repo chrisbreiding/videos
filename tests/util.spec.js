@@ -10,7 +10,7 @@ describe('lib/util', () => {
     await expect(page.locator('body')).toBeVisible()
 
     const result = await page.evaluate(async () => {
-      const util = await import('/src/lib/util.jsx')
+      const util = await import('/src/lib/util.tsx')
 
       const iconNoText = util.icon('star')
       const iconRightText = util.icon('star', 'right')

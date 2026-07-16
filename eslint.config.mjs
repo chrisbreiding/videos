@@ -1,6 +1,7 @@
 import globals from 'globals'
 import { FlatCompat } from '@eslint/eslintrc'
 import reactHooks from 'eslint-plugin-react-hooks'
+import tseslint from 'typescript-eslint'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -20,7 +21,7 @@ export default [
   },
 
   {
-    files: ['**/*.js'],
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -33,12 +34,19 @@ export default [
 
   ...compat.extends('plugin:crb/general', 'plugin:crb/react').map((config) => ({
     ...config,
-    files: ['src/**/*.js', 'src/**/*.jsx'],
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
   })),
 
   {
-    files: ['src/**/*.js', 'src/**/*.jsx'],
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
     plugins: {
+      '@typescript-eslint': tseslint.plugin,
       'react-hooks': reactHooks,
     },
     settings: {
@@ -48,11 +56,20 @@ export default [
     },
     rules: {
       'padding-line-between-statements': 'off',
+      // TypeScript resolves references itself, and JSX's automatic runtime means
+      // React need not be imported into scope.
+      'no-undef': 'off',
+      'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
       'react/jsx-uses-vars': 'error',
-      'react/jsx-uses-react': 'error',
-      'react/react-in-jsx-scope': 'error',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-uses-react': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
+      // Use the TypeScript-aware unused-vars rule; the core one misfires on
+      // type-only constructs.
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'error',
     },
   },
 ]

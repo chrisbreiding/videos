@@ -16,7 +16,7 @@ describe('firebase lib', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const uid = await page.evaluate(async () => {
-      const { getCurrentUser } = await import('/src/lib/firebase.js')
+      const { getCurrentUser } = await import('/src/lib/firebase.ts')
 
       return getCurrentUser().uid
     })
@@ -41,7 +41,7 @@ describe('firebase lib', () => {
     await page.goto('/')
 
     const result = await page.evaluate(async () => {
-      const { getDoc } = await import('/src/lib/firebase.js')
+      const { getDoc } = await import('/src/lib/firebase.ts')
 
       return getDoc()
     })
@@ -70,7 +70,7 @@ describe('firebase lib', () => {
     await page.goto('/')
 
     const called = await page.evaluate(async () => {
-      const { watchDoc } = await import('/src/lib/firebase.js')
+      const { watchDoc } = await import('/src/lib/firebase.ts')
       let called = false
 
       watchDoc(() => { called = true })
@@ -85,7 +85,7 @@ describe('firebase lib', () => {
     await page.goto('/login')
 
     const results = await page.evaluate(async () => {
-      const firebaseLib = await import('/src/lib/firebase.js')
+      const firebaseLib = await import('/src/lib/firebase.ts')
       const out = {}
 
       try {
@@ -139,7 +139,7 @@ describe('firebase lib', () => {
     await page.goto('/login')
 
     const results = await page.evaluate(async () => {
-      const firebaseLib = await import('/src/lib/firebase.js')
+      const firebaseLib = await import('/src/lib/firebase.ts')
 
       window.__firebaseStubs = { currentUser: { uid: 'real-path-user' } }
 
@@ -199,7 +199,7 @@ describe('firebase lib', () => {
     await page.goto('/login')
 
     await page.evaluate(async () => {
-      const { deleteField } = await import('/src/lib/firebase.js')
+      const { deleteField } = await import('/src/lib/firebase.ts')
 
       await deleteField('someField')
     })

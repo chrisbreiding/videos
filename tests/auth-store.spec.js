@@ -15,7 +15,7 @@ describe('login/auth-store', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const youtubeApiKey = await page.evaluate(async () => {
-      const { authStore } = await import('/src/login/auth-store.js')
+      const { authStore } = await import('/src/login/auth-store.ts')
 
       authStore.setApiKey(undefined)
 
@@ -31,7 +31,7 @@ describe('login/auth-store', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { authStore } = await import('/src/login/auth-store.js')
+      const { authStore } = await import('/src/login/auth-store.ts')
 
       return authStore.checkApiKey('')
     })
