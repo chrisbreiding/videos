@@ -1,9 +1,9 @@
 import cs from 'classnames'
 import _ from 'lodash'
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { matchPath } from 'react-router'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { appState, minNowPlayingHeight } from './app-state'
 import { authStore } from '../login/auth-store'
@@ -20,8 +20,9 @@ import { Sub } from '../sub/sub'
 import { AddCustomPlaylist } from '../subs/add-sub/add-custom-playlist'
 import { AddChannel } from '../subs/add-sub/add-channel'
 
-export const App = inject('router')(observer(({ router }) => {
+export const App = observer(() => {
   const location = useLocation()
+  const navigate = useNavigate()
   const [isResizing, setIsResizing] = useState(false)
 
   const unsubscribersRef = useRef([])
@@ -86,7 +87,7 @@ export const App = inject('router')(observer(({ router }) => {
       }
     }
 
-    router.push(updatedLink(location, {
+    navigate(updatedLink(location, {
       search: { nowPlaying: nextVideoId },
     }))
   }
@@ -119,7 +120,7 @@ export const App = inject('router')(observer(({ router }) => {
       }
 
       appState.setSavedLocation(location)
-      router.push({ pathname: '/login' })
+      navigate({ pathname: '/login' })
     })
 
     unsubscribersRef.current.push(unsubscribe)
@@ -183,7 +184,6 @@ export const App = inject('router')(observer(({ router }) => {
       )}
       <div className='subs'>
         <Subs
-          router={router}
           location={location}
           onSortStart={onSortStart}
           onSortEnd={onSortEnd}
@@ -200,4 +200,4 @@ export const App = inject('router')(observer(({ router }) => {
       </div>
     </div>
   )
-}))
+})

@@ -1,14 +1,15 @@
 import cs from 'classnames'
 import _ from 'lodash'
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
 import { videosService } from '../../videos/videos-service'
 import { subsStore } from '../subs-store'
 
-export const AddChannel = inject('router')(observer(({ router }) => {
+export const AddChannel = observer(() => {
+  const navigate = useNavigate()
   const params = useParams()
   const [loadingPlaylists, setLoadingPlaylists] = useState({})
   const [loadingMorePlaylists, setLoadingMorePlaylists] = useState({})
@@ -41,7 +42,7 @@ export const AddChannel = inject('router')(observer(({ router }) => {
   }, [params.query])
 
   const updateSearch = (searchTerm) => {
-    router.push(`/add-channel/${encodeURIComponent(searchTerm)}`)
+    navigate(`/add-channel/${encodeURIComponent(searchTerm)}`)
   }
 
   const searchSubs = (e) => {
@@ -193,4 +194,4 @@ export const AddChannel = inject('router')(observer(({ router }) => {
       <ul className='channels-list'>{renderResults()}</ul>
     </div>
   )
-}))
+})

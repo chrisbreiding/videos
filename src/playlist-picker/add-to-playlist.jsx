@@ -1,14 +1,15 @@
-import { inject, observer, useLocalStore } from 'mobx-react'
+import { observer, useLocalStore } from 'mobx-react'
 import React, { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { subsStore } from '../subs/subs-store'
 import { parseQueryString } from '../lib/util'
 import { action } from 'mobx'
 
 // this route and component exist so a bookmarklet can be used to add a video
 // to a playlist directly from YouTube
-export const AddToPlaylist = inject('router')(observer((props) => {
+export const AddToPlaylist = observer(() => {
   const location = useLocation()
+  const navigate = useNavigate()
   const state = useLocalStore(() => ({
     error: null,
     setError: action((error) => {
@@ -24,7 +25,7 @@ export const AddToPlaylist = inject('router')(observer((props) => {
 
     if (playlist) {
       subsStore.addVideoToPlaylist(playlist, videoId)
-      props.router.push({ pathname: `/subs/${playlist.id}`, search: '' })
+      navigate({ pathname: `/subs/${playlist.id}`, search: '' })
     } else {
       state.setError('Playlist not found')
     }
@@ -43,4 +44,4 @@ export const AddToPlaylist = inject('router')(observer((props) => {
       )}
     </div>
   )
-}))
+})

@@ -1,14 +1,17 @@
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { authStore } from './auth-store'
 import { icon } from '../lib/util'
 
-export const Logout = inject('router')(observer(({ router }) => {
+export const Logout = observer(() => {
+  const navigate = useNavigate()
+
   useEffect(() => {
     (async () => {
       await authStore.logout()
-      router.push({ pathname: '/login' })
+      navigate({ pathname: '/login' })
     })()
   }, [true])
 
@@ -19,4 +22,4 @@ export const Logout = inject('router')(observer(({ router }) => {
       </div>
     </div>
   )
-}))
+})

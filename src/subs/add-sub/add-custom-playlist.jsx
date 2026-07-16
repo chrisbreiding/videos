@@ -1,7 +1,8 @@
 import { toJS } from 'mobx'
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import _ from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
 import { iconsList } from '../../lib/icons-list'
@@ -11,7 +12,8 @@ import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import { Modal } from '../../modal/modal'
 
-export const AddCustomPlaylist = inject('router')(observer(({ router }) => {
+export const AddCustomPlaylist = observer(() => {
+  const navigate = useNavigate()
   const titleRef = useRef()
   const [iconState, setIconState] = useState({
     icon: iconsList[0],
@@ -40,7 +42,7 @@ export const AddCustomPlaylist = inject('router')(observer(({ router }) => {
     if (!title) return
 
     const id = subsStore.addCustomPlaylist({ title, icon: toJS(iconState) })
-    router.push(`/subs/${id}`)
+    navigate(`/subs/${id}`)
   }
 
   const renderIconPicker = () => {
@@ -77,4 +79,4 @@ export const AddCustomPlaylist = inject('router')(observer(({ router }) => {
       {renderIconPicker()}
     </form>
   )
-}))
+})

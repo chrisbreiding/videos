@@ -1,8 +1,8 @@
 import cs from 'classnames'
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useCallback } from 'react'
 import DocumentTitle from 'react-document-title'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { appState } from '../app/app-state'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
@@ -13,8 +13,9 @@ import { Paginator } from '../paginator/paginator'
 import { Search } from '../search/search'
 import { Videos } from '../videos/videos'
 
-export const Sub = inject('router')(observer(({ router }) => {
+export const Sub = observer(() => {
   const location = useLocation()
+  const navigate = useNavigate()
   const params = useParams()
   const previousLoadingValueRef = useRef(videosStore.isLoading)
   const searchQueryRef = useRef(null)
@@ -132,11 +133,11 @@ export const Sub = inject('router')(observer(({ router }) => {
   }
 
   const updateVideoMarkerLink = useCallback((marker) => {
-    router.replace(updatedLink(location, {
+    navigate(updatedLink(location, {
       search: { marker },
-    }))
+    }), { replace: true })
     scrollToMarker(marker)
-  }, [router, location])
+  }, [navigate, location])
 
   const updateBookmark = useCallback((sub) => () => {
     const bookmarkedPageToken = isPageBookMarked(sub) ? null : pageTokenRef.current
@@ -168,7 +169,7 @@ export const Sub = inject('router')(observer(({ router }) => {
   }, [])
 
   const onSearchUpdate = useCallback((searchTerm) => {
-    router.push(updatedLink({
+    navigate(updatedLink({
       pathname: `/subs/${getParam('id')}`,
     }, {
       search: {
@@ -176,7 +177,7 @@ export const Sub = inject('router')(observer(({ router }) => {
         pageToken: undefined,
       },
     }))
-  }, [router])
+  }, [navigate])
 
   const renderSearch = (sub) => {
     if (!sub || sub.type === 'custom') return null
@@ -272,4 +273,4 @@ export const Sub = inject('router')(observer(({ router }) => {
       <Paginator prevLink={prevLink} nextLink={nextLink} />
     </main>
   )
-}))
+})

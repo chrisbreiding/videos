@@ -1,12 +1,14 @@
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { onAuthStateChanged } from '../lib/firebase'
 import { appState } from '../app/app-state'
 import { authStore } from './auth-store'
 import { icon } from '../lib/util'
 
-export const Login = inject('router')(observer(({ router }) => {
+export const Login = observer(() => {
+  const navigate = useNavigate()
   const [loginFailed, setLoginFailed] = useState(false)
   const emailRef = useRef(null)
   const passwordRef = useRef(null)
@@ -18,12 +20,12 @@ export const Login = inject('router')(observer(({ router }) => {
       unsubscribe?.()
 
       if (user) {
-        router.push({ pathname: '/' })
+        navigate({ pathname: '/' })
       }
     })
 
     emailRef.current.focus()
-  }, [router])
+  }, [navigate])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -36,7 +38,7 @@ export const Login = inject('router')(observer(({ router }) => {
 
       setLoginFailed(false)
       const location = appState.savedLocation || { pathname: '/' }
-      router.push(location)
+      navigate(location)
       appState.setSavedLocation()
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -65,4 +67,4 @@ export const Login = inject('router')(observer(({ router }) => {
       </form>
     </div>
   )
-}))
+})
