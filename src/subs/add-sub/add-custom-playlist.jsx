@@ -2,7 +2,7 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import _ from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { icon } from '../../lib/util'
 import { iconsList } from '../../lib/icons-list'

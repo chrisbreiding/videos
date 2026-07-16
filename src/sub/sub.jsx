@@ -1,10 +1,10 @@
 import cs from 'classnames'
 import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useCallback } from 'react'
-import DocumentTitle from 'react-document-title'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { appState } from '../app/app-state'
+import { DocumentTitle } from '../lib/document-title'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import React, { useRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/react/sortable'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router'
 
 import { icon } from '../../lib/util'
 import { getChannelDetails, getPlaylistDetails } from '../../lib/youtube'

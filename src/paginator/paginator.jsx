@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { icon } from '../lib/util'
 
 const LinkTo = ({ link, direction, leftText, rightText }) => {

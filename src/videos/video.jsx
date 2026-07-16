@@ -2,7 +2,7 @@ import cs from 'classnames'
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { useSortable } from '@dnd-kit/react/sortable'
 
 import { icon, duration, durationSeconds, date } from '../lib/util'

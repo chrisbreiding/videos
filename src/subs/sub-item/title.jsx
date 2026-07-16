@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router'
 
 export const Title = observer(({ sub, link }) => (
   <NavLink to={link} className={({ isActive }) => cs('sub-title', { active: isActive })}>

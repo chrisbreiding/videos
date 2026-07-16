@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { onAuthStateChanged } from '../lib/firebase'
 import { appState } from '../app/app-state'
