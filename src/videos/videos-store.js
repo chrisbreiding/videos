@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable, values, toJS } from 'mobx'
 import _ from 'lodash'
 import moment from 'moment'
-import arrayMove from 'array-move'
+import { arrayMoveImmutable as arrayMove } from 'array-move'
 
 import { videosService } from './videos-service'
 import { VideoModel } from './video-model'

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { action, computed, makeObservable, observable, values } from 'mobx'
-import arrayMove from 'array-move'
+import { arrayMoveImmutable as arrayMove } from 'array-move'
 
 import { SubModel } from '../sub/sub-model'
 import { removeSub, removeVideoFromSub, update } from '../lib/remote-data'

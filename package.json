@@ -33,7 +33,7 @@
     "vite-plugin-istanbul": "^9.0.1"
   },
   "dependencies": {
-    "array-move": "2.2.2",
+    "array-move": "^4.0.0",
     "classnames": "2.2.6",
     "firebase": "^7.15.1",
     "font-awesome": "4.7.0",
