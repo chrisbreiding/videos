@@ -39,6 +39,7 @@ export const AddChannel = observer(() => {
 
   useEffect(() => {
     search()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.query])
 
   const updateSearch = (searchTerm) => {

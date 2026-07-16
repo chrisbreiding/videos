@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import cs from 'classnames'
 
 import { icon as renderIcon } from '../lib/util'
@@ -25,9 +25,9 @@ export const IconPicker = ({ icon, onUpdate }) => {
     }
   }
 
-  const updateIcon = (iconName) => {
+  const updateIcon = useCallback((iconName) => {
     onUpdate('icon', iconName)
-  }
+  }, [onUpdate])
 
   const updateFilter = (e) => {
     setFilter(e.target.value)
@@ -63,7 +63,7 @@ export const IconPicker = ({ icon, onUpdate }) => {
         />
       </button>
     ))
-  }, [filteredIcons, icon, updateIcon])
+  }, [filteredIcons, icon, filter, updateIcon])
 
   return (
     <div className='icon-picker'>

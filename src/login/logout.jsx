@@ -13,7 +13,7 @@ export const Logout = observer(() => {
       await authStore.logout()
       navigate({ pathname: '/login' })
     })()
-  }, [true])
+  }, [navigate])
 
   return (
     <div className='logout'>

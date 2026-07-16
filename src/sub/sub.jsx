@@ -24,9 +24,9 @@ export const Sub = observer(() => {
   const playlistIdRef = useRef(null)
   const isAllSubsRef = useRef(false)
 
-  const getSub = () => {
+  const getSub = useCallback(() => {
     return subsStore.getSubById(params.id)
-  }
+  }, [params.id])
 
   const scrollToMarker = (marker) => {
     document.querySelector(`#${marker}`)?.scrollIntoView()
@@ -115,7 +115,7 @@ export const Sub = observer(() => {
     } else if (sub) {
       subsStore.update(sub.id, { markedVideoId: id })
     }
-  }, [])
+  }, [getSub])
 
   const updateVideoMarkerLink = useCallback((marker) => {
     navigate(updatedLink(location, {
@@ -133,7 +133,7 @@ export const Sub = observer(() => {
   const removeVideoMark = useCallback(() => {
     updateVideoMark()
     updateVideoMarkerLink()
-  }, [updateVideoMarkerLink])
+  }, [updateVideoMark, updateVideoMarkerLink])
 
   const onSortStart = useCallback(() => {
     appState.setSorting(true)
@@ -158,7 +158,7 @@ export const Sub = observer(() => {
         pageToken: undefined,
       },
     }))
-  }, [navigate])
+  }, [navigate, params.id])
 
   const renderSearch = (sub) => {
     if (!sub || sub.type === 'custom') return null

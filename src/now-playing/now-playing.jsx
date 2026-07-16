@@ -66,6 +66,7 @@ export const NowPlaying = observer((props) => {
     }
 
     videosService.getVideo(props.id).then(setVideoProps)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.id])
 
   if (!props.id) return null

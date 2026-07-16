@@ -113,6 +113,8 @@ export const App = observer(() => {
   }
 
   useEffect(() => {
+    const unsubscribers = unsubscribersRef.current
+
     const unsubscribe = onAuthStateChanged((user) => {
       if (user) {
         authStore.setUserId(user.uid)
@@ -123,13 +125,14 @@ export const App = observer(() => {
       navigate({ pathname: '/login' })
     })
 
-    unsubscribersRef.current.push(unsubscribe)
+    unsubscribers.push(unsubscribe)
 
     return () => {
-      _.each(unsubscribersRef.current, (unsubscribe) => {
+      _.each(unsubscribers, (unsubscribe) => {
         unsubscribe()
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!authStore.isAuthenticated) {

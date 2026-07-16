@@ -29,6 +29,7 @@ export const AddToPlaylist = observer(() => {
     } else {
       state.setError('Playlist not found')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location])
 
   return (

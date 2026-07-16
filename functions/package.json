@@ -18,6 +18,7 @@
     "firebase-functions": "^6.1.0"
   },
   "devDependencies": {
-    "eslint": "^8.57.1"
+    "eslint": "^9",
+    "globals": "^16.4.0"
   }
 }

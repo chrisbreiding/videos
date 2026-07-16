@@ -101,6 +101,7 @@ export const YoutubePlayer = ({ id, width, height, onEnd, onTime, startTime }) =
 
       window.onYouTubeIframeAPIReady = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
