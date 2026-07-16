@@ -324,6 +324,70 @@ describe('Viewing a Custom Playlist With Videos', () => {
     // The videos should now be swapped
     await expect.poll(() => page.locator('.video h4').allTextContents()).not.toEqual(['First Video', 'Second Video'])
   })
+
+  test('dragging videos after navigating from the All Subs page reorders correctly', async ({ page }) => {
+    const pageErrors = []
+    page.on('pageerror', (err) => pageErrors.push(err.message))
+
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', order: 0 }),
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'My Playlist',
+          order: 1,
+          videos: {
+            'video-1': { id: 'video-1', order: 0 },
+            'video-2': { id: 'video-2', order: 1 },
+            'video-3': { id: 'video-3', order: 2 },
+            'video-4': { id: 'video-4', order: 3 },
+          },
+        }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'First Video' }),
+        createVideo({ id: 'video-2', title: 'Second Video' }),
+        createVideo({ id: 'video-3', title: 'Third Video' }),
+        createVideo({ id: 'video-4', title: 'Fourth Video' }),
+      ],
+    })
+
+    await page.goto('/')
+
+    // Navigate to the custom playlist from the All Subs page
+    await page.locator('.custom-sub-item .sub-title').click()
+
+    await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.video h4').allTextContents()).resolves.toEqual([
+      'First Video', 'Second Video', 'Third Video', 'Fourth Video',
+    ])
+
+    // Drag the 1st video into the 3rd position
+    const handles = page.locator('.video-sort-handle')
+    const firstHandleBox = await handles.nth(0).boundingBox()
+    const thirdItemBox = await page.locator('.video').nth(2).boundingBox()
+
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + firstHandleBox.height / 2
+    )
+    await page.mouse.down()
+
+    // Move in small steps to give dnd-kit a chance to track the drag
+    const steps = 10
+    for (let i = 1; i <= steps; i++) {
+      const y = firstHandleBox.y + ((thirdItemBox.y + thirdItemBox.height / 2 - firstHandleBox.y) * i) / steps
+      await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
+    }
+
+    await page.mouse.up()
+
+    // The first video should now be in the 3rd position, with no runtime errors
+    await expect.poll(() => page.locator('.video h4').allTextContents()).toEqual([
+      'Second Video', 'Third Video', 'First Video', 'Fourth Video',
+    ])
+    expect(pageErrors).toEqual([])
+  })
 })
 
 describe('Viewing a Playlist and Its Videos', () => {

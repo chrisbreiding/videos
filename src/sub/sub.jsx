@@ -166,7 +166,7 @@ export const Sub = observer(() => {
       subsStore.updatePlaylistVideosOrder(getParam('id'), videosStore.videos)
       subsStore.save()
     }
-  }, [])
+  }, [params.id])
 
   const onSearchUpdate = useCallback((searchTerm) => {
     navigate(updatedLink({
