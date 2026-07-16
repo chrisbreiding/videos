@@ -15,6 +15,7 @@ import { Videos } from '../videos/videos'
 
 export const Sub = observer(() => {
   const location = useLocation()
+  const query = parseQueryString(location.search)
   const navigate = useNavigate()
   const params = useParams()
   const previousLoadingValueRef = useRef(videosStore.isLoading)
@@ -23,24 +24,8 @@ export const Sub = observer(() => {
   const playlistIdRef = useRef(null)
   const isAllSubsRef = useRef(false)
 
-  const getParam = (key) => {
-    return params[key]
-  }
-
-  const getQuery = () => {
-    return parseQueryString(location.search)
-  }
-
-  const getPageToken = () => {
-    return getParam('pageToken')
-  }
-
-  const getSearchQuery = () => {
-    return getQuery().search
-  }
-
   const getSub = () => {
-    return subsStore.getSubById(getParam('id'))
+    return subsStore.getSubById(params.id)
   }
 
   const scrollToMarker = (marker) => {
@@ -65,11 +50,11 @@ export const Sub = observer(() => {
     const sub = getSub()
 
     const oldSearchQuery = searchQueryRef.current
-    const newSearchQuery = getSearchQuery()
+    const newSearchQuery = query.search
     searchQueryRef.current = newSearchQuery
 
     const oldToken = pageTokenRef.current
-    const newToken = getPageToken()
+    const newToken = params.pageToken
     pageTokenRef.current = newToken
 
     const oldPlaylistId = playlistIdRef.current
@@ -122,7 +107,7 @@ export const Sub = observer(() => {
     return sub ? sub.markedVideoId : null
   }
 
-  const updateVideoMark = (id) => {
+  const updateVideoMark = useCallback((id) => {
     const sub = getSub()
 
     if (isAllSubsRef.current) {
@@ -130,7 +115,7 @@ export const Sub = observer(() => {
     } else if (sub) {
       subsStore.update(sub.id, { markedVideoId: id })
     }
-  }
+  }, [])
 
   const updateVideoMarkerLink = useCallback((marker) => {
     navigate(updatedLink(location, {
@@ -143,10 +128,6 @@ export const Sub = observer(() => {
     const bookmarkedPageToken = isPageBookMarked(sub) ? null : pageTokenRef.current
     sub.update({ bookmarkedPageToken })
     subsStore.save()
-  }, [])
-
-  const playVideo = useCallback((id) => {
-    updateVideoMark(id)
   }, [])
 
   const removeVideoMark = useCallback(() => {
@@ -163,14 +144,14 @@ export const Sub = observer(() => {
     const changed = videosStore.sort(sortProps)
 
     if (changed) {
-      subsStore.updatePlaylistVideosOrder(getParam('id'), videosStore.videos)
+      subsStore.updatePlaylistVideosOrder(params.id, videosStore.videos)
       subsStore.save()
     }
   }, [params.id])
 
   const onSearchUpdate = useCallback((searchTerm) => {
     navigate(updatedLink({
-      pathname: `/subs/${getParam('id')}`,
+      pathname: `/subs/${params.id}`,
     }, {
       search: {
         search: searchTerm || undefined,
@@ -184,7 +165,7 @@ export const Sub = observer(() => {
 
     return (
       <Search
-        query={getSearchQuery()}
+        query={query.search}
         onSearch={onSearchUpdate}
       />
     )
@@ -222,7 +203,7 @@ export const Sub = observer(() => {
         isSortable={isCustom}
         location={location}
         markedVideoId={getMarkedVideoId(sub)}
-        onPlay={playVideo}
+        onPlay={updateVideoMark}
         onRemoveMark={removeVideoMark}
         onSortStart={onSortStart}
         onSortEnd={onSortEnd}
@@ -244,25 +225,22 @@ export const Sub = observer(() => {
   useEffect(() => {
     getVideos()
 
-    const marker = getQuery().marker
-
-    if (marker && finishedLoadingVideos()) {
-      scrollToMarker(marker)
+    if (query.marker && finishedLoadingVideos()) {
+      scrollToMarker(query.marker)
     }
 
     previousLoadingValueRef.current = videosStore.isLoading
   })
 
   const sub = getSub()
-  const nowPlaying = getQuery().nowPlaying
-  const subId = getParam('id')
+  const subId = params.id
   const { isLoading, prevPageToken, nextPageToken } = videosStore
   const prevLink = paginatorLink(subId, prevPageToken)
   const nextLink = paginatorLink(subId, nextPageToken)
 
   return (
     <main className='videos'>
-      {!nowPlaying && (
+      {!query.nowPlaying && (
         <DocumentTitle title={`${sub?.title || 'All Subs'} | Videos`} />
       )}
       <Paginator prevLink={prevLink} nextLink={nextLink}>
