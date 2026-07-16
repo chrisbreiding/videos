@@ -325,6 +325,52 @@ describe('Viewing a Custom Playlist With Videos', () => {
     await expect.poll(() => page.locator('.video h4').allTextContents()).not.toEqual(['First Video', 'Second Video'])
   })
 
+  test('canceling a video drag with escape leaves the order unchanged', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'My Playlist',
+          order: 0,
+          videos: {
+            'video-1': { id: 'video-1', order: 0 },
+            'video-2': { id: 'video-2', order: 1 },
+          },
+        }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'First Video' }),
+        createVideo({ id: 'video-2', title: 'Second Video' }),
+      ],
+    })
+
+    await page.goto('/subs/custom-0')
+
+    await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
+
+    const handles = page.locator('.video-sort-handle')
+    const firstHandleBox = await handles.nth(0).boundingBox()
+    const secondItemBox = await page.locator('.video').nth(1).boundingBox()
+
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + firstHandleBox.height / 2
+    )
+    await page.mouse.down()
+
+    const steps = 10
+    for (let i = 1; i <= steps; i++) {
+      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
+    }
+
+    await page.keyboard.press('Escape')
+    await page.mouse.up()
+
+    // Order should be unchanged since the drag was canceled
+    await expect.poll(() => page.locator('.video h4').allTextContents()).toEqual(['First Video', 'Second Video'])
+  })
+
   test('dragging videos after navigating from the All Subs page reorders correctly', async ({ page }) => {
     const pageErrors = []
     page.on('pageerror', (err) => pageErrors.push(err.message))

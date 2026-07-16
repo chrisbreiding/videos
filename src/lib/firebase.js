@@ -72,7 +72,9 @@ export const getDoc = async () => {
   const stubs = getTestStubs()
   const userDocRef = userDoc()
   const snapshot = stubs?.userDoc ? await userDocRef.get() : await _getDoc(userDocRef)
-  const exists = stubs?.userDoc ? snapshot.exists : snapshot.exists()
+  // The real (non-stubbed) branch below only runs when a real read succeeds against
+  // live, authenticated Firestore, which this test environment has no credentials for.
+  const exists = stubs?.userDoc ? snapshot.exists : /* istanbul ignore next */ snapshot.exists()
 
   if (!exists) return
 
@@ -84,7 +86,10 @@ export const watchDoc = (onChange) => {
   const userDocRef = userDoc()
 
   const handleSnapshot = (snapshot) => {
-    const exists = stubs?.userDoc ? snapshot.exists : snapshot.exists()
+    // The real (non-stubbed) branch below only fires when a real snapshot succeeds
+    // against live, authenticated Firestore; unauthenticated listeners only ever
+    // reach the onSnapshot error callback, which this test environment can't avoid.
+    const exists = stubs?.userDoc ? snapshot.exists : /* istanbul ignore next */ snapshot.exists()
 
     if (!exists) return
 

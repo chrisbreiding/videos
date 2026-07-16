@@ -168,7 +168,7 @@ export const App = observer(() => {
         autoPlayEnabled={appState.autoPlayEnabled}
         id={nowPlayingId}
         customPlaylists={subsStore.customPlaylists}
-        closeLink={getCloseNowPlayingLink}
+        closeLink={getCloseNowPlayingLink()}
         onEnd={onVideoEnded}
         onToggleAutoPlay={appState.toggleAutoPlay}
         addedToPlaylist={(playlist) => subsStore.addVideoToPlaylist(playlist, nowPlayingId)}

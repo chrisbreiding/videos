@@ -619,4 +619,43 @@ describe('Reordering Subs', () => {
     await expect(subItems.nth(0)).toContainText('Second Channel')
     await expect(subItems.nth(1)).toContainText('First Channel')
   })
+
+  test('canceling a sub drag with escape leaves the order unchanged', async ({ page }) => {
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
+        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+      },
+      videos: [],
+    })
+
+    await page.goto('/')
+    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
+
+    const subItems = page.locator('.sub-item:not(.all-subs)')
+    await expect(subItems).toHaveCount(2)
+    await expect(subItems.nth(0)).toContainText('First Channel')
+
+    const firstHandleBox = await subItems.nth(0).locator('span.sub-item-icon').boundingBox()
+    const secondItemBox = await subItems.nth(1).boundingBox()
+
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + firstHandleBox.height / 2
+    )
+    await page.mouse.down()
+
+    const steps = 10
+    for (let i = 1; i <= steps; i++) {
+      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
+    }
+
+    await page.keyboard.press('Escape')
+    await page.mouse.up()
+
+    // Order should be unchanged since the drag was canceled
+    await expect(subItems.nth(0)).toContainText('First Channel')
+    await expect(subItems.nth(1)).toContainText('Second Channel')
+  })
 })

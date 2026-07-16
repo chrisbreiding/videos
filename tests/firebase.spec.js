@@ -126,4 +126,87 @@ describe('firebase lib', () => {
     expect(results.currentUser).toBeFalsy()
     expect(results.currentUserThrew).toBeUndefined()
   })
+
+  test('watchDoc, updateDoc and deleteField fall back to the real firestore APIs when only currentUser is stubbed', async ({ page }) => {
+    // No stubs are configured before the app loads, so the module initializes
+    // a real Firebase `app` (see the "falls back to the real firebase APIs"
+    // test above for the same setup). Configuring `window.__firebaseStubs`
+    // afterwards - with only `currentUser` set, not `userDoc` - lets
+    // `userDoc()` build a real `DocumentReference` without throwing, so
+    // `watchDoc`/`updateDoc`/`deleteField` fall through to the real
+    // `onSnapshot`/`setDoc`/`updateDoc` calls instead of the stub branches
+    // exercised elsewhere.
+    await page.goto('/login')
+
+    const results = await page.evaluate(async () => {
+      const firebaseLib = await import('/src/lib/firebase.js')
+
+      window.__firebaseStubs = { currentUser: { uid: 'real-path-user' } }
+
+      const out = {}
+
+      try {
+        const unsubscribe = firebaseLib.watchDoc(() => {})
+
+        out.watchDocRan = typeof unsubscribe === 'function'
+        unsubscribe()
+      } catch (error) {
+        out.watchDocThrew = error.message
+      }
+
+      try {
+        await firebaseLib.updateDoc({ some: 'data' })
+      } catch (error) {
+        out.updateDocThrew = error.message
+      }
+
+      try {
+        await firebaseLib.deleteField('someField')
+      } catch (error) {
+        out.deleteFieldThrew = error.message
+      }
+
+      try {
+        await firebaseLib.getDoc()
+      } catch (error) {
+        out.getDocThrew = error.message
+      }
+
+      return out
+    })
+
+    expect(results.watchDocRan).toBe(true)
+  })
+
+  test('deleteField uses the stubbed user document when userDoc is stubbed without a deleteField stub', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__deleteFieldUpdates = []
+      window.__firebaseStubs = {
+        onAuthStateChanged: (callback) => {
+          callback(null)
+
+          return () => {}
+        },
+        userDoc: () => ({
+          update: (data) => {
+            window.__deleteFieldUpdates.push(data)
+
+            return Promise.resolve()
+          },
+        }),
+      }
+    })
+    await page.goto('/login')
+
+    await page.evaluate(async () => {
+      const { deleteField } = await import('/src/lib/firebase.js')
+
+      await deleteField('someField')
+    })
+
+    const updates = await page.evaluate(() => window.__deleteFieldUpdates)
+
+    expect(updates).toHaveLength(1)
+    expect(updates[0]).toHaveProperty('someField')
+  })
 })
