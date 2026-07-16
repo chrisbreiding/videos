@@ -12,8 +12,10 @@ export const Login = inject('router')(observer(({ router }) => {
   const passwordRef = useRef(null)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged((user) => {
-      unsubscribe()
+    let unsubscribe
+
+    unsubscribe = onAuthStateChanged((user) => {
+      unsubscribe?.()
 
       if (user) {
         router.push({ pathname: '/' })

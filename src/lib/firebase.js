@@ -1,14 +1,29 @@
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
+import { initializeApp } from 'firebase/app'
+import {
+  getAuth,
+  onAuthStateChanged as _onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut as _signOut,
+} from 'firebase/auth'
+import {
+  deleteField as _deleteField,
+  doc,
+  getDoc as _getDoc,
+  getFirestore,
+  onSnapshot,
+  setDoc,
+  updateDoc as _updateDoc,
+} from 'firebase/firestore'
 
 // Test stub support - allows mocking Firebase in tests
 const getTestStubs = () => typeof window !== 'undefined' && window.__firebaseStubs
 
 // App
 
+let app
+
 if (!getTestStubs()) {
-  firebase.initializeApp({
+  app = initializeApp({
     apiKey: 'AIzaSyBKLAAS6kvNvTbdOJARafhDIYmL6ch9xDY',
     projectId: 'videos-a040a',
   })
@@ -20,28 +35,28 @@ export const getCurrentUser = () => {
   const stubs = getTestStubs()
   if (stubs?.currentUser) return stubs.currentUser
 
-  return firebase.auth().currentUser
+  return getAuth(app).currentUser
 }
 
 export const onAuthStateChanged = (callback) => {
   const stubs = getTestStubs()
   if (stubs?.onAuthStateChanged) return stubs.onAuthStateChanged(callback)
 
-  return firebase.auth().onAuthStateChanged(callback)
+  return _onAuthStateChanged(getAuth(app), callback)
 }
 
 export const signIn = (email, password) => {
   const stubs = getTestStubs()
   if (stubs?.signIn) return stubs.signIn(email, password)
 
-  return firebase.auth().signInWithEmailAndPassword(email, password)
+  return signInWithEmailAndPassword(getAuth(app), email, password)
 }
 
 export const signOut = () => {
   const stubs = getTestStubs()
   if (stubs?.signOut) return stubs.signOut()
 
-  return firebase.auth().signOut()
+  return _signOut(getAuth(app))
 }
 
 // Data
@@ -50,34 +65,59 @@ const userDoc = () => {
   const stubs = getTestStubs()
   if (stubs?.userDoc) return stubs.userDoc()
 
-  return firebase.firestore().doc(`/users/${getCurrentUser().uid}`)
+  return doc(getFirestore(app), `/users/${getCurrentUser().uid}`)
 }
 
 export const getDoc = async () => {
-  const snapshot = await userDoc().get()
+  const stubs = getTestStubs()
+  const userDocRef = userDoc()
+  const snapshot = stubs?.userDoc ? await userDocRef.get() : await _getDoc(userDocRef)
+  const exists = stubs?.userDoc ? snapshot.exists : snapshot.exists()
 
-  if (!snapshot.exists) return
+  if (!exists) return
 
   return snapshot.data()
 }
 
 export const watchDoc = (onChange) => {
-  return userDoc().onSnapshot((snapshot) => {
-    if (!snapshot.exists) return
+  const stubs = getTestStubs()
+  const userDocRef = userDoc()
+
+  const handleSnapshot = (snapshot) => {
+    const exists = stubs?.userDoc ? snapshot.exists : snapshot.exists()
+
+    if (!exists) return
 
     onChange(snapshot.data())
-  })
+  }
+
+  if (stubs?.userDoc) return userDocRef.onSnapshot(handleSnapshot)
+
+  return onSnapshot(userDocRef, handleSnapshot)
 }
 
 export const updateDoc = (data) => {
-  return userDoc().set(data, { merge: true })
+  const stubs = getTestStubs()
+  const userDocRef = userDoc()
+
+  if (stubs?.userDoc) return userDocRef.set(data, { merge: true })
+
+  return setDoc(userDocRef, data, { merge: true })
 }
 
 export const deleteField = (fieldPath) => {
   const stubs = getTestStubs()
   if (stubs?.deleteField) return stubs.deleteField(fieldPath)
 
-  userDoc().update({
-    [fieldPath]: firebase.firestore.FieldValue.delete(),
+  const userDocRef = userDoc()
+
+  if (stubs?.userDoc) {
+    return userDocRef.update({
+      [fieldPath]: _deleteField(),
+    })
+  }
+
+  return _updateDoc(userDocRef, {
+    [fieldPath]: _deleteField(),
   })
 }
