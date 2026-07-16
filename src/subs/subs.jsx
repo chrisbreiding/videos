@@ -63,7 +63,7 @@ const _Subs = observer(({ location }) => {
                 <img key={sub.id} src={sub.thumb} />
               ))}
             </span>
-            <NavLink exact to={allSubsLink} className='sub-title' activeClassName='active'>
+            <NavLink end to={allSubsLink} className={({ isActive }) => cs('sub-title', { active: isActive })}>
               <h3>All Subs</h3>
             </NavLink>
           </span>

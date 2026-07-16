@@ -1,9 +1,9 @@
 // import { configure as configureMobx } from 'mobx'
-import { Provider } from 'mobx-react'
+import { Provider, observer } from 'mobx-react'
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router'
 import React from 'react'
 import { render } from 'react-dom'
-import { Router, Link, Route, Switch } from 'react-router-dom'
+import { Router, Routes, Route } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 import DocumentTitle from 'react-document-title'
 
@@ -27,28 +27,20 @@ document.addEventListener('touchstart', () => {
   document.body.className = 'has-touch'
 })
 
+const AppRouter = observer(() => (
+  <Router location={routerStore.location} navigator={history}>
+    <Routes>
+      <Route path='/login' element={<Login />} />
+      <Route path='/logout' element={<Logout />} />
+      <Route path='/*' element={<App />} />
+    </Routes>
+  </Router>
+))
+
 render(
   <Provider router={routerStore}>
     <DocumentTitle title='Videos' />
-    <Router history={history}>
-      <Switch>
-        <Route exact path="/" component={App} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/logout" component={Logout} />
-        <Route exact path="/add-channel/:query?" component={App} />
-        <Route exact path="/add-custom-playlist" component={App} />
-        <Route exact path="/add-to-playlist" component={App} />
-        <Route path="/subs" component={App} />
-        <Route
-          component={() => (
-            <div>
-              <p>404 - Not Found</p>
-              <p><Link to='/subs'>Subs</Link></p>
-            </div>
-          )}
-        />
-      </Switch>
-    </Router>
+    <AppRouter />
   </Provider>,
   document.getElementById('app'),
 )

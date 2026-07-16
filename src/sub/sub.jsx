@@ -2,6 +2,7 @@ import cs from 'classnames'
 import { inject, observer } from 'mobx-react'
 import React, { useEffect, useRef, useCallback } from 'react'
 import DocumentTitle from 'react-document-title'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { appState } from '../app/app-state'
 import { icon, parseQueryString, updatedLink } from '../lib/util'
@@ -12,7 +13,9 @@ import { Paginator } from '../paginator/paginator'
 import { Search } from '../search/search'
 import { Videos } from '../videos/videos'
 
-export const Sub = inject('router')(observer(({ router, match, location }) => {
+export const Sub = inject('router')(observer(({ router }) => {
+  const location = useLocation()
+  const params = useParams()
   const previousLoadingValueRef = useRef(videosStore.isLoading)
   const searchQueryRef = useRef(null)
   const pageTokenRef = useRef(null)
@@ -20,7 +23,7 @@ export const Sub = inject('router')(observer(({ router, match, location }) => {
   const isAllSubsRef = useRef(false)
 
   const getParam = (key) => {
-    return match.params[key]
+    return params[key]
   }
 
   const getQuery = () => {

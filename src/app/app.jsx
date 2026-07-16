@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { inject, observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { matchPath } from 'react-router'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
 import { appState, minNowPlayingHeight } from './app-state'
 import { authStore } from '../login/auth-store'
@@ -20,7 +20,8 @@ import { Sub } from '../sub/sub'
 import { AddCustomPlaylist } from '../subs/add-sub/add-custom-playlist'
 import { AddChannel } from '../subs/add-sub/add-channel'
 
-export const App = inject('router')(observer(({ router, location }) => {
+export const App = inject('router')(observer(({ router }) => {
+  const location = useLocation()
   const [isResizing, setIsResizing] = useState(false)
 
   const unsubscribersRef = useRef([])
@@ -74,9 +75,7 @@ export const App = inject('router')(observer(({ router, location }) => {
     const nextVideoId = videosStore.nextVideoId(getNowPlayingId())
     if (!nextVideoId) return
 
-    const match = matchPath(location.pathname, {
-      path: '/subs/:id',
-    })
+    const match = matchPath({ path: '/subs/:id', end: false }, location.pathname)
 
     if (match) {
       const subId = match.params.id
@@ -149,7 +148,7 @@ export const App = inject('router')(observer(({ router, location }) => {
   }
 
   if (!subsStore.subs.length && !location.pathname.includes('/add-channel')) {
-    return <Redirect to='/add-channel' />
+    return <Navigate to='/add-channel' />
   }
 
   const nowPlayingId = getNowPlayingId()
@@ -189,14 +188,15 @@ export const App = inject('router')(observer(({ router, location }) => {
           onSortStart={onSortStart}
           onSortEnd={onSortEnd}
         />
-        <Switch>
-          <Route exact path='/' component={Sub} />
-          <Route exact path='/add-custom-playlist' component={AddCustomPlaylist} />
-          <Route exact path='/add-to-playlist' component={AddToPlaylist} />
-          <Route path='/add-channel/:query?' component={AddChannel} />
-          <Route path='/subs/:id/page/:pageToken' component={Sub} />
-          <Route path='/subs/:id' component={Sub} />
-        </Switch>
+        <Routes>
+          <Route path='/' element={<Sub />} />
+          <Route path='add-custom-playlist' element={<AddCustomPlaylist />} />
+          <Route path='add-to-playlist' element={<AddToPlaylist />} />
+          <Route path='add-channel' element={<AddChannel />} />
+          <Route path='add-channel/:query' element={<AddChannel />} />
+          <Route path='subs/:id/page/:pageToken' element={<Sub />} />
+          <Route path='subs/:id' element={<Sub />} />
+        </Routes>
       </div>
     </div>
   )

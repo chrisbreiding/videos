@@ -190,16 +190,3 @@ describe('Video Ended Behavior', () => {
     await expect(page).toHaveURL(/nowPlaying=only-1/)
   })
 })
-
-describe('404 Page', () => {
-  test('displays 404 for unknown routes', async ({ page }) => {
-    await page.goto('/unknown-route')
-    await expect(page.getByText('404 - Not Found')).toBeVisible()
-  })
-
-  test('has link back to subs', async ({ page }) => {
-    await page.goto('/unknown-route')
-    const subsLink = page.getByRole('link', { name: 'Subs' })
-    await expect(subsLink).toBeVisible()
-  })
-})

@@ -2,12 +2,14 @@ import cs from 'classnames'
 import _ from 'lodash'
 import { inject, observer } from 'mobx-react'
 import React, { useState, useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
 import { videosService } from '../../videos/videos-service'
 import { subsStore } from '../subs-store'
 
-export const AddChannel = inject('router')(observer(({ router, match }) => {
+export const AddChannel = inject('router')(observer(({ router }) => {
+  const params = useParams()
   const [loadingPlaylists, setLoadingPlaylists] = useState({})
   const [loadingMorePlaylists, setLoadingMorePlaylists] = useState({})
   const [playlists, setPlaylists] = useState({})
@@ -16,7 +18,7 @@ export const AddChannel = inject('router')(observer(({ router, match }) => {
   const queryInputRef = useRef(null)
   const prevQueryRef = useRef('')
 
-  const getQuery = () => match.params.query || ''
+  const getQuery = () => params.query || ''
 
   const search = () => {
     const query = getQuery()
@@ -36,7 +38,7 @@ export const AddChannel = inject('router')(observer(({ router, match }) => {
 
   useEffect(() => {
     search()
-  }, [match.params.query])
+  }, [params.query])
 
   const updateSearch = (searchTerm) => {
     router.push(`/add-channel/${encodeURIComponent(searchTerm)}`)
