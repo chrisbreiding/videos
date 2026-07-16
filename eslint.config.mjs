@@ -41,6 +41,11 @@ export default [
     plugins: {
       'react-hooks': reactHooks,
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     rules: {
       'padding-line-between-statements': 'off',
       'react/jsx-uses-vars': 'error',
