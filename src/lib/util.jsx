@@ -1,6 +1,9 @@
 import _ from 'lodash'
 import React from 'react'
-import moment from 'moment'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
 import qs from 'qs'
 
 const re = /^P(?:(\d+(?:[\.,]\d{0,3})?W)|(\d+(?:[\.,]\d{0,3})?Y)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?D)?(?:T(\d+(?:[\.,]\d{0,3})?H)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?S)?)?)$/
@@ -79,13 +82,13 @@ export function durationSeconds (duration) {
 }
 
 export function date (date) {
-  const mDate = moment(date)
+  const dDate = dayjs(date)
   return (
     <span>
-      <span>{mDate.fromNow()}</span>
+      <span>{dDate.fromNow()}</span>
       <br />
       <span className='formatted'>
-        {mDate.format('MMM D, YYYY h:mma')}
+        {dDate.format('MMM D, YYYY h:mma')}
       </span>
     </span>
   )

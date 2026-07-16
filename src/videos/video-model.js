@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from 'mobx'
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export class VideoModel {
   duration
@@ -27,7 +27,7 @@ export class VideoModel {
     this.duration = props.duration
     this.id = props.id
     this.channelId = props.channelId
-    this.published = moment(props.published)
+    this.published = dayjs(props.published)
     this.description = props.description
     this.order = props.order
     this.thumb = props.thumb

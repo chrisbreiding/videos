@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable, values, toJS } from 'mobx'
 import _ from 'lodash'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { arrayMoveImmutable as arrayMove } from 'array-move'
 
 import { videosService } from './videos-service'
@@ -40,7 +40,7 @@ class VideosStore {
     }
 
     const sortedVideos = this._videos.slice().sort((video1, video2) => {
-      return moment(video1.published).isBefore(video2.published) ? 1 : -1
+      return dayjs(video1.published).isBefore(video2.published) ? 1 : -1
     })
 
     return _.take(sortedVideos, 25)
