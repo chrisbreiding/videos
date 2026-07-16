@@ -1,20 +1,13 @@
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React, { useRef, useState, useCallback } from 'react'
-import { SortableHandle } from 'react-sortable-hoc'
 
 import { Title } from './title'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { Modal } from '../../modal/modal'
 
-const SortHandle = SortableHandle(({ icon }) => (
-  <span className='sub-item-icon'>
-    <IconThumb {...icon} />
-  </span>
-))
-
-export const CustomPlaylist = observer(({ sub, link, onUpdate }) => {
+export const CustomPlaylist = observer(({ sub, link, onUpdate, handleRef }) => {
   const [isPickingIcon, setIsPickingIcon] = useState(false)
   const titleRef = useRef()
 
@@ -30,7 +23,9 @@ export const CustomPlaylist = observer(({ sub, link, onUpdate }) => {
 
   return (
     <span className='custom-sub-item'>
-      <SortHandle icon={sub.icon} />
+      <span className='sub-item-icon' ref={handleRef}>
+        <IconThumb {...sub.icon} />
+      </span>
       <button className='sub-item-icon editable' onClick={() => setIsPickingIcon(true)} >
         <IconThumb {...sub.icon} />
       </button>

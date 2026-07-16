@@ -3,16 +3,15 @@ import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { SortableContainer, SortableElement } from 'react-sortable-hoc'
+import { DragDropProvider } from '@dnd-kit/react'
+import { move } from '@dnd-kit/helpers'
 
 import { subsStore } from './subs-store'
 import { icon, updatedLink } from '../lib/util'
 
 import { SubItem } from './sub-item/sub-item'
 
-const SortableSubItem = SortableElement(SubItem)
-
-const _Subs = observer(({ location }) => {
+export const Subs = observer(({ location, onSortStart, onSortEnd }) => {
   const [isEditing, setIsEditing] = useState(false)
 
   const toggleEditing = () => {
@@ -25,6 +24,17 @@ const _Subs = observer(({ location }) => {
 
   const removeSub = (id) => {
     subsStore.remove(id)
+  }
+
+  const handleDragEnd = (event) => {
+    onSortEnd()
+
+    if (event.canceled) return
+
+    const ids = _.map(subsStore.subs, 'id')
+    const sortedIds = move(ids, event)
+
+    subsStore.sort(sortedIds)
   }
 
   const renderEditButton = () => {
@@ -81,7 +91,7 @@ const _Subs = observer(({ location }) => {
           })
 
           return (
-            <SortableSubItem
+            <SubItem
               key={sub.id}
               index={index}
               sub={sub}
@@ -122,26 +132,10 @@ const _Subs = observer(({ location }) => {
       <header>
         {renderEditButton()}
       </header>
-      {renderSubs()}
+      <DragDropProvider onDragStart={onSortStart} onDragEnd={handleDragEnd}>
+        {renderSubs()}
+      </DragDropProvider>
       {renderAddSubButtons()}
     </aside>
   )
 })
-
-const SortableSubs = SortableContainer(_Subs)
-
-export const Subs = (props) => {
-  const onSortEnd = (sortProps) => {
-    props.onSortEnd()
-    subsStore.sort(sortProps)
-  }
-
-  return (
-    <SortableSubs
-      {...props}
-      useDragHandle={true}
-      onSortStart={props.onSortStart}
-      onSortEnd={onSortEnd}
-    />
-  )
-}

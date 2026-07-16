@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { SortableHandle } from 'react-sortable-hoc'
+import { useSortable } from '@dnd-kit/react/sortable'
 
 import { icon, duration, durationSeconds, date } from '../lib/util'
 import { appState } from '../app/app-state'
@@ -28,14 +28,13 @@ const WatchProgress = ({ id, duration }) => {
   )
 }
 
-const SortHandle = SortableHandle(() => (
-  <div className='video-sort-handle'>
-    {icon('ellipsis-v')}
-    {icon('ellipsis-v')}
-  </div>
-))
-
 export const Video = observer((props) => {
+  const { ref, handleRef } = useSortable({
+    id: props.video.id,
+    index: props.index,
+    disabled: !props.isSortable,
+  })
+
   const playlistPicker = () => {
     if (!props.customPlaylists.length) return null
 
@@ -59,7 +58,7 @@ export const Video = observer((props) => {
   const durationDisplay = duration(props.video.duration)
 
   return (
-    <div className={cs('video', { 'is-marked': props.isMarked })}>
+    <div ref={ref} className={cs('video', { 'is-marked': props.isMarked })}>
       {props.isMarked && (
         <div
           className={videoMarkerName}
@@ -72,7 +71,10 @@ export const Video = observer((props) => {
         </div>
       )}
       <div className='contents'>
-        <SortHandle />
+        <div className='video-sort-handle' ref={handleRef}>
+          {icon('ellipsis-v')}
+          {icon('ellipsis-v')}
+        </div>
         <aside>
           <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
             <img src={props.video.thumb} />

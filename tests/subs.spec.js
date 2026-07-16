@@ -606,7 +606,7 @@ describe('Reordering Subs', () => {
     )
     await page.mouse.down()
 
-    // Move in small steps to give react-sortable-hoc a chance to track the drag
+    // Move in small steps to give dnd-kit a chance to track the drag
     const steps = 10
     for (let i = 1; i <= steps; i++) {
       const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps

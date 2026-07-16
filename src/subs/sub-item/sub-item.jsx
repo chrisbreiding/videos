@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import React, { useRef, useState } from 'react'
-import { SortableHandle } from 'react-sortable-hoc'
+import { useSortable } from '@dnd-kit/react/sortable'
 import { NavLink } from 'react-router-dom'
 
 import { icon } from '../../lib/util'
@@ -8,12 +8,6 @@ import { getChannelDetails, getPlaylistDetails } from '../../lib/youtube'
 
 import { Title } from './title'
 import { CustomPlaylist } from './custom-playlist'
-
-const SortHandle = SortableHandle(({ thumb }) => (
-  <span className='sub-item-icon'>
-    <img src={thumb} />
-  </span>
-))
 
 const BookmarkLink = observer(({ link }) => {
   if (!link) return null
@@ -29,7 +23,7 @@ const BookmarkLink = observer(({ link }) => {
   )
 })
 
-const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
+const Channel = observer(({ sub, link, bookmarkLink, onUpdate, handleRef }) => {
   const inputRef = useRef()
   const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
 
@@ -58,7 +52,9 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
 
   return (
     <span className={`${sub.type}-sub-item`}>
-      <SortHandle thumb={sub.thumb} />
+      <span className='sub-item-icon' ref={handleRef}>
+        <img src={sub.thumb} />
+      </span>
       <button
         className='sub-item-icon editable'
         onClick={onThumbClick}
@@ -74,6 +70,11 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate }) => {
 })
 
 export const SubItem = observer((props) => {
+  const { ref, handleRef } = useSortable({
+    id: props.sub.id,
+    index: props.index,
+  })
+
   function remove () {
     if (confirm(`Remove ${props.sub.title || props.sub.author}?`)) {
       props.onRemove()
@@ -81,10 +82,10 @@ export const SubItem = observer((props) => {
   }
 
   return (
-    <li className='sub-item'>
+    <li className='sub-item' ref={ref}>
       {props.sub.type === 'custom'
-        ? <CustomPlaylist {...props} />
-        : <Channel {...props} onUpdate={props.onUpdate} />}
+        ? <CustomPlaylist {...props} handleRef={handleRef} />
+        : <Channel {...props} onUpdate={props.onUpdate} handleRef={handleRef} />}
       <button className='remove' onClick={remove}>{icon('minus-circle')}</button>
     </li>
   )

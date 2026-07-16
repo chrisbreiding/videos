@@ -2,15 +2,14 @@ import cs from 'classnames'
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import React from 'react'
-import { SortableContainer, SortableElement } from 'react-sortable-hoc'
+import { DragDropProvider } from '@dnd-kit/react'
+import { move } from '@dnd-kit/helpers'
 
 import { updatedLink } from '../lib/util'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
 
 import { Video } from './video'
-
-const SortableVideo = SortableElement(Video)
 
 const VideosList = observer((props) => {
   const {
@@ -23,8 +22,6 @@ const VideosList = observer((props) => {
     onUpdateVideoMarkerLink,
   } = props
 
-  const VideoItem = isSortable ? SortableVideo : Video
-
   return (
     <div className={cs('videos-list', { 'videos-is-sortable': isSortable })}>
       {_.map(videosStore.videos, (video, index) => {
@@ -32,9 +29,10 @@ const VideosList = observer((props) => {
         const playVideoLink = updatedLink(location, { search: { nowPlaying: id } })
 
         return (
-          <VideoItem
+          <Video
             key={id}
             index={index}
+            isSortable={isSortable}
             onPlay={_.partial(onPlay, id)}
             playLink={playVideoLink}
             addVideoMarkerLink={onUpdateVideoMarkerLink}
@@ -52,22 +50,17 @@ const VideosList = observer((props) => {
   )
 })
 
-const SortableVideos = SortableContainer(VideosList)
-
 export const Videos = (props) => {
-  const onSortEnd = (sortProps) => {
-    props.onSortEnd(sortProps)
+  const handleDragEnd = (event) => {
+    const ids = _.map(videosStore.videos, 'id')
+    const sortedIds = event.canceled ? ids : move(ids, event)
+
+    props.onSortEnd(sortedIds)
   }
 
-  const TheVideos = props.isSortable ? SortableVideos : VideosList
-
   return (
-    <TheVideos
-      {...props}
-      useDragHandle={true}
-      helperClass='videos-sort-helper'
-      onSortStart={props.onSortStart}
-      onSortEnd={onSortEnd}
-    />
+    <DragDropProvider onDragStart={props.onSortStart} onDragEnd={handleDragEnd}>
+      <VideosList {...props} />
+    </DragDropProvider>
   )
 }

@@ -1,7 +1,6 @@
 import { action, computed, makeObservable, observable, values, toJS } from 'mobx'
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import { arrayMoveImmutable as arrayMove } from 'array-move'
 
 import { videosService } from './videos-service'
 import { VideoModel } from './video-model'
@@ -144,11 +143,9 @@ class VideosStore {
     if (nextPageToken) this.nextPageToken = nextPageToken
   }
 
-  sort ({ oldIndex, newIndex }) {
-    if (oldIndex === newIndex) return false
-
+  sort (sortedIds) {
     const ids = _.map(this.videos, 'id')
-    const sortedIds = arrayMove(ids, oldIndex, newIndex)
+    if (_.isEqual(ids, sortedIds)) return false
 
     _.each(sortedIds, (id, order) => {
       this.getVideoById(id).update({ order })

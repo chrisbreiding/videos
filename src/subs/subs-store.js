@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import { action, computed, makeObservable, observable, values } from 'mobx'
-import { arrayMoveImmutable as arrayMove } from 'array-move'
 
 import { SubModel } from '../sub/sub-model'
 import { removeSub, removeVideoFromSub, update } from '../lib/remote-data'
@@ -189,11 +188,9 @@ class SubsStore {
     this.getSubById(playlistId).updateVideosOrder(videosWithNewOrders)
   }
 
-  sort ({ oldIndex, newIndex }) {
-    if (oldIndex === newIndex) return
-
+  sort (sortedIds) {
     const ids = _.map(this.subs, 'id')
-    const sortedIds = arrayMove(ids, oldIndex, newIndex)
+    if (_.isEqual(ids, sortedIds)) return
 
     _.each(sortedIds, (id, order) => {
       this.getSubById(id).update({ order })
