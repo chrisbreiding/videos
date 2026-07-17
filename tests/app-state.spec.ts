@@ -1,39 +1,46 @@
+import type { Page } from '@playwright/test'
 import { test, expect } from './util/coverage-fixture'
 import { stubFirebaseAuth } from './util/helpers'
 
 const { describe } = test
 
+interface SaveVideoProgressArgs {
+  videoId?: string
+  watchTimestamp: number
+  immediate: boolean
+}
+
 // Reaches the live appState singleton the running app already instantiated.
 // The Playwright webServer runs the Vite dev server, which serves source
 // modules by path, so importing the module URL returns the same cached
 // instance (and runs the instrumented code so it counts toward coverage).
-async function callSaveVideoProgress (page, { videoId, watchTimestamp, immediate }) {
+async function callSaveVideoProgress (page: Page, { videoId, watchTimestamp, immediate }: SaveVideoProgressArgs) {
   return page.evaluate(async (args) => {
     const { appState } = await import('/src/app/app-state.ts')
 
-    window.__setCalls.length = 0
+    window.__setCalls!.length = 0
     appState.saveVideoProgress(args.videoId, args.watchTimestamp, args.immediate)
 
     return {
-      watched: appState.watchedVideos[args.videoId],
+      watched: appState.watchedVideos[args.videoId!],
       setCalls: window.__setCalls,
     }
   }, { videoId, watchTimestamp, immediate })
 }
 
-async function setup (page) {
+async function setup (page: Page) {
   await stubFirebaseAuth(page)
 
   // Record every firestore `set` payload so we can assert whether a save was
   // flushed immediately or deferred to the debounced writer.
   await page.addInitScript(() => {
     window.__setCalls = []
-    const originalUserDoc = window.__firebaseStubs.userDoc
-    window.__firebaseStubs.userDoc = () => {
+    const originalUserDoc = window.__firebaseStubs!.userDoc!
+    window.__firebaseStubs!.userDoc = () => {
       const doc = originalUserDoc()
       const originalSet = doc.set
-      doc.set = (data, options) => {
-        window.__setCalls.push(data)
+      doc.set = (data: unknown, options: unknown) => {
+        window.__setCalls!.push(data)
         return originalSet(data, options)
       }
       return doc
@@ -88,7 +95,7 @@ describe('AppState#saveVideoProgress', () => {
       const { appState } = await import('/src/app/app-state.ts')
       const before = Object.keys(appState.watchedVideos).length
 
-      window.__setCalls.length = 0
+      window.__setCalls!.length = 0
       appState.saveVideoProgress(undefined, 42, true)
 
       return {
@@ -108,7 +115,7 @@ describe('AppState#saveVideoProgress', () => {
     const setCalls = await page.evaluate(async () => {
       const { appState } = await import('/src/app/app-state.ts')
 
-      window.__setCalls.length = 0
+      window.__setCalls!.length = 0
       appState.saveVideoProgress('video-debounced', 7, false)
 
       return new Promise((resolve) => {
@@ -129,7 +136,7 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     const result = await page.evaluate(async () => {
       const { appState } = await import('/src/app/app-state.ts')
 
-      window.__setCalls.length = 0
+      window.__setCalls!.length = 0
       appState.setAllSubsMarkedVideoId('video-marked')
 
       return {
@@ -148,7 +155,7 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     const result = await page.evaluate(async () => {
       const { appState } = await import('/src/app/app-state.ts')
 
-      window.__setCalls.length = 0
+      window.__setCalls!.length = 0
       appState.setAllSubsMarkedVideoId('video-marked-local', false)
 
       return {
@@ -170,22 +177,22 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     await page.addInitScript(() => {
       window.__setCalls = []
       window.__deleteFieldCalls = []
-      const originalUserDoc = window.__firebaseStubs.userDoc
-      window.__firebaseStubs.userDoc = () => {
+      const originalUserDoc = window.__firebaseStubs!.userDoc!
+      window.__firebaseStubs!.userDoc = () => {
         const doc = originalUserDoc()
-        doc.set = (data) => {
+        doc.set = (data: Record<string, unknown>) => {
           for (const key in data) {
             if (data[key] === undefined) {
               throw new Error(`FirebaseError: Function setDoc() called with invalid data. Unsupported field value: undefined (found in field ${key})`)
             }
           }
-          window.__setCalls.push(data)
+          window.__setCalls!.push(data)
           return Promise.resolve()
         }
         return doc
       }
-      window.__firebaseStubs.deleteField = (fieldPath) => {
-        window.__deleteFieldCalls.push(fieldPath)
+      window.__firebaseStubs!.deleteField = (fieldPath: string) => {
+        window.__deleteFieldCalls!.push(fieldPath)
         return Promise.resolve()
       }
     })
@@ -197,8 +204,8 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
       const { appState } = await import('/src/app/app-state.ts')
 
       appState.setAllSubsMarkedVideoId('video-marked')
-      window.__setCalls.length = 0
-      window.__deleteFieldCalls.length = 0
+      window.__setCalls!.length = 0
+      window.__deleteFieldCalls!.length = 0
 
       appState.setAllSubsMarkedVideoId(undefined)
 
@@ -291,7 +298,7 @@ describe('AppState#toggleAutoPlay', () => {
 
       appState.toggleAutoPlay()
 
-      return new Promise((resolve) => {
+      return new Promise<{ before: boolean, after: boolean, stored: boolean }>((resolve) => {
         setTimeout(() => resolve({ before, after: appState.autoPlayEnabled, stored: JSON.parse(localStorage.autoPlayEnabled) }), 600)
       })
     })

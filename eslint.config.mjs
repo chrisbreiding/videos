@@ -34,16 +34,17 @@ export default [
 
   ...compat.extends('plugin:crb/general', 'plugin:crb/react').map((config) => ({
     ...config,
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'tests/**/*.ts', 'playwright.config.ts'],
   })),
 
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'tests/**/*.ts', 'playwright.config.ts'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
       },
+      globals: globals.node,
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,

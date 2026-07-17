@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { test, expect } from './util/coverage-fixture'
 import { setupApp, createChannel, createVideo } from './util/helpers'
 
@@ -177,9 +178,14 @@ describe('Playing a Video', () => {
 })
 
 describe('Now Playing Height', () => {
+  interface SetupOptions {
+    storedHeight: number
+    viewportHeight: number
+  }
+
   // Seeds the stored now-playing height (read from localStorage on startup)
   // and sizes the viewport so window.innerHeight (the max-height basis) is known
-  async function setup (page, { storedHeight, viewportHeight }) {
+  async function setup (page: Page, { storedHeight, viewportHeight }: SetupOptions) {
     await page.addInitScript((height) => {
       localStorage.nowPlayingHeight = JSON.stringify(height)
     }, storedHeight)
@@ -201,8 +207,8 @@ describe('Now Playing Height', () => {
   }
 
   // The rendered inline `height` style reflects the clamped nowPlayingHeight
-  async function renderedHeight (page) {
-    return page.locator('.now-playing').evaluate((el) => parseInt(el.style.height, 10))
+  async function renderedHeight (page: Page): Promise<number> {
+    return page.locator('.now-playing').evaluate((el) => parseInt((el as HTMLElement).style.height, 10))
   }
 
   test('clamps to the max height when the stored height exceeds it', async ({ page }) => {

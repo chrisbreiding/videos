@@ -1,11 +1,11 @@
-const { defineConfig, devices } = require('@playwright/test')
+import { defineConfig, devices } from '@playwright/test'
 
 const collectCoverage = !!process.env.COVERAGE
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -29,6 +29,6 @@ module.exports = defineConfig({
     url: 'http://localhost:8001',
     reuseExistingServer: !process.env.CI && !collectCoverage,
     timeout: 120 * 1000,
-    env: { ...process.env },
+    env: { ...process.env } as Record<string, string>,
   },
 })

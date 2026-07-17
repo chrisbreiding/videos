@@ -18,7 +18,7 @@ describe('firebase lib', () => {
     const uid = await page.evaluate(async () => {
       const { getCurrentUser } = await import('/src/lib/firebase.ts')
 
-      return getCurrentUser().uid
+      return getCurrentUser()?.uid
     })
 
     expect(uid).toBe('test-user-123')
@@ -59,7 +59,7 @@ describe('firebase lib', () => {
         },
         userDoc: () => ({
           get: () => Promise.resolve({ exists: false }),
-          onSnapshot: (callback) => {
+          onSnapshot: (callback: (snapshot: { exists: boolean }) => void) => {
             callback({ exists: false })
 
             return () => {}
@@ -86,36 +86,36 @@ describe('firebase lib', () => {
 
     const results = await page.evaluate(async () => {
       const firebaseLib = await import('/src/lib/firebase.ts')
-      const out = {}
+      const out: Record<string, unknown> = {}
 
       try {
         out.currentUser = firebaseLib.getCurrentUser()
       } catch (error) {
-        out.currentUserThrew = error.message
+        out.currentUserThrew = (error as Error).message
       }
 
       try {
         await firebaseLib.signIn('nobody@example.com', 'wrong-password')
       } catch (error) {
-        out.signInThrew = error.message
+        out.signInThrew = (error as Error).message
       }
 
       try {
         await firebaseLib.signOut()
       } catch (error) {
-        out.signOutThrew = error.message
+        out.signOutThrew = (error as Error).message
       }
 
       try {
         await firebaseLib.getDoc()
       } catch (error) {
-        out.getDocThrew = error.message
+        out.getDocThrew = (error as Error).message
       }
 
       try {
         firebaseLib.deleteField('someField')
       } catch (error) {
-        out.deleteFieldThrew = error.message
+        out.deleteFieldThrew = (error as Error).message
       }
 
       return out
@@ -141,9 +141,9 @@ describe('firebase lib', () => {
     const results = await page.evaluate(async () => {
       const firebaseLib = await import('/src/lib/firebase.ts')
 
-      window.__firebaseStubs = { currentUser: { uid: 'real-path-user' } }
+      window.__firebaseStubs = { currentUser: { uid: 'real-path-user' } as never }
 
-      const out = {}
+      const out: Record<string, unknown> = {}
 
       try {
         const unsubscribe = firebaseLib.watchDoc(() => {})
@@ -151,25 +151,25 @@ describe('firebase lib', () => {
         out.watchDocRan = typeof unsubscribe === 'function'
         unsubscribe()
       } catch (error) {
-        out.watchDocThrew = error.message
+        out.watchDocThrew = (error as Error).message
       }
 
       try {
         await firebaseLib.updateDoc({ some: 'data' })
       } catch (error) {
-        out.updateDocThrew = error.message
+        out.updateDocThrew = (error as Error).message
       }
 
       try {
         await firebaseLib.deleteField('someField')
       } catch (error) {
-        out.deleteFieldThrew = error.message
+        out.deleteFieldThrew = (error as Error).message
       }
 
       try {
         await firebaseLib.getDoc()
       } catch (error) {
-        out.getDocThrew = error.message
+        out.getDocThrew = (error as Error).message
       }
 
       return out
@@ -188,8 +188,8 @@ describe('firebase lib', () => {
           return () => {}
         },
         userDoc: () => ({
-          update: (data) => {
-            window.__deleteFieldUpdates.push(data)
+          update: (data: unknown) => {
+            window.__deleteFieldUpdates!.push(data)
 
             return Promise.resolve()
           },
@@ -207,6 +207,6 @@ describe('firebase lib', () => {
     const updates = await page.evaluate(() => window.__deleteFieldUpdates)
 
     expect(updates).toHaveLength(1)
-    expect(updates[0]).toHaveProperty('someField')
+    expect(updates![0]).toHaveProperty('someField')
   })
 })

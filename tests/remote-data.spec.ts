@@ -1,3 +1,4 @@
+import type { DocumentData } from 'firebase/firestore'
 import { test, expect } from './util/coverage-fixture'
 import { stubFirebaseAuth } from './util/helpers'
 
@@ -39,8 +40,8 @@ describe('remote-data lib', () => {
     const result = await page.evaluate(async () => {
       const { listen } = await import('/src/lib/remote-data.ts')
 
-      return new Promise((resolve) => {
-        listen((data) => resolve(data))
+      return new Promise<DocumentData>((resolve) => {
+        listen((data: DocumentData) => resolve(data))
       })
     })
 

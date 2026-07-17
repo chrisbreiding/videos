@@ -1,10 +1,11 @@
+import type { Page } from '@playwright/test'
 import { test, expect } from './util/coverage-fixture'
 import { setupApp, createChannel, createVideo, mockYoutubeIframeApi } from './util/helpers'
 
 const { describe } = test
 
 describe('Resizer', () => {
-  async function setup(page, { viewportHeight = 800 } = {}) {
+  async function setup (page: Page, { viewportHeight = 800 } = {}) {
     await page.setViewportSize({ width: 1280, height: viewportHeight })
 
     await mockYoutubeIframeApi(page)
@@ -21,15 +22,15 @@ describe('Resizer', () => {
     await expect(page.locator('.now-playing')).toBeVisible({ timeout: 10000 })
   }
 
-  async function nowPlayingHeight(page) {
-    return page.locator('.now-playing').evaluate((el) => parseInt(el.style.height, 10))
+  async function nowPlayingHeight (page: Page) {
+    return page.locator('.now-playing').evaluate((el) => parseInt((el as HTMLElement).style.height, 10))
   }
 
   test('resizes within the allowed range while dragging', async ({ page }) => {
     await setup(page, { viewportHeight: 800 })
 
     const resizer = page.locator('.resizer')
-    const box = await resizer.boundingBox()
+    const box = (await resizer.boundingBox())!
 
     await page.mouse.move(box.x + box.width / 2, box.y)
     await page.mouse.down()
@@ -46,7 +47,7 @@ describe('Resizer', () => {
     await setup(page, { viewportHeight: 800 })
 
     const resizer = page.locator('.resizer')
-    const box = await resizer.boundingBox()
+    const box = (await resizer.boundingBox())!
 
     await page.mouse.move(box.x + box.width / 2, box.y)
     await page.mouse.down()
@@ -62,7 +63,7 @@ describe('Resizer', () => {
     await setup(page, { viewportHeight: 800 })
 
     const resizer = page.locator('.resizer')
-    const box = await resizer.boundingBox()
+    const box = (await resizer.boundingBox())!
 
     await page.mouse.move(box.x + box.width / 2, box.y)
     await page.mouse.down()
@@ -80,7 +81,7 @@ describe('Resizer', () => {
     const heightBefore = await nowPlayingHeight(page)
 
     const resizer = page.locator('.resizer')
-    const box = await resizer.boundingBox()
+    const box = (await resizer.boundingBox())!
 
     // move and release the mouse without ever pressing down on the resizer
     await page.mouse.move(box.x + box.width / 2, 400)

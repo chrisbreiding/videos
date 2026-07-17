@@ -1,10 +1,11 @@
+import type { Page } from '@playwright/test'
 import { test, expect } from './util/coverage-fixture'
 import { stubFirebaseAuth, setupApp, createChannel, createCustomPlaylist, createVideo, mockYoutubeIframeApi } from './util/helpers'
 
 const { describe } = test
 
 // Waits for the (index + 1)th fake YT.Player instance to be constructed.
-async function waitForPlayer(page, index = 0) {
+async function waitForPlayer (page: Page, index = 0) {
   await page.waitForFunction((i) => window.__ytPlayers && window.__ytPlayers.length > i, index)
 }
 
@@ -94,7 +95,7 @@ describe('Remote All Subs Marked Video', () => {
     await expect(page.getByText('Video Two').first()).toBeVisible({ timeout: 10000 })
 
     await page.evaluate(() => {
-      window.__triggerSnapshotUpdate({
+      window.__triggerSnapshotUpdate!({
         youtubeApiKey: 'fake-api-key',
         watchedVideos: {},
         subs: {
@@ -159,8 +160,8 @@ describe('Video Ended Behavior', () => {
     await expect(page.locator('.toggle-auto-play:not(.enabled)')).toBeVisible()
 
     await waitForPlayer(page)
-    await page.evaluate(() => window.__ytPlayers[0].simulateReady())
-    await page.evaluate(() => window.__ytPlayers[0].simulateStateChange(window.YT.PlayerState.ENDED))
+    await page.evaluate(() => window.__ytPlayers![0].simulateReady())
+    await page.evaluate(() => window.__ytPlayers![0].simulateStateChange(window.YT.PlayerState.ENDED))
 
     // The URL should not change since auto-play is disabled
     await expect(page).toHaveURL(/nowPlaying=end-1/)
@@ -183,8 +184,8 @@ describe('Video Ended Behavior', () => {
     await expect(page.locator('.toggle-auto-play.enabled')).toBeVisible()
 
     await waitForPlayer(page)
-    await page.evaluate(() => window.__ytPlayers[0].simulateReady())
-    await page.evaluate(() => window.__ytPlayers[0].simulateStateChange(window.YT.PlayerState.ENDED))
+    await page.evaluate(() => window.__ytPlayers![0].simulateReady())
+    await page.evaluate(() => window.__ytPlayers![0].simulateStateChange(window.YT.PlayerState.ENDED))
 
     // With no next video, the now playing video should remain unchanged
     await expect(page).toHaveURL(/nowPlaying=only-1/)

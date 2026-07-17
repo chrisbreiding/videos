@@ -24,7 +24,7 @@ describe('videos/videos-store', () => {
         ],
       })
 
-      return videosStore.videos.map((video) => video.title)
+      return videosStore.videos.map((video: { title: string }) => video.title)
     })
 
     expect(titles).toEqual(['Newer Video', 'Older Video'])

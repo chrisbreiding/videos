@@ -221,12 +221,12 @@ describe('Custom Playlists', () => {
     await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
 
     const handles = page.locator('.video-sort-handle')
-    const firstHandleBox = await handles.nth(0).boundingBox()
-    const secondItemBox = await page.locator('.video').nth(1).boundingBox()
+    const firstHandleBox = (await handles.nth(0).boundingBox())!
+    const secondItemBox = (await page.locator('.video').nth(1).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
 
@@ -264,11 +264,11 @@ describe('Custom Playlists', () => {
     await expect(page.getByText('Stay First')).toBeVisible({ timeout: 10000 })
 
     const handles = page.locator('.video-sort-handle')
-    const firstHandleBox = await handles.nth(0).boundingBox()
+    const firstHandleBox = (await handles.nth(0).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
     // Move just a couple pixels - not enough to cross into the next item's slot
@@ -516,7 +516,7 @@ describe('No Subscriptions', () => {
     await expect(page.getByText('Only Video')).toBeVisible({ timeout: 10000 })
 
     await page.evaluate(() => {
-      window.__triggerSnapshotUpdate({
+      window.__triggerSnapshotUpdate!({
         youtubeApiKey: 'fake-api-key',
         watchedVideos: {},
         subs: {},

@@ -27,7 +27,7 @@ describe('lib/youtube', () => {
   test('getVideosDataForChannelSearch includes the page token when paginating', async ({ page }) => {
     await stubFirebaseAuth(page)
 
-    let requestedUrl
+    let requestedUrl: string | undefined
     await page.route('https://www.googleapis.com/youtube/v3/search**', async (route, request) => {
       requestedUrl = request.url()
       await route.fulfill({

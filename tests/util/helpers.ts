@@ -1,7 +1,17 @@
+import type { Page } from '@playwright/test'
+import type { SubProps, VideoData, WatchedVideos, ChannelSearchResult } from '../../src/lib/types'
+
+interface StubFirebaseAuthOptions {
+  userId?: string
+  youtubeApiKey?: string
+  subs?: Record<string, SubProps>
+  watchedVideos?: WatchedVideos
+}
+
 /**
  * Sets up Firebase stubs for authenticated tests
  */
-export async function stubFirebaseAuth(page, options = {}) {
+export async function stubFirebaseAuth (page: Page, options: StubFirebaseAuthOptions = {}) {
   const {
     userId = 'test-user-123',
     youtubeApiKey = 'fake-api-key',
@@ -20,12 +30,12 @@ export async function stubFirebaseAuth(page, options = {}) {
 
   // Set up Firebase stubs before the app loads
   await page.addInitScript(({ userId, youtubeApiKey, subs, watchedVideos }) => {
-    let snapshotCallback
+    let snapshotCallback: (snapshot: { exists: boolean, data: () => unknown }) => void
 
     // Lets tests simulate a remote change to the user doc (e.g. another
     // client editing subs) arriving over the real-time listener, independent
     // of any local action.
-    window.__triggerSnapshotUpdate = (data) => {
+    window.__triggerSnapshotUpdate = (data: unknown) => {
       snapshotCallback({
         exists: true,
         data: () => data,
@@ -33,11 +43,11 @@ export async function stubFirebaseAuth(page, options = {}) {
     }
 
     window.__firebaseStubs = {
-      currentUser: { uid: userId },
+      currentUser: { uid: userId } as never,
 
       onAuthStateChanged: (callback) => {
         // Immediately call with mock user
-        setTimeout(() => callback({ uid: userId }), 0)
+        setTimeout(() => callback({ uid: userId } as never), 0)
         // Return unsubscribe function
         return () => {}
       },
@@ -51,7 +61,7 @@ export async function stubFirebaseAuth(page, options = {}) {
           exists: true,
           data: () => ({ youtubeApiKey, subs, watchedVideos }),
         }),
-        onSnapshot: (callback) => {
+        onSnapshot: (callback: (snapshot: { exists: boolean, data: () => unknown }) => void) => {
           snapshotCallback = callback
 
           setTimeout(() => {
@@ -77,7 +87,7 @@ export async function stubFirebaseAuth(page, options = {}) {
  * instead of depending on a real embedded video. Fake players are tracked on
  * `window.__ytPlayers`, in creation order, with recorded method calls.
  */
-export async function mockYoutubeIframeApi(page) {
+export async function mockYoutubeIframeApi (page: Page) {
   await page.route('https://www.youtube.com/iframe_api', async (route) => {
     await route.fulfill({
       status: 200,
@@ -119,10 +129,45 @@ export async function mockYoutubeIframeApi(page) {
   })
 }
 
+interface SearchPlaylistOption {
+  id?: string
+  title?: string
+  description?: string
+  published?: string
+  thumb?: string
+  count?: number
+}
+
+interface ChannelApiItem {
+  id?: string
+  contentDetails: { relatedPlaylists: { uploads: string } }
+  snippet?: { thumbnails: { medium: { url: string } } }
+}
+
+interface PaginationPage {
+  videos: VideoData[]
+  prevPageToken?: string
+  nextPageToken?: string
+}
+
+interface SetupAppOptions {
+  userId?: string
+  youtubeApiKey?: string
+  subs?: Record<string, SubProps>
+  videos?: VideoData[]
+  search?: ChannelSearchResult[]
+  playlists?: SearchPlaylistOption[]
+  channels?: ChannelApiItem[]
+  watchedVideos?: WatchedVideos
+  pagination?: Record<string, PaginationPage>
+  playlistsNextPageToken?: string
+  nextPageToken?: string
+}
+
 /**
  * Setup both Firebase auth and YouTube API mocking together
  */
-export async function setupApp(page, options = {}) {
+export async function setupApp (page: Page, options: SetupAppOptions = {}) {
   const {
     userId = 'test-user-123',
     youtubeApiKey = 'fake-api-key',
@@ -138,7 +183,7 @@ export async function setupApp(page, options = {}) {
   await stubFirebaseAuth(page, { userId, youtubeApiKey, subs, watchedVideos })
 
   // Convert videos array to a lookup for easy access
-  const videosById = {}
+  const videosById: Record<string, VideoData> = {}
   videos.forEach((v) => {
     videosById[v.id] = v
   })
@@ -219,11 +264,11 @@ export async function setupApp(page, options = {}) {
 
       // Get videos based on page token
       let videosToReturn = videos
-      let prevPageToken = undefined
-      let nextPageToken = undefined
+      let prevPageToken: string | undefined
+      let nextPageToken: string | undefined
 
       if (options.pagination) {
-        const pageData = options.pagination[pageToken] || options.pagination['default'] || { videos, prevPageToken: undefined, nextPageToken: undefined }
+        const pageData = options.pagination[pageToken || ''] || options.pagination['default'] || { videos, prevPageToken: undefined, nextPageToken: undefined }
         videosToReturn = pageData.videos
         prevPageToken = pageData.prevPageToken
         nextPageToken = pageData.nextPageToken
@@ -255,7 +300,7 @@ export async function setupApp(page, options = {}) {
 
       // Return requested videos or all videos
       const videosToReturn = requestedIds.length > 0
-        ? requestedIds.map((id) => videosById[id] || videos.find((v) => v.id === id)).filter(Boolean)
+        ? requestedIds.map((id) => videosById[id] || videos.find((v) => v.id === id)).filter((v): v is VideoData => Boolean(v))
         : videos
 
       await route.fulfill({
@@ -293,10 +338,12 @@ export async function setupApp(page, options = {}) {
   })
 }
 
+type SubOptions = Partial<Omit<SubProps, 'type'>>
+
 /**
  * Create a channel subscription object
  */
-export function createChannel(options = {}) {
+export function createChannel (options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'channel-1',
     title: options.title || 'Test Channel',
@@ -313,7 +360,7 @@ export function createChannel(options = {}) {
 /**
  * Create a playlist subscription object
  */
-export function createPlaylist(options = {}) {
+export function createPlaylist (options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'playlist-1',
     title: options.title || 'Test Playlist',
@@ -322,8 +369,6 @@ export function createPlaylist(options = {}) {
     playlistId: options.playlistId || options.id || 'PL123',
     type: 'playlist',
     order: options.order ?? 0,
-    count: options.count || 0,
-    description: options.description || '',
     markedVideoId: options.markedVideoId || null,
     bookmarkedPageToken: options.bookmarkedPageToken || null,
   }
@@ -332,7 +377,7 @@ export function createPlaylist(options = {}) {
 /**
  * Create a custom playlist subscription object
  */
-export function createCustomPlaylist(options = {}) {
+export function createCustomPlaylist (options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'custom-0',
     title: options.title || 'Custom Playlist',
@@ -350,10 +395,12 @@ export function createCustomPlaylist(options = {}) {
   }
 }
 
+type VideoOptions = Partial<VideoData>
+
 /**
  * Create a video object
  */
-export function createVideo(options = {}) {
+export function createVideo (options: VideoOptions = {}): VideoData {
   return {
     id: options.id || 'video-1',
     title: options.title || 'Test Video',
@@ -368,7 +415,7 @@ export function createVideo(options = {}) {
 /**
  * Create a playlist item for search results
  */
-export function createSearchPlaylist(options = {}) {
+export function createSearchPlaylist (options: SearchPlaylistOption = {}): Omit<Required<SearchPlaylistOption>, 'published'> {
   return {
     id: options.id || 'playlist-1',
     title: options.title || 'Test Playlist',

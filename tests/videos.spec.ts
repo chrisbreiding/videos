@@ -303,12 +303,12 @@ describe('Viewing a Custom Playlist With Videos', () => {
     await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
 
     const handles = page.locator('.video-sort-handle')
-    const firstHandleBox = await handles.nth(0).boundingBox()
-    const secondItemBox = await page.locator('.video').nth(1).boundingBox()
+    const firstHandleBox = (await handles.nth(0).boundingBox())!
+    const secondItemBox = (await page.locator('.video').nth(1).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
 
@@ -349,12 +349,12 @@ describe('Viewing a Custom Playlist With Videos', () => {
     await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
 
     const handles = page.locator('.video-sort-handle')
-    const firstHandleBox = await handles.nth(0).boundingBox()
-    const secondItemBox = await page.locator('.video').nth(1).boundingBox()
+    const firstHandleBox = (await handles.nth(0).boundingBox())!
+    const secondItemBox = (await page.locator('.video').nth(1).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
 
@@ -372,7 +372,7 @@ describe('Viewing a Custom Playlist With Videos', () => {
   })
 
   test('dragging videos after navigating from the All Subs page reorders correctly', async ({ page }) => {
-    const pageErrors = []
+    const pageErrors: string[] = []
     page.on('pageerror', (err) => pageErrors.push(err.message))
 
     await setupApp(page, {
@@ -410,12 +410,12 @@ describe('Viewing a Custom Playlist With Videos', () => {
 
     // Drag the 1st video into the 3rd position
     const handles = page.locator('.video-sort-handle')
-    const firstHandleBox = await handles.nth(0).boundingBox()
-    const thirdItemBox = await page.locator('.video').nth(2).boundingBox()
+    const firstHandleBox = (await handles.nth(0).boundingBox())!
+    const thirdItemBox = (await page.locator('.video').nth(2).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
 
@@ -464,7 +464,7 @@ describe('Paginating Through a Channel', () => {
   test('can navigate to older videos', async ({ page }) => {
     // Need 25+ videos for pagination to work (RESULTS_PER_PAGE check in youtube.js)
     const videos = Array.from({ length: 25 }, (_, i) =>
-      createVideo({ id: `video-${i + 1}`, title: `Channel Video ${i + 1}` })
+      createVideo({ id: `video-${i + 1}`, title: `Channel Video ${i + 1}` }),
     )
 
     await setupApp(page, {
@@ -487,10 +487,10 @@ describe('Paginating Through a Channel', () => {
   test('can navigate backwards and forwards', async ({ page }) => {
     // Need 25+ videos for pagination to work
     const page1Videos = Array.from({ length: 25 }, (_, i) =>
-      createVideo({ id: `video-p1-${i + 1}`, title: `First Page Vid ${i + 1}` })
+      createVideo({ id: `video-p1-${i + 1}`, title: `First Page Vid ${i + 1}` }),
     )
     const page2Videos = Array.from({ length: 25 }, (_, i) =>
-      createVideo({ id: `video-p2-${i + 1}`, title: `Second Page Vid ${i + 1}` })
+      createVideo({ id: `video-p2-${i + 1}`, title: `Second Page Vid ${i + 1}` }),
     )
 
     await setupApp(page, {
@@ -526,7 +526,7 @@ describe('Paginating Through a Playlist', () => {
   test('playlist pagination works', async ({ page }) => {
     // Need 25+ videos for pagination to work (RESULTS_PER_PAGE check in youtube.js)
     const videos = Array.from({ length: 25 }, (_, i) =>
-      createVideo({ id: `video-${i + 1}`, title: `Playlist Vid ${i + 1}` })
+      createVideo({ id: `video-${i + 1}`, title: `Playlist Vid ${i + 1}` }),
     )
 
     await setupApp(page, {

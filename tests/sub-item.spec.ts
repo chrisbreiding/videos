@@ -174,8 +174,8 @@ describe('Sub Item - Editing a Channel', () => {
     // The button is disabled while updating, so invoke the handler directly
     // (via React's internal props) to exercise the early-return guard
     await page.evaluate(() => {
-      const el = document.querySelector('.channel-sub-item .sub-item-icon.editable')
-      const key = Object.keys(el).find((k) => k.startsWith('__reactProps$') || k.startsWith('__reactEventHandlers$'))
+      const el = document.querySelector('.channel-sub-item .sub-item-icon.editable') as unknown as Record<string, { onClick: () => void }>
+      const key = Object.keys(el).find((k) => k.startsWith('__reactProps$') || k.startsWith('__reactEventHandlers$'))!
       el[key].onClick()
     })
   })
@@ -228,7 +228,7 @@ describe('Sub Item - Editing a Channel', () => {
       videos: [],
     })
 
-    const consoleErrors = []
+    const consoleErrors: string[] = []
     page.on('console', (msg) => {
       if (msg.type() === 'error') consoleErrors.push(msg.text())
     })

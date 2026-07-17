@@ -35,7 +35,7 @@ describe('lib/util', () => {
         durationSecondsInvalid: util.durationSeconds('not-a-duration'),
         durationSecondsValid: util.durationSeconds('PT1H2M3S'),
 
-        transformed: util.transformObject({ a: 1, b: 2 }, (value) => value * 2),
+        transformed: util.transformObject({ a: 1, b: 2 }, (value: number) => value * 2),
         mapObj: util.convertMapToObject(new Map([['a', 1], ['b', 2]])),
         entriesObj: util.convertMapEntriesToObject([['a', 1], ['b', 2]]),
 

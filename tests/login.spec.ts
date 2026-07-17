@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { test, expect } from './util/coverage-fixture'
 import { stubFirebaseAuth } from './util/helpers'
 
@@ -9,13 +10,13 @@ const { describe } = test
  * subsequent `onAuthStateChanged` call (e.g. from the app after a successful
  * login) reports the now-authenticated user.
  */
-async function stubUnauthenticated(page, { signInSucceeds = true } = {}) {
+async function stubUnauthenticated (page: Page, { signInSucceeds = true } = {}) {
   await page.addInitScript(({ signInSucceeds }) => {
     let signedIn = false
 
     window.__firebaseStubs = {
       onAuthStateChanged: (callback) => {
-        setTimeout(() => callback(signedIn ? { uid: 'test-user-123' } : null), 0)
+        setTimeout(() => callback(signedIn ? { uid: 'test-user-123' } as never : null), 0)
         return () => {}
       },
 
@@ -33,7 +34,7 @@ async function stubUnauthenticated(page, { signInSucceeds = true } = {}) {
           exists: true,
           data: () => ({ youtubeApiKey: 'fake-api-key', subs: {}, watchedVideos: {} }),
         }),
-        onSnapshot: (callback) => {
+        onSnapshot: (callback: (snapshot: { exists: boolean, data: () => unknown }) => void) => {
           setTimeout(() => {
             callback({
               exists: true,

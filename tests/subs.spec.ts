@@ -1,5 +1,6 @@
 import { test, expect } from './util/coverage-fixture'
 import { setupApp, createChannel, createVideo, createSearchPlaylist, createCustomPlaylist } from './util/helpers'
+import type { ChannelSearchResult } from '../src/lib/types'
 
 const { describe } = test
 
@@ -29,7 +30,7 @@ describe('Adding a Channel', () => {
       search: [
         createChannel({ id: 'channel-1', title: 'Test Channel 1' }),
         createChannel({ id: 'channel-2', title: 'Test Channel 2' }),
-      ],
+      ] as ChannelSearchResult[],
       channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
     })
 
@@ -56,7 +57,7 @@ describe('Adding a Channel', () => {
       subs: {},
       search: [
         { id: 'channel-1', title: '', author: 'Author Only Channel', thumb: 'https://example.com/thumb.jpg' },
-      ],
+      ] as ChannelSearchResult[],
       channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
     })
 
@@ -78,7 +79,7 @@ describe('Adding Multiple Channels', () => {
         createChannel({ id: 'channel-1', title: 'First Channel' }),
         createChannel({ id: 'channel-2', title: 'Second Channel' }),
         createChannel({ id: 'channel-3', title: 'Third Channel' }),
-      ],
+      ] as ChannelSearchResult[],
       channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
     })
 
@@ -151,7 +152,7 @@ describe('Loading Playlists and Adding a Playlist', () => {
       subs: {},
       search: [
         createChannel({ id: 'channel-1', title: 'Channel With Playlists' }),
-      ],
+      ] as ChannelSearchResult[],
       playlists: [
         createSearchPlaylist({ id: 'playlist-1', title: 'Awesome Playlist', count: 42 }),
         createSearchPlaylist({ id: 'playlist-2', title: 'Another Playlist', count: 10 }),
@@ -194,7 +195,7 @@ describe('Loading Playlists and Adding a Playlist', () => {
       subs: {},
       search: [
         createChannel({ id: 'channel-1', title: 'Channel' }),
-      ],
+      ] as ChannelSearchResult[],
       playlists: [
         createSearchPlaylist({ id: 'playlist-1', title: 'Gaming Videos' }),
         createSearchPlaylist({ id: 'playlist-2', title: 'Cooking Tutorials' }),
@@ -235,7 +236,7 @@ describe('Loading Playlists and Adding a Playlist', () => {
       subs: {},
       search: [
         createChannel({ id: 'channel-1', title: 'Channel With More Playlists' }),
-      ],
+      ] as ChannelSearchResult[],
       playlists: firstPagePlaylists,
       playlistsNextPageToken: 'page-2',
     })
@@ -268,7 +269,7 @@ describe('Loading Playlists and Adding a Playlist', () => {
       subs: {},
       search: [
         createChannel({ id: 'channel-1', title: 'Channel To Hide' }),
-      ],
+      ] as ChannelSearchResult[],
       playlists: [
         createSearchPlaylist({ id: 'playlist-1', title: 'A Playlist' }),
       ],
@@ -304,7 +305,7 @@ describe('Leaving the Add Channel Page', () => {
       },
       search: [
         createChannel({ id: 'channel-2', title: 'Some Search Result' }),
-      ],
+      ] as ChannelSearchResult[],
       videos: [],
     })
 
@@ -399,10 +400,10 @@ describe('Adding a Custom Playlist', () => {
     // Filter to something that matches nothing
     await filterInput.fill('not-a-real-icon-name')
     await expect(page.locator('.icon-picker .empty-icons')).toBeVisible()
-    await expect(page.getByText("No icons matching filter 'not-a-real-icon-name'")).toBeVisible()
+    await expect(page.getByText('No icons matching filter \'not-a-real-icon-name\'')).toBeVisible()
 
     // Submitting the form should be prevented and not navigate away
-    await page.locator('.icon-picker form').evaluate((form) => form.requestSubmit())
+    await page.locator('.icon-picker form').evaluate((form) => (form as HTMLFormElement).requestSubmit())
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
   })
 
@@ -528,7 +529,7 @@ describe('Remote Subs Changes', () => {
 
     // Simulate another client removing "Second Channel" from the shared doc
     await page.evaluate(() => {
-      window.__triggerSnapshotUpdate({
+      window.__triggerSnapshotUpdate!({
         youtubeApiKey: 'fake-api-key',
         watchedVideos: {},
         subs: {
@@ -565,11 +566,11 @@ describe('Reordering Subs', () => {
     await expect(subItems).toHaveCount(2)
     await expect(subItems.nth(0)).toContainText('First Channel')
 
-    const firstHandleBox = await subItems.nth(0).locator('span.sub-item-icon').boundingBox()
+    const firstHandleBox = (await subItems.nth(0).locator('span.sub-item-icon').boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
     // A tiny move that isn't enough to cross into the next item's position
@@ -597,12 +598,12 @@ describe('Reordering Subs', () => {
     await expect(subItems).toHaveCount(2)
     await expect(subItems.nth(0)).toContainText('First Channel')
 
-    const firstHandleBox = await subItems.nth(0).locator('span.sub-item-icon').boundingBox()
-    const secondItemBox = await subItems.nth(1).boundingBox()
+    const firstHandleBox = (await subItems.nth(0).locator('span.sub-item-icon').boundingBox())!
+    const secondItemBox = (await subItems.nth(1).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
 
@@ -636,12 +637,12 @@ describe('Reordering Subs', () => {
     await expect(subItems).toHaveCount(2)
     await expect(subItems.nth(0)).toContainText('First Channel')
 
-    const firstHandleBox = await subItems.nth(0).locator('span.sub-item-icon').boundingBox()
-    const secondItemBox = await subItems.nth(1).boundingBox()
+    const firstHandleBox = (await subItems.nth(0).locator('span.sub-item-icon').boundingBox())!
+    const secondItemBox = (await subItems.nth(1).boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
-      firstHandleBox.y + firstHandleBox.height / 2
+      firstHandleBox.y + firstHandleBox.height / 2,
     )
     await page.mouse.down()
 

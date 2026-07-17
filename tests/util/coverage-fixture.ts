@@ -1,7 +1,7 @@
-const crypto = require('crypto')
-const fs = require('fs')
-const path = require('path')
-const { test: base, expect } = require('@playwright/test')
+import crypto from 'crypto'
+import fs from 'fs'
+import path from 'path'
+import { test as base, expect } from '@playwright/test'
 
 const NYC_OUTPUT_DIR = path.join(__dirname, '..', '..', '.nyc_output')
 
@@ -12,13 +12,13 @@ const collectCoverage = !!process.env.COVERAGE
 // An auto fixture wraps every test: after the test body runs we read the
 // Istanbul coverage object that vite-plugin-istanbul exposes on the page and
 // append it to .nyc_output for `nyc report` to consume.
-const test = base.extend({
+const test = base.extend<{ autoCoverage: void }>({
   autoCoverage: [async ({ page }, use) => {
     await use()
 
     if (!collectCoverage) return
 
-    let coverage
+    let coverage: unknown
     try {
       coverage = await page.evaluate(() => window.__coverage__)
     } catch {
@@ -34,4 +34,4 @@ const test = base.extend({
   }, { auto: true }],
 })
 
-module.exports = { test, expect }
+export { test, expect }
