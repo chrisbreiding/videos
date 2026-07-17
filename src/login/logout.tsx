@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
 import { authStore } from './auth-store'
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 
 export const Logout = observer(() => {
   const navigate = useNavigate()
@@ -18,7 +18,7 @@ export const Logout = observer(() => {
   return (
     <div className='logout'>
       <div className='loader'>
-        {icon('sign-out')} Logging out...
+        <Icon name='sign-out' /> Logging out...
       </div>
     </div>
   )

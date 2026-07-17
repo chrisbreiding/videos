@@ -17,4 +17,16 @@
   .controls {
     margin-top: 2em;
   }
+
+  .submit {
+    background: action-color;
+    border-color: action-color;
+    color: white;
+
+    &:hover,
+    &:focus {
+      background-color: darken(action-color, 10%);
+      border-color: darken(action-color, 10%);
+    }
+  }
 }

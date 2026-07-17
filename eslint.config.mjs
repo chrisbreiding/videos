@@ -11,6 +11,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      'generated/**',
       'coverage/**',
       '.nyc_output/**',
       'test-results/**',

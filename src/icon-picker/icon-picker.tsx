@@ -2,10 +2,10 @@ import _ from 'lodash'
 import { useCallback, useMemo, useState } from 'react'
 import cs from 'classnames'
 
-import { icon as renderIcon } from '../lib/util'
-import { iconsList } from '../lib/icons-list'
+import { Icon } from '../lib/util'
 import { IconThumb } from '../icon-thumb/icon-thumb'
 import type { IconConfig } from '../lib/types'
+import { iconNames } from '../../generated/font-awesome'
 
 interface IconPickerProps {
   icon: IconConfig
@@ -41,8 +41,8 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
 
   const filteredIcons = useMemo(() => {
     return filter
-      ? _.filter(iconsList, (iconName) => iconName.includes(filter))
-      : iconsList
+      ? _.filter(iconNames, (iconName) => iconName.includes(filter))
+      : iconNames
   }, [filter])
 
   const icons = useMemo(() => {
@@ -54,18 +54,18 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
       )
     }
 
-    return _.map(filteredIcons, (iconName) => (
+    return _.map(filteredIcons, (name) => (
       <button
-        key={iconName}
-        onClick={() => updateIcon(iconName)}
+        key={name}
+        onClick={() => updateIcon(name)}
         className={cs('picker-icon', {
-          chosen: icon.icon === iconName,
+          chosen: icon.icon === name,
         })}
       >
         <IconThumb
           backgroundColor={icon.backgroundColor}
           foregroundColor={icon.foregroundColor}
-          icon={iconName}
+          icon={name}
         />
       </button>
     ))
@@ -105,7 +105,7 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
         <fieldset>
           <label>Filter</label>
           <div className='fields'>
-            {renderIcon('filter')}
+            <Icon name='filter' />
             <input
               value={filter}
               onChange={updateFilter}

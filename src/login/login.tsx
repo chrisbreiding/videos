@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 import { onAuthStateChanged } from '../lib/firebase'
 import { appState } from '../app/app-state'
 import { authStore } from './auth-store'
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 
 export const Login = observer(() => {
   const navigate = useNavigate()
@@ -27,7 +27,7 @@ export const Login = observer(() => {
     emailRef.current!.focus()
   }, [navigate])
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault()
 
     const email = emailRef.current!.value
@@ -62,7 +62,7 @@ export const Login = observer(() => {
           <input ref={passwordRef} name="password" type='password' />
         </fieldset>
         <fieldset className='controls'>
-          <button type="submit">{icon('sign-in')} Log In</button>
+          <button type="submit"><Icon name='sign-in' /> Log In</button>
         </fieldset>
       </form>
     </div>

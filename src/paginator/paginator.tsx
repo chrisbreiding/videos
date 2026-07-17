@@ -2,20 +2,18 @@ import { observer } from 'mobx-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 import type { LinkLocation } from '../lib/types'
 
-const LinkTo = ({ link, direction, leftText, rightText }: {
+const LinkTo = ({ link, children }: {
   link?: LinkLocation | null
-  direction: string
-  leftText?: string
-  rightText?: string
+  children: ReactNode
 }) => {
   if (!link) return <span />
 
   return (
-    <Link className={'paginator-button'} to={link}>
-      {icon(`angle-${direction}`, leftText, rightText)}
+    <Link className='paginator-button' to={link}>
+      {children}
     </Link>
   )
 }
@@ -27,9 +25,13 @@ export const Paginator = observer(({ prevLink, nextLink, children }: {
 }) => {
   return (
     <div className='paginator'>
-      <LinkTo link={prevLink} direction='left' leftText='Newer' />
+      <LinkTo link={prevLink}>
+        <Icon name='angle-left' rightText='Newer' />
+      </LinkTo>
       {children}
-      <LinkTo link={nextLink} direction='right' rightText='Older' />
+      <LinkTo link={nextLink}>
+        <Icon name='angle-right' leftText='Older' />
+      </LinkTo>
     </div>
   )
 })

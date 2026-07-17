@@ -1,7 +1,14 @@
 // Shared domain types for the app.
 
-export interface IconConfig {
+import { IconName } from '../../generated/font-awesome'
+
+export interface RemoteIconConfig {
   icon: string
+  foregroundColor: string
+  backgroundColor: string
+}
+export interface IconConfig {
+  icon: IconName
   foregroundColor: string
   backgroundColor: string
 }
@@ -80,7 +87,7 @@ export interface CustomPlaylistVideo {
 // Props used to construct a SubModel and the serialized shape stored remotely.
 export interface SubProps {
   author?: string
-  icon?: IconConfig
+  icon?: RemoteIconConfig
   id: string
   type: SubType
   order?: number

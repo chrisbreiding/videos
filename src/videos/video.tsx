@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { Link } from 'react-router'
 import { useSortable } from '@dnd-kit/react/sortable'
 
-import { icon, duration, durationSeconds, date } from '../lib/util'
+import { Icon, duration, durationSeconds, date } from '../lib/util'
 import { appState } from '../app/app-state'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
 import type { VideoModel } from './video-model'
@@ -83,14 +83,14 @@ export const Video = observer((props: VideoProps) => {
           onClick={_.partial(props.addVideoMarkerLink, videoMarkerName)}
         >
           <div className='remove-video-marker' onClick={removeMark}>
-            {icon('remove')}
+            <Icon name='remove' />
           </div>
         </div>
       )}
       <div className='contents'>
         <div className='video-sort-handle' ref={handleRef}>
-          {icon('ellipsis-v')}
-          {icon('ellipsis-v')}
+          <Icon name='ellipsis-v' />
+          <Icon name='ellipsis-v' />
         </div>
         <aside>
           <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
@@ -102,7 +102,9 @@ export const Video = observer((props: VideoProps) => {
         <main>
           <h4>{props.video.title}</h4>
           <div>
-            {durationDisplay && <p className='duration'>{icon('clock-o', durationDisplay)}</p>}
+            {durationDisplay && <p className='duration'>
+              <Icon name='clock' rightText={durationDisplay} />
+            </p>}
             <p className='pub-date'>{date(props.video.published)}</p>
           </div>
         </main>

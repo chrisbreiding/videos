@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 
 export const Search = ({ query, onSearch }: { query?: string, onSearch: (value: string) => void }) => {
   const queryRef = useRef<HTMLInputElement>(null)
@@ -11,7 +11,7 @@ export const Search = ({ query, onSearch }: { query?: string, onSearch: (value: 
     }
   }, [query])
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: React.SubmitEvent) => {
     e.preventDefault()
     onSearch(queryRef.current!.value)
   }
@@ -23,7 +23,9 @@ export const Search = ({ query, onSearch }: { query?: string, onSearch: (value: 
         defaultValue={query}
         placeholder="Search Channel"
       />
-      <button>{icon('search')}</button>
+      <button>
+        <Icon name='search' />
+      </button>
     </form>
   )
 }

@@ -4,20 +4,20 @@ import _ from 'lodash'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { icon } from '../../lib/util'
-import { iconsList } from '../../lib/icons-list'
+import { Icon } from '../../lib/util'
 import { subsStore } from '../subs-store'
 
 import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import { Modal } from '../../modal/modal'
 import type { IconConfig } from '../../lib/types'
+import { iconNames } from '../../../generated/font-awesome'
 
 export const AddCustomPlaylist = observer(() => {
   const navigate = useNavigate()
   const titleRef = useRef<HTMLInputElement>(null)
   const [iconState, setIconState] = useState<IconConfig>({
-    icon: iconsList[0],
+    icon: iconNames[0],
     foregroundColor: '#FFFFFF',
     backgroundColor: '#333333',
   })
@@ -75,7 +75,9 @@ export const AddCustomPlaylist = observer(() => {
         </button>
       </fieldset>
       <fieldset className='controls'>
-        <button className='submit'>{icon('plus', 'Add Custom Playlist')}</button>
+        <button className='submit'>
+          <Icon name='plus' /> Add Custom Playlist
+        </button>
       </fieldset>
       {renderIconPicker()}
     </form>

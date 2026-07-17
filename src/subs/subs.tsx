@@ -7,7 +7,7 @@ import { DragDropProvider, type DragEndEvent } from '@dnd-kit/react'
 import { move } from '@dnd-kit/helpers'
 
 import { subsStore } from './subs-store'
-import { icon, updatedLink } from '../lib/util'
+import { Icon, updatedLink } from '../lib/util'
 
 import { SubItem } from './sub-item/sub-item'
 import type { SubProps } from '../lib/types'
@@ -114,15 +114,19 @@ export const Subs = observer(({ location, onSortStart, onSortEnd }: {
   const renderAddSubButtons = () => {
     if (!subsStore.subs.length) {
       return (
-        <p className='empty-message'>Add a channel to get started {icon('arrow-right')}</p>
+        <p className='empty-message'>Add a channel to get started{' '}<Icon name='arrow-right' /></p>
       )
     }
 
     return (
       <div className='add-sub-buttons'>
         <div className='add-sub-buttons-links'>
-          <NavLink to='/add-channel'>{icon('plus', 'Channel')}</NavLink>
-          <NavLink to='/add-custom-playlist'>{icon('plus', 'Custom Playlist')}</NavLink>
+          <NavLink to='/add-channel'>
+            <Icon name='plus' rightText='Channel' />
+          </NavLink>
+          <NavLink to='/add-custom-playlist'>
+            <Icon name='plus' rightText='Custom Playlist' />
+          </NavLink>
         </div>
       </div>
     )

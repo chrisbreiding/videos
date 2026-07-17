@@ -4,12 +4,12 @@
   margin: 0.6em;
 
   .paginator-button {
+    align-items: center;
     border: solid 1px darken(light-color, 20%);
-    display: block;
+    display: flex;
     font-size: 0.9em;
     min-width: 5em;
     padding: 0.4em 0.6em;
-    text-align: center;
     text-decoration: none;
 
     &:hover,
@@ -18,11 +18,11 @@
     }
 
     &:first-child {
-      border-radius: 3px 0 0 3px;
+      border-radius: 10px 3px 3px 10px;
     }
 
     &:last-child {
-      border-radius: 0 3px 3px 0;
+      border-radius: 3px 10px 10px 3px;
     }
 
     &.disabled {

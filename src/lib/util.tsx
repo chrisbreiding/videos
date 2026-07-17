@@ -1,3 +1,5 @@
+import { findIconDefinition } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import _ from 'lodash'
 import type { ReactNode } from 'react'
 import dayjs from 'dayjs'
@@ -5,6 +7,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import qs from 'qs'
 
 import type { LinkLocation, LinkUpdates, ParsedQuery } from './types'
+import { IconName } from '../../generated/font-awesome'
 
 dayjs.extend(relativeTime)
 
@@ -52,12 +55,36 @@ export function convertMapEntriesToObject<V> (mapEntries: Array<[string, V]>): R
   return obj
 }
 
-export function icon (iconName: string, rightText?: ReactNode, leftText?: ReactNode) {
+// Prefer explicit type for brands and regular. If no prefix is specified,
+// prefer solid, then regular, then brands.
+function findIcon (name: IconName, type?: 'solid' | 'regular' | 'brands') {
+  if (type === 'brands') {
+    return findIconDefinition({ prefix: 'fab', iconName: name })
+  }
+
+  if (type === 'regular') {
+    return findIconDefinition({ prefix: 'far', iconName: name })
+  }
+
+  return findIconDefinition({ prefix: 'fas', iconName: name })
+    || findIconDefinition({ prefix: 'far', iconName: name })
+    || findIconDefinition({ prefix: 'fab', iconName: name })
+}
+
+interface IconProps {
+  name: IconName
+  type?: 'solid' | 'regular' | 'brands'
+  spin?: boolean
+  rightText?: ReactNode
+  leftText?: ReactNode
+}
+
+export function Icon ({ name, type, spin, rightText, leftText }: IconProps) {
   return (
     <span className={`icon${rightText || leftText ? ' with-text' : ''}`}>
-      {leftText ? leftText : null}
-      <i className={`fa fa-${iconName}`} />
-      {rightText ? rightText : null}
+      {leftText ? <span>{leftText}</span> : null}
+      <FontAwesomeIcon icon={findIcon(name, type)} spin={spin} />
+      {rightText ? <span>{rightText}</span> : null}
     </span>
   )
 }

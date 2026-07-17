@@ -2,7 +2,27 @@ import _ from 'lodash'
 import { action, computed, makeObservable, observable, ObservableMap, toJS } from 'mobx'
 
 import { convertMapToObject, transformObject } from '../lib/util'
-import type { CustomPlaylistVideo, IconConfig, SubProps, SubType } from '../lib/types'
+import type { CustomPlaylistVideo, IconConfig, RemoteIconConfig, SubProps, SubType } from '../lib/types'
+import { IconName, iconNames } from '../../generated/font-awesome'
+import { legacyIconMap } from '../lib/legacy-icons'
+
+function resolveIcon (name: string): IconName {
+  if (iconNames.includes(name as unknown as IconName)) return name as IconName
+
+  if (legacyIconMap[name]) return legacyIconMap[name] as IconName
+
+  return 'question'
+}
+
+function resolveIconConfig (icon?: RemoteIconConfig): IconConfig | undefined {
+  if (!icon) return undefined
+
+  return {
+    icon: resolveIcon(icon.icon),
+    foregroundColor: icon.foregroundColor,
+    backgroundColor: icon.backgroundColor,
+  }
+}
 
 export class SubModel {
   author?: string
@@ -42,7 +62,7 @@ export class SubModel {
     })
 
     this.author = props.author
-    this.icon = props.icon
+    this.icon = resolveIconConfig(props.icon)
     this.id = props.id
     this.type = props.type
     this.order = props.order

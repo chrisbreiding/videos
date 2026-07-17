@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import cs from 'classnames'
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 
 export const Modal = ({ className, onClose, children }: {
   className?: string
@@ -27,7 +27,7 @@ export const Modal = ({ className, onClose, children }: {
   return createPortal(
     <div className='modal-box'>
       <button className='modal-close' onClick={onClose}>
-        {icon('remove')}
+        <Icon name='remove' />
       </button>
       <div className='modal-content'>
         {children}

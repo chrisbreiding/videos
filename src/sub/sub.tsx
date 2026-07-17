@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { appState } from '../app/app-state'
 import { DocumentTitle } from '../lib/document-title'
-import { icon, parseQueryString, updatedLink } from '../lib/util'
+import { Icon, parseQueryString, updatedLink } from '../lib/util'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
 
@@ -180,7 +180,7 @@ export const Sub = observer(() => {
         className={cs('bookmark', { 'is-bookmarked': isPageBookMarked(sub) })}
         onClick={updateBookmark(sub)}
       >
-        {icon('bookmark')}
+        <Icon name='bookmark' />
       </button>
     )
   }
@@ -189,9 +189,9 @@ export const Sub = observer(() => {
     if (!videosStore.videos.length) {
       return (
         <div className='videos-empty'>
-          {icon('film')}
+          <Icon name='film' />
           No videos
-          {icon('film')}
+          <Icon name='film' />
         </div>
       )
     }
@@ -216,9 +216,9 @@ export const Sub = observer(() => {
   const renderLoader = () => {
     return (
       <div className='loader'>
-        {icon('spin fa-play-circle')}
-        {icon('spin fa-play-circle')}
-        {icon('spin fa-play-circle')}
+        <Icon name='play-circle' spin />
+        <Icon name='play-circle' spin />
+        <Icon name='play-circle' spin />
       </div>
     )
   }

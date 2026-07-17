@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { observer } from 'mobx-react'
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 import type { SubModel } from '../sub/sub-model'
 
 interface PlaylistPickerProps {
@@ -29,7 +29,7 @@ export const PlaylistPicker = observer((props: PlaylistPickerProps) => {
           return (
             <li key={playlist.id}>
               <button onClick={_.partial(setPlaylist, playlist, !inPlaylist)}>
-                {icon(inPlaylist ? 'check-square' : 'square-o')}
+                <Icon name={inPlaylist ? 'square-check' : 'square'} type={inPlaylist ? 'solid' : 'regular'} />
                 <span>{playlist.title}</span>
               </button>
             </li>

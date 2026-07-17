@@ -1,7 +1,7 @@
-import { icon } from '../lib/util'
+import { Icon } from '../lib/util'
 import type { IconConfig } from '../lib/types'
 
-export const IconThumb = ({ backgroundColor, foregroundColor, icon: thumbIcon }: IconConfig) => (
+export const IconThumb = ({ backgroundColor, foregroundColor, icon }: IconConfig) => (
   <span
     className='icon-thumb'
     style={{
@@ -9,6 +9,6 @@ export const IconThumb = ({ backgroundColor, foregroundColor, icon: thumbIcon }:
       color: foregroundColor,
     }}
   >
-    {icon(thumbIcon)}
+    <Icon name={icon} />
   </span>
 )

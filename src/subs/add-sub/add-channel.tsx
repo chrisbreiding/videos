@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import { icon } from '../../lib/util'
+import { Icon } from '../../lib/util'
 import { videosService } from '../../videos/videos-service'
 import { subsStore } from '../subs-store'
 import type { ChannelSearchResult, PlaylistSummary, PlaylistsForChannelResult } from '../../lib/types'
@@ -132,9 +132,13 @@ export const AddChannel = observer(() => {
                   <span className='playlist-count'>{playlist.count} videos</span>
                 </div>
                 {isPlaylistSubscribed ? (
-                  <span className='subscribed-indicator'>{icon('check')}</span>
+                  <span className='subscribed-indicator'>
+                    <Icon name='check' />
+                  </span>
                 ) : (
-                  <button onClick={_.partial(onAddPlaylist, playlist)}>{icon('plus')}</button>
+                  <button onClick={_.partial(onAddPlaylist, playlist)}>
+                    <Icon name='plus' />
+                  </button>
                 )}
               </li>
             )
@@ -176,9 +180,13 @@ export const AddChannel = observer(() => {
               </button>
             </div>
             {isSubscribed ? (
-              <span className='subscribed-indicator'>{icon('check')}</span>
+              <span className='subscribed-indicator'>
+                <Icon name='check' />
+              </span>
             ) : (
-              <button className='add-button' onClick={_.partial(onAddChannel, channel)}>{icon('plus')}</button>
+              <button className='add-button' onClick={_.partial(onAddChannel, channel)}>
+                <Icon name='plus' />
+              </button>
             )}
           </div>
           {channelPlaylistData && renderPlaylists(channel.id, channelPlaylistData)}
@@ -191,7 +199,9 @@ export const AddChannel = observer(() => {
     <div className='add-sub add-channel'>
       <form onSubmit={searchSubs}>
         <input ref={queryInputRef} placeholder='Search Channels' defaultValue={getQuery()} />
-        <button>{icon('search')}</button>
+        <button>
+          <Icon name='search' />
+        </button>
       </form>
       <ul className='channels-list'>{renderResults()}</ul>
     </div>

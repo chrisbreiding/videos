@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { NavLink } from 'react-router'
 
-import { icon } from '../../lib/util'
+import { Icon } from '../../lib/util'
 import { getChannelDetails, getPlaylistDetails } from '../../lib/youtube'
 
 import { Title } from './title'
@@ -33,7 +33,7 @@ const BookmarkLink = observer(({ link }: { link?: BookmarkLinkTo }) => {
 
   return (
     <NavLink onClick={onClick} to={link} className='sub-bookmark'>
-      {icon('bookmark')}
+      <Icon name='bookmark' />
     </NavLink>
   )
 })
@@ -107,7 +107,9 @@ export const SubItem = observer((props: SubItemProps) => {
       {props.sub.type === 'custom'
         ? <CustomPlaylist {...props} handleRef={handleRef} />
         : <Channel {...props} onUpdate={props.onUpdate} handleRef={handleRef} />}
-      <button className='remove' onClick={remove}>{icon('minus-circle')}</button>
+      <button className='remove' onClick={remove}>
+        <Icon name='minus-circle' />
+      </button>
     </li>
   )
 })

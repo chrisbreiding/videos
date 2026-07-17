@@ -8,7 +8,7 @@ import { Link } from 'react-router'
 import { YoutubePlayer } from '../lib/youtube-player'
 import { appState } from '../app/app-state'
 import { DocumentTitle } from '../lib/document-title'
-import { icon, durationSeconds } from '../lib/util'
+import { Icon, durationSeconds } from '../lib/util'
 import { videosStore } from '../videos/videos-store'
 import { videosService } from '../videos/videos-service'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
@@ -121,28 +121,28 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
           title='Close Video'
           to={props.closeLink}
         >
-          {icon('remove')}
+          <Icon name='remove' />
         </Link>
         <button
           className={cs('toggle-auto-play', { enabled: props.autoPlayEnabled })}
           title='Toggle Auto Play'
           onClick={props.onToggleAutoPlay}
         >
-          {icon('forward')}
+          <Icon name='forward' />
         </button>
         <button
           className={cs('toggle-description', { enabled: state.isShowingDescription })}
           title='Toggle Description'
           onClick={state.toggleShowingDescription}
         >
-          {icon('info')}
+          <Icon name='info' />
         </button>
         <button
           className={cs('toggle-playlists', { enabled: state.isShowingPlaylists })}
           title='Toggle Playlists'
           onClick={state.toggleShowingPlaylists}
         >
-          {icon('list-ul')}
+          <Icon name='list-ul' />
         </button>
       </div>
       <div

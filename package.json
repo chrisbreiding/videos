@@ -6,6 +6,7 @@
     "node": "22"
   },
   "scripts": {
+    "postinstall": "node scripts/generate-font-awesome-types.js",
     "start": "vite",
     "build": "rm -rf dist && vite build",
     "preview": "vite preview --port 8088",
@@ -48,6 +49,11 @@
   "dependencies": {
     "@dnd-kit/helpers": "^0.5.0",
     "@dnd-kit/react": "^0.5.0",
+    "@fortawesome/fontawesome-svg-core": "^7.3.1",
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@fortawesome/free-regular-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@fortawesome/react-fontawesome": "^3.4.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.21",
     "firebase": "^12.16.0",

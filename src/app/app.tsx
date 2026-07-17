@@ -9,7 +9,7 @@ import { authStore } from '../login/auth-store'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
 import { onAuthStateChanged, watchDoc } from '../lib/firebase'
-import { icon, parseQueryString, updatedLink } from '../lib/util'
+import { Icon, parseQueryString, updatedLink } from '../lib/util'
 
 import { AddToPlaylist } from '../playlist-picker/add-to-playlist'
 import { NowPlaying } from '../now-playing/now-playing'
@@ -138,7 +138,7 @@ export const App = observer(() => {
   if (!authStore.isAuthenticated) {
     return (
       <div className='loader'>
-        {icon('sign-in')} Authenticating...
+        <Icon name='sign-in' /> Authenticating...
       </div>
     )
   }
@@ -146,7 +146,7 @@ export const App = observer(() => {
   if (subsStore.isLoading) {
     return (
       <div className='loader'>
-        {icon('spin fa-play-circle')} Loading...
+        <Icon name='play-circle' spin /> Loading...
       </div>
     )
   }
