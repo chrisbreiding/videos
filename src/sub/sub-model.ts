@@ -1,21 +1,17 @@
 import _ from 'lodash'
 import { action, computed, makeObservable, observable, ObservableMap, toJS } from 'mobx'
 
-import { convertMapToObject, transformObject } from '../lib/util'
+import { convertMapToObject, resolveIcon, transformObject } from '../lib/util'
 import type { CustomPlaylistVideo, IconConfig, RemoteIconConfig, SubProps, SubType } from '../lib/types'
-import { IconName, iconNames } from '../../generated/font-awesome'
-
-function resolveIcon (name: string): IconName {
-  if (iconNames.includes(name as unknown as IconName)) return name as IconName
-
-  return 'circle'
-}
 
 function resolveIconConfig (icon?: RemoteIconConfig): IconConfig | undefined {
   if (!icon) return undefined
 
+  const { icon: name, type } = resolveIcon(icon.icon, icon.type)
+
   return {
-    icon: resolveIcon(icon.icon),
+    icon: name,
+    type,
     foregroundColor: icon.foregroundColor,
     backgroundColor: icon.backgroundColor,
   }
@@ -97,7 +93,7 @@ export class SubModel {
     const props: Record<string, unknown> = _.pick(this, 'id', 'type', 'markedVideoId', 'order', 'playlistId', 'title', 'bookmarkedPageToken')
 
     if (this.type === 'custom') {
-      props.icon = _.pick(this.icon, 'backgroundColor', 'foregroundColor', 'icon')
+      props.icon = _.pick(this.icon, 'backgroundColor', 'foregroundColor', 'icon', 'type')
       props.videos = transformObject(this.videosObject(), ({ id, order }) => ({ id, order }))
     } else {
       _.extend(props, _.pick(this, 'author', 'thumb'))

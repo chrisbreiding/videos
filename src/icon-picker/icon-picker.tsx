@@ -4,13 +4,24 @@ import cs from 'classnames'
 
 import { Icon } from '../lib/util'
 import { IconThumb } from '../icon-thumb/icon-thumb'
-import type { IconConfig } from '../lib/types'
-import { iconNames } from '../../generated/font-awesome'
+import type { IconConfig, IconType } from '../lib/types'
+import { brandsIconNames, type IconName, regularIconNames, solidIconNames } from '../../generated/font-awesome'
 
 interface IconPickerProps {
   icon: IconConfig
-  onUpdate: (key: string, value: string) => void
+  onUpdate: (updates: Partial<IconConfig>) => void
 }
+
+interface PickableIcon {
+  name: IconName
+  type: IconType
+}
+
+const allIcons: PickableIcon[] = [
+  ..._.map(solidIconNames, (name) => ({ name, type: 'solid' as const })),
+  ..._.map(regularIconNames, (name) => ({ name, type: 'regular' as const })),
+  ..._.map(brandsIconNames, (name) => ({ name, type: 'brands' as const })),
+]
 
 export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
   const [filter, setFilter] = useState('')
@@ -19,7 +30,7 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
 
   const updateColorDebounced = useMemo(() => {
     return _.debounce((key: string, color: string) => {
-      onUpdate(`${key}Color`, color)
+      onUpdate({ [`${key}Color`]: color })
     }, 100)
   }, [onUpdate])
 
@@ -27,12 +38,12 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
     if (debounce) {
       updateColorDebounced(key, e.target.value)
     } else {
-      onUpdate(`${key}Color`, e.target.value)
+      onUpdate({ [`${key}Color`]: e.target.value })
     }
   }
 
-  const updateIcon = useCallback((iconName: string) => {
-    onUpdate('icon', iconName)
+  const updateIcon = useCallback((iconName: IconName, iconType: IconType) => {
+    onUpdate({ icon: iconName, type: iconType })
   }, [onUpdate])
 
   const updateFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,8 +52,8 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
 
   const filteredIcons = useMemo(() => {
     return filter
-      ? _.filter(iconNames, (iconName) => iconName.includes(filter))
-      : iconNames
+      ? _.filter(allIcons, ({ name }) => name.includes(filter))
+      : allIcons
   }, [filter])
 
   const icons = useMemo(() => {
@@ -54,18 +65,19 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
       )
     }
 
-    return _.map(filteredIcons, (name) => (
+    return _.map(filteredIcons, ({ name, type }) => (
       <button
-        key={name}
-        onClick={() => updateIcon(name)}
+        key={`${type}-${name}`}
+        onClick={() => updateIcon(name, type)}
         className={cs('picker-icon', {
-          chosen: icon.icon === name,
+          chosen: icon.icon === name && icon.type === type,
         })}
       >
         <IconThumb
           backgroundColor={icon.backgroundColor}
           foregroundColor={icon.foregroundColor}
           icon={name}
+          type={type}
         />
       </button>
     ))

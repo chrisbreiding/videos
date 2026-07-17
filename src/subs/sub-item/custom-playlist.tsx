@@ -22,10 +22,8 @@ export const CustomPlaylist = observer(({ sub, link, onUpdate, handleRef }: {
     onUpdate({ title: titleRef.current!.value })
   }, [onUpdate])
 
-  const handleIconUpdated = useCallback((key: string, value: string) => {
-    onUpdate({
-      icon: _.extend(sub.icon, { [key]: value }) as IconConfig,
-    })
+  const handleIconUpdated = useCallback((updates: Partial<IconConfig>) => {
+    onUpdate({ icon: { ...sub.icon, ...updates } as IconConfig })
   }, [onUpdate, sub.icon])
 
   return (

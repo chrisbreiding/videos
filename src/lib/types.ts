@@ -2,13 +2,18 @@
 
 import { IconName } from '../../generated/font-awesome'
 
+export type IconType = 'solid' | 'regular' | 'brands'
+
 export interface RemoteIconConfig {
   icon: string
+  type?: IconType
   foregroundColor: string
   backgroundColor: string
 }
+
 export interface IconConfig {
   icon: IconName
+  type: IconType
   foregroundColor: string
   backgroundColor: string
 }

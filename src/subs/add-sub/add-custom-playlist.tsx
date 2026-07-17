@@ -11,13 +11,14 @@ import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import { Modal } from '../../modal/modal'
 import type { IconConfig } from '../../lib/types'
-import { iconNames } from '../../../generated/font-awesome'
+import { solidIconNames } from '../../../generated/font-awesome'
 
 export const AddCustomPlaylist = observer(() => {
   const navigate = useNavigate()
   const titleRef = useRef<HTMLInputElement>(null)
   const [iconState, setIconState] = useState<IconConfig>({
-    icon: iconNames[0],
+    icon: solidIconNames[0],
+    type: 'solid',
     foregroundColor: '#FFFFFF',
     backgroundColor: '#333333',
   })
@@ -27,8 +28,8 @@ export const AddCustomPlaylist = observer(() => {
     titleRef.current!.focus()
   }, [])
 
-  const iconUpdated = (key: string, value: string) => {
-    setIconState((prev) => ({ ...prev, [key]: value }))
+  const iconUpdated = (updates: Partial<IconConfig>) => {
+    setIconState((prev) => ({ ...prev, ...updates }))
   }
 
   const toggleIconPicker = (e: React.MouseEvent) => {

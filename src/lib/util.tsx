@@ -6,8 +6,8 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import qs from 'qs'
 
-import type { LinkLocation, LinkUpdates, ParsedQuery } from './types'
-import { IconName } from '../../generated/font-awesome'
+import type { IconType, LinkLocation, LinkUpdates, ParsedQuery } from './types'
+import { brandsIconNames, type IconName, regularIconNames, solidIconNames } from '../../generated/font-awesome'
 
 dayjs.extend(relativeTime)
 
@@ -55,8 +55,7 @@ export function convertMapEntriesToObject<V> (mapEntries: Array<[string, V]>): R
   return obj
 }
 
-// Prefer explicit type for brands and regular. If no prefix is specified,
-// prefer solid, then regular, then brands.
+// Require explicit type for brands and regular to avoid conflicts with solid
 function findIcon (name: IconName, type?: 'solid' | 'regular' | 'brands') {
   if (type === 'brands') {
     return findIconDefinition({ prefix: 'fab', iconName: name })
@@ -67,8 +66,6 @@ function findIcon (name: IconName, type?: 'solid' | 'regular' | 'brands') {
   }
 
   return findIconDefinition({ prefix: 'fas', iconName: name })
-    || findIconDefinition({ prefix: 'far', iconName: name })
-    || findIconDefinition({ prefix: 'fab', iconName: name })
 }
 
 interface IconProps {
@@ -87,6 +84,20 @@ export function Icon ({ name, type, spin, rightText, leftText }: IconProps) {
       {rightText ? <span>{rightText}</span> : null}
     </span>
   )
+}
+
+const iconNamesByType: Record<IconType, readonly string[]> = {
+  solid: solidIconNames,
+  regular: regularIconNames,
+  brands: brandsIconNames,
+}
+
+export function resolveIcon (name: string, type: IconType = 'solid'): { icon: IconName, type: IconType } {
+  if (iconNamesByType[type].includes(name)) {
+    return { icon: name as IconName, type }
+  }
+
+  return { icon: 'circle', type: 'regular' }
 }
 
 export function duration (duration?: string): string | undefined {
