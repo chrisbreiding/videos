@@ -179,7 +179,7 @@ describe('Adding Videos to a Custom Playlist from a Channel', () => {
     await page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().click()
 
     // The checkbox icon should change to checked
-    await expect(page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().locator('.fa-check-square')).toBeVisible()
+    await expect(page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().locator('.fa-square-check')).toBeVisible()
   })
 
   test('can remove a video from a custom playlist', async ({ page }) => {
@@ -203,13 +203,13 @@ describe('Adding Videos to a Custom Playlist from a Channel', () => {
     await expect(page.getByText('Already Added Video')).toBeVisible({ timeout: 10000 })
 
     // Video should already be checked in the playlist
-    await expect(page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().locator('.fa-check-square')).toBeVisible()
+    await expect(page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().locator('.fa-square-check')).toBeVisible()
 
     // Click to remove from playlist
     await page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().click()
 
     // Should now show unchecked
-    await expect(page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().locator('.fa-square-o')).toBeVisible()
+    await expect(page.locator('.playlist-picker button').filter({ hasText: 'Watch Later' }).first().locator('.fa-square')).toBeVisible()
   })
 })
 

@@ -132,11 +132,11 @@ describe('Adding/Removing the Now Playing Video from a Playlist', () => {
 
     // Add to the custom playlist
     await playlistButton.click()
-    await expect(playlistButton.locator('.fa-check-square')).toBeVisible()
+    await expect(playlistButton.locator('.fa-square-check')).toBeVisible()
 
     // Remove from the custom playlist
     await playlistButton.click()
-    await expect(playlistButton.locator('.fa-square-o')).toBeVisible()
+    await expect(playlistButton.locator('.fa-square')).toBeVisible()
   })
 })
 

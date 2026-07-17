@@ -12,19 +12,21 @@ describe('lib/util', () => {
     const result = await page.evaluate(async () => {
       const util = await import('/src/lib/util.tsx')
 
-      const iconNoText = util.icon('star')
-      const iconRightText = util.icon('star', 'right')
-      const iconLeftText = util.icon('star', null, 'left')
-      const iconBothText = util.icon('star', 'right', 'left')
+      const iconNoText = util.Icon({ name: 'star' })
+      const iconRightText = util.Icon({ name: 'star', rightText: 'right' })
+      const iconLeftText = util.Icon({ name: 'star', leftText: 'left' })
+      const iconBothText = util.Icon({ name: 'star', rightText: 'right', leftText: 'left' })
+
+      const textOf = (child: { props?: { children?: unknown } } | null) => child?.props?.children ?? null
 
       return {
         iconNoTextClassName: iconNoText.props.className,
-        iconNoTextChildren: [iconNoText.props.children[0], iconNoText.props.children[2]],
+        iconNoTextChildren: [textOf(iconNoText.props.children[0]), textOf(iconNoText.props.children[2])],
         iconRightTextClassName: iconRightText.props.className,
-        iconRightTextChildren: [iconRightText.props.children[0], iconRightText.props.children[2]],
+        iconRightTextChildren: [textOf(iconRightText.props.children[0]), textOf(iconRightText.props.children[2])],
         iconLeftTextClassName: iconLeftText.props.className,
-        iconLeftTextChildren: [iconLeftText.props.children[0], iconLeftText.props.children[2]],
-        iconBothTextChildren: [iconBothText.props.children[0], iconBothText.props.children[2]],
+        iconLeftTextChildren: [textOf(iconLeftText.props.children[0]), textOf(iconLeftText.props.children[2])],
+        iconBothTextChildren: [textOf(iconBothText.props.children[0]), textOf(iconBothText.props.children[2])],
 
         durationUndefined: util.duration(undefined),
         durationWithHours: util.duration('PT1H2M3S'),

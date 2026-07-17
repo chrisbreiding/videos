@@ -4,14 +4,11 @@ import { action, computed, makeObservable, observable, ObservableMap, toJS } fro
 import { convertMapToObject, transformObject } from '../lib/util'
 import type { CustomPlaylistVideo, IconConfig, RemoteIconConfig, SubProps, SubType } from '../lib/types'
 import { IconName, iconNames } from '../../generated/font-awesome'
-import { legacyIconMap } from '../lib/legacy-icons'
 
 function resolveIcon (name: string): IconName {
   if (iconNames.includes(name as unknown as IconName)) return name as IconName
 
-  if (legacyIconMap[name]) return legacyIconMap[name] as IconName
-
-  return 'question'
+  return 'circle'
 }
 
 function resolveIconConfig (icon?: RemoteIconConfig): IconConfig | undefined {
