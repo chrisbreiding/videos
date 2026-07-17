@@ -69,21 +69,27 @@ export const Sub = observer(() => {
       return
     }
 
+    if (!sub) {
+      isAllSubsRef.current = true
+
+      return
+    }
+
+    isAllSubsRef.current = false
+
     if (
       oldPlaylistId !== newPlaylistId
       || oldToken !== newToken
       || oldSearchQuery !== newSearchQuery
     ) {
-      isAllSubsRef.current = false
-
       if (newSearchQuery) {
-        if (sub!.type === 'playlist') {
-          videosStore.getVideosDataForPlaylistSearch(sub!.playlistId!, newSearchQuery)
+        if (sub.type === 'playlist') {
+          videosStore.getVideosDataForPlaylistSearch(sub.playlistId!, newSearchQuery)
         } else {
-          videosStore.getVideosDataForChannelSearch(sub!, newSearchQuery, newToken)
+          videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
         }
-      } else if (sub!.type === 'custom') {
-        videosStore.getVideosDataForCustomPlaylist(sub!)
+      } else if (sub.type === 'custom') {
+        videosStore.getVideosDataForCustomPlaylist(sub)
       } else {
         videosStore.getVideosDataForPlaylist(newPlaylistId!, newToken)
       }

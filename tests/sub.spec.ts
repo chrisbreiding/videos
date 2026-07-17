@@ -1,5 +1,6 @@
 import { test, expect } from './util/coverage-fixture'
 import { setupApp, createChannel, createPlaylist, createCustomPlaylist, createVideo } from './util/helpers'
+import type { ChannelSearchResult } from '../src/lib/types'
 
 const { describe } = test
 
@@ -88,6 +89,38 @@ describe('Loading All Subs', () => {
 
     await expect(page).toHaveURL('/')
     await expect(page.locator('.videos-list')).toBeVisible({ timeout: 10000 })
+  })
+
+  test('returning to All Subs after searching for a channel to add does not crash', async ({ page }) => {
+    const search: ChannelSearchResult[] = [
+      { id: 'channel-2', title: 'Found Channel', author: 'Found Channel', thumb: 'https://example.com/thumb.jpg' },
+    ]
+
+    await setupApp(page, {
+      subs: {
+        'channel-1': createChannel({ id: 'channel-1', title: 'Channel One', playlistId: 'UU111', order: 0 }),
+      },
+      videos: [
+        createVideo({ id: 'video-1', title: 'Video One', channelId: 'channel-1' }),
+      ],
+      search,
+    })
+
+    await page.goto('/')
+    await expect(page.getByText('Video One')).toBeVisible({ timeout: 10000 })
+
+    await page.locator('a[href="/add-channel"]').click()
+
+    const searchInput = page.locator('.add-channel input')
+    await searchInput.fill('Found Channel')
+    await page.locator('.add-channel button').click()
+
+    await expect(page.getByText('Found Channel')).toBeVisible({ timeout: 10000 })
+
+    await page.locator('.all-subs .sub-title').click()
+
+    await expect(page).toHaveURL('/')
+    await expect(page.getByText('Video One')).toBeVisible({ timeout: 10000 })
   })
 })
 
