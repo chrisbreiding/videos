@@ -12,7 +12,7 @@ video-thumb-width = 160px;
   .video-sort-handle {
     cursor: grab;
     left: 0;
-    padding: 0.6em;
+    padding: 1em 0.6em 0.6em;
     position: absolute;
     top: 0;
     visibility: hidden;
@@ -20,10 +20,14 @@ video-thumb-width = 160px;
     .icon {
       color: darken(light-color, 30%);
 
-      &:first-child {
-        margin-right: 0.16em;
+      svg {
+        width: 0.5em;
       }
     }
+  }
+
+  &.is-marked .video-sort-handle {
+    top: 1.7em;
   }
 
   .videos-is-sortable &:hover .video-sort-handle,
@@ -127,19 +131,6 @@ video-thumb-width = 160px;
     left: 0;
     position: absolute;
     width: (video-thumb-height / 2);
-  }
-
-  .icon svg {
-    color: #FFF;
-    bottom: 0;
-    font-size: 4em;
-    left: 0;
-    line-height: video-thumb-height;
-    position: absolute;
-    right: 0;
-    top: 0;
-    text-align: center;
-    visibility: hidden;
   }
 
   &:hover,

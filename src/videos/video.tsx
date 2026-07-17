@@ -89,8 +89,8 @@ export const Video = observer((props: VideoProps) => {
       )}
       <div className='contents'>
         <div className='video-sort-handle' ref={handleRef}>
-          <Icon name='ellipsis-v' />
-          <Icon name='ellipsis-v' />
+          <Icon name='ellipsis-vertical' />
+          <Icon name='ellipsis-vertical' />
         </div>
         <aside>
           <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
