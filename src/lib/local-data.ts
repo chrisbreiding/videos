@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getItem = <T = any>(key: string): T | undefined => {
+export const getItem = <T>(key: string): T | undefined => {
   return localStorage[key] ? JSON.parse(localStorage[key]) : undefined
 }
 
