@@ -7,26 +7,55 @@ import { IconThumb } from '../icon-thumb/icon-thumb'
 import type { IconConfig, IconType } from '../lib/types'
 import { brandsIconNames, type IconName, regularIconNames, solidIconNames } from '../../generated/font-awesome'
 
-interface IconPickerProps {
-  icon: IconConfig
-  onUpdate: (updates: Partial<IconConfig>) => void
-}
-
-interface PickableIcon {
+interface IconOption {
   name: IconName
   type: IconType
 }
 
-const allIcons: PickableIcon[] = [
+const allIcons: IconOption[] = [
   ..._.map(solidIconNames, (name) => ({ name, type: 'solid' as const })),
   ..._.map(regularIconNames, (name) => ({ name, type: 'regular' as const })),
   ..._.map(brandsIconNames, (name) => ({ name, type: 'brands' as const })),
 ]
 
-export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
+interface IconItemProps {
+  isChosen: boolean
+  icon: IconConfig
+  onUpdate: (updates: Partial<IconConfig>) => void
+}
+
+const IconItem = ({ isChosen, icon, onUpdate }: IconItemProps) => {
+  const update = useCallback(() => {
+    onUpdate(icon)
+  }, [icon, onUpdate])
+
+  return (
+    <button
+      key={`${icon.type}-${icon.icon}`}
+      onClick={update}
+      className={cs('picker-icon', {
+        chosen: isChosen,
+      })}
+    >
+      <IconThumb
+        backgroundColor={icon.backgroundColor}
+        foregroundColor={icon.foregroundColor}
+        icon={icon.icon}
+        type={icon.type}
+      />
+    </button>
+  )
+}
+
+interface IconPickerProps {
+  chosenIcon: IconConfig
+  onUpdate: (updates: Partial<IconConfig>) => void
+}
+
+export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
   const [filter, setFilter] = useState('')
 
-  const { foregroundColor, backgroundColor } = icon
+  const { foregroundColor, backgroundColor } = chosenIcon
 
   const updateColorDebounced = useMemo(() => {
     return _.debounce((key: string, color: string) => {
@@ -41,10 +70,6 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
       onUpdate({ [`${key}Color`]: e.target.value })
     }
   }
-
-  const updateIcon = useCallback((iconName: IconName, iconType: IconType) => {
-    onUpdate({ icon: iconName, type: iconType })
-  }, [onUpdate])
 
   const updateFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value)
@@ -66,22 +91,14 @@ export const IconPicker = ({ icon, onUpdate }: IconPickerProps) => {
     }
 
     return _.map(filteredIcons, ({ name, type }) => (
-      <button
+      <IconItem
         key={`${type}-${name}`}
-        onClick={() => updateIcon(name, type)}
-        className={cs('picker-icon', {
-          chosen: icon.icon === name && icon.type === type,
-        })}
-      >
-        <IconThumb
-          backgroundColor={icon.backgroundColor}
-          foregroundColor={icon.foregroundColor}
-          icon={name}
-          type={type}
-        />
-      </button>
+        icon={{ icon: name, type, foregroundColor, backgroundColor }}
+        isChosen={chosenIcon.icon === name && chosenIcon.type === type}
+        onUpdate={onUpdate}
+      />
     ))
-  }, [filteredIcons, icon, filter, updateIcon])
+  }, [filteredIcons, chosenIcon, filter, onUpdate, foregroundColor, backgroundColor])
 
   return (
     <div className='icon-picker'>

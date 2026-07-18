@@ -40,7 +40,7 @@ export const CustomPlaylist = observer(({ sub, link, onUpdate, handleRef }: {
         <Modal className='icon-picker-modal' onClose={() => setIsPickingIcon(false)}>
           <IconPicker
             onUpdate={handleIconUpdated}
-            icon={sub.icon!}
+            chosenIcon={sub.icon!}
           />
         </Modal>
       )}

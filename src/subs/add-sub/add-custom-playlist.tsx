@@ -1,7 +1,7 @@
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import _ from 'lodash'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { Icon } from '../../lib/util'
@@ -28,16 +28,16 @@ export const AddCustomPlaylist = observer(() => {
     titleRef.current!.focus()
   }, [])
 
-  const iconUpdated = (updates: Partial<IconConfig>) => {
+  const iconUpdated = useCallback((updates: Partial<IconConfig>) => {
     setIconState((prev) => ({ ...prev, ...updates }))
-  }
+  }, [setIconState])
 
-  const toggleIconPicker = (e: React.MouseEvent) => {
+  const toggleIconPicker = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     setIsPickingIcon(!isPickingIcon)
-  }
+  }, [setIsPickingIcon, isPickingIcon])
 
-  const add = (e: React.FormEvent) => {
+  const add = (e: React.SubmitEvent) => {
     e.preventDefault()
 
     const title = titleRef.current!.value
@@ -57,7 +57,7 @@ export const AddCustomPlaylist = observer(() => {
       >
         <IconPicker
           onUpdate={iconUpdated}
-          icon={iconState}
+          chosenIcon={iconState}
         />
       </Modal>
     )
