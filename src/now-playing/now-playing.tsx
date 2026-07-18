@@ -121,7 +121,7 @@ export const NowPlaying = (props: NowPlayingProps) => {
           title="Toggle Auto Play"
           onClick={props.onToggleAutoPlay}
         >
-          <Icon name="forward" />
+          <Icon name="repeat" />
         </button>
         <button
           className={cs('toggle-description', {
@@ -130,7 +130,7 @@ export const NowPlaying = (props: NowPlayingProps) => {
           title="Toggle Description"
           onClick={toggleShowingDescription}
         >
-          <Icon name="info" />
+          <Icon name="circle-info" />
         </button>
         <button
           className={cs('toggle-playlists', {

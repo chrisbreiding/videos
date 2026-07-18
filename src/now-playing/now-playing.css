@@ -30,11 +30,9 @@
     & button,
     & .button {
       border: none;
-      height: 2.2em;
-      width: 2.4em;
 
       & .icon svg {
-        font-size: 1.4em;
+        font-size: 1.2em;
       }
     }
 
