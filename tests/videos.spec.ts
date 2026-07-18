@@ -404,7 +404,7 @@ describe('Viewing a Custom Playlist With Videos', () => {
     await page.locator('.custom-sub-item .sub-title').click()
 
     await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
-    await expect(page.locator('.video h4').allTextContents()).resolves.toEqual([
+    await expect.poll(() => page.locator('.video h4').allTextContents()).toEqual([
       'First Video', 'Second Video', 'Third Video', 'Fourth Video',
     ])
 
