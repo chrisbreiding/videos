@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { NavLink } from 'react-router'
 
@@ -7,6 +7,7 @@ import { Icon } from '../../lib/util'
 import { getChannelDetails, getPlaylistDetails } from '../../lib/youtube'
 
 import { Title } from './title'
+import { SubTitleInput } from './sub-title-input'
 import { CustomPlaylist } from './custom-playlist'
 import type { SubModel } from '../../sub/sub-model'
 import type { LinkLocation, SubProps } from '../../lib/types'
@@ -45,14 +46,13 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate, handleRef }: {
   onUpdate: (props: Partial<SubProps>) => void
   handleRef: HandleRef
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null)
   const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
 
-  const onChange = () => {
-    onUpdate({ title: inputRef.current!.value })
-  }
+  const onTitleUpdate = useCallback((title: string) => {
+    onUpdate({ title })
+  }, [onUpdate])
 
-  const onThumbClick = async () => {
+  const onThumbClick = useCallback(async () => {
     if (isUpdatingThumb) return
 
     setIsUpdatingThumb(true)
@@ -69,7 +69,7 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate, handleRef }: {
     } finally {
       setIsUpdatingThumb(false)
     }
-  }
+  }, [isUpdatingThumb, onUpdate, setIsUpdatingThumb, sub])
 
   return (
     <span className={`${sub.type}-sub-item`}>
@@ -84,7 +84,7 @@ const Channel = observer(({ sub, link, bookmarkLink, onUpdate, handleRef }: {
         <img src={sub.thumb} />
       </button>
       <Title sub={sub} link={link} />
-      <input ref={inputRef} onChange={onChange} value={sub.title || sub.author} />
+      <SubTitleInput value={sub.title || sub.author} onUpdate={onTitleUpdate} />
       <BookmarkLink link={bookmarkLink} />
     </span>
   )
@@ -106,7 +106,7 @@ export const SubItem = observer((props: SubItemProps) => {
     <li className='sub-item' ref={ref}>
       {props.sub.type === 'custom'
         ? <CustomPlaylist {...props} handleRef={handleRef} />
-        : <Channel {...props} onUpdate={props.onUpdate} handleRef={handleRef} />}
+        : <Channel {...props} handleRef={handleRef} />}
       <button className='remove' onClick={remove}>
         <Icon name='minus-circle' />
       </button>

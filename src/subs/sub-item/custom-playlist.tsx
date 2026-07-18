@@ -1,8 +1,8 @@
-import _ from 'lodash'
 import { observer } from 'mobx-react'
-import { useRef, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 
 import { Title } from './title'
+import { SubTitleInput } from './sub-title-input'
 import { IconPicker } from '../../icon-picker/icon-picker'
 import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { Modal } from '../../modal/modal'
@@ -16,10 +16,9 @@ export const CustomPlaylist = observer(({ sub, link, onUpdate, handleRef }: {
   handleRef: (element: Element | null) => void
 }) => {
   const [isPickingIcon, setIsPickingIcon] = useState(false)
-  const titleRef = useRef<HTMLInputElement>(null)
 
-  const handleChange = useCallback(() => {
-    onUpdate({ title: titleRef.current!.value })
+  const onTitleUpdate = useCallback((title: string) => {
+    onUpdate({ title })
   }, [onUpdate])
 
   const handleIconUpdated = useCallback((updates: Partial<IconConfig>) => {
@@ -35,7 +34,7 @@ export const CustomPlaylist = observer(({ sub, link, onUpdate, handleRef }: {
         <IconThumb {...sub.icon!} />
       </button>
       <Title sub={sub} link={link} />
-      <input ref={titleRef} onChange={handleChange} value={sub.title} />
+      <SubTitleInput value={sub.title} onUpdate={onTitleUpdate} />
       {isPickingIcon && (
         <Modal className='icon-picker-modal' onClose={() => setIsPickingIcon(false)}>
           <IconPicker

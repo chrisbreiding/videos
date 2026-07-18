@@ -55,6 +55,22 @@ describe('Sub Item - Editing a Channel', () => {
       videos: [],
     })
 
+    // Record every firestore `set` payload so we can assert the debounced
+    // write reaches firebase with the new title, not just the local input.
+    await page.addInitScript(() => {
+      window.__setCalls = []
+      const originalUserDoc = window.__firebaseStubs!.userDoc!
+      window.__firebaseStubs!.userDoc = () => {
+        const doc = originalUserDoc()
+        const originalSet = doc.set
+        doc.set = (data: unknown, options: unknown) => {
+          window.__setCalls!.push(data)
+          return originalSet(data, options)
+        }
+        return doc
+      }
+    })
+
     await page.goto('/')
     await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
 
@@ -65,10 +81,21 @@ describe('Sub Item - Editing a Channel', () => {
     await expect(titleInput).toBeVisible()
     await expect(titleInput).toHaveValue('Old Name')
 
-    // Typing fires onChange -> onUpdate({ title }), and the controlled input
-    // reflects the updated sub title
+    await page.evaluate(() => { window.__setCalls!.length = 0 })
+
     await titleInput.fill('New Name')
     await expect(titleInput).toHaveValue('New Name')
+
+    // The write is debounced, so it should not reach firebase immediately
+    const callsRightAfterTyping = await page.evaluate(() => window.__setCalls)
+    expect(callsRightAfterTyping).toHaveLength(0)
+
+    // Once the debounce elapses, the new title is persisted
+    await expect.poll(() => page.evaluate(() => window.__setCalls!.length), { timeout: 2000 }).toBeGreaterThan(0)
+
+    const calls = await page.evaluate(() => window.__setCalls)
+    const lastCall = calls![calls!.length - 1] as { subs: Record<string, { title: string }> }
+    expect(lastCall.subs['channel-1'].title).toBe('New Name')
   })
 
   test('updates a channel thumbnail from the channel details', async ({ page }) => {
