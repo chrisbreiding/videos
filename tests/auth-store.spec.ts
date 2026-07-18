@@ -25,7 +25,9 @@ describe('login/auth-store', () => {
     expect(youtubeApiKey).toBe('fake-api-key')
   })
 
-  test('checkApiKey resolves false without calling out when given a falsy value', async ({ page }) => {
+  test('checkApiKey resolves false without calling out when given a falsy value', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })

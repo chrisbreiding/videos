@@ -21,7 +21,8 @@ import {
 
 // Test stub support - allows mocking Firebase in tests
 const getTestStubs = (): FirebaseStubs | undefined => {
-  return (typeof window !== 'undefined' && window.__firebaseStubs) as FirebaseStubs | undefined
+  return (typeof window !== 'undefined' && window.__firebaseStubs) as
+    FirebaseStubs | undefined
 }
 
 // App
@@ -44,7 +45,9 @@ export const getCurrentUser = (): User | null => {
   return getAuth(app).currentUser
 }
 
-export const onAuthStateChanged = (callback: (user: User | null) => void): (() => void) => {
+export const onAuthStateChanged = (
+  callback: (user: User | null) => void,
+): (() => void) => {
   const stubs = getTestStubs()
   if (stubs?.onAuthStateChanged) return stubs.onAuthStateChanged(callback)
 
@@ -110,21 +113,29 @@ export const getDoc = async (): Promise<DocumentData | undefined> => {
   return snapshot.data() as DocumentData
 }
 
-export const watchDoc = (onChange: (data: DocumentData) => void): (() => void) => {
+export const watchDoc = (
+  onChange: (data: DocumentData) => void,
+): (() => void) => {
   const userDocRef = userDoc()
 
-  const handleSnapshot = (snapshot: DocumentSnapshot<DocumentData> | StubSnapshot) => {
+  const handleSnapshot = (
+    snapshot: DocumentSnapshot<DocumentData> | StubSnapshot,
+  ) => {
     // The real (non-stubbed) branch below only fires when a real snapshot succeeds
     // against live, authenticated Firestore; unauthenticated listeners only ever
     // reach the onSnapshot error callback, which this test environment can't avoid.
-    const exists = snapshot instanceof DocumentSnapshot ? /* istanbul ignore next */ snapshot.exists() : snapshot.exists
+    /* istanbul ignore next 2 */
+    const exists =
+      snapshot instanceof DocumentSnapshot ? snapshot.exists() : snapshot.exists
 
     if (!exists) return
 
     onChange(snapshot.data() as DocumentData)
   }
 
-  if (userDocRef instanceof DocumentReference) return onSnapshot(userDocRef, handleSnapshot)
+  if (userDocRef instanceof DocumentReference) {
+    return onSnapshot(userDocRef, handleSnapshot)
+  }
 
   return userDocRef.onSnapshot(handleSnapshot)
 }
@@ -132,7 +143,9 @@ export const watchDoc = (onChange: (data: DocumentData) => void): (() => void) =
 export const updateDoc = (data: DocumentData) => {
   const userDocRef = userDoc()
 
-  if (userDocRef instanceof DocumentReference) return setDoc(userDocRef, data, { merge: true })
+  if (userDocRef instanceof DocumentReference) {
+    return setDoc(userDocRef, data, { merge: true })
+  }
 
   return userDocRef.set(data, { merge: true })
 }

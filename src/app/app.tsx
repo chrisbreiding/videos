@@ -2,7 +2,14 @@ import cs from 'classnames'
 import _ from 'lodash'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
-import { Navigate, Route, Routes, matchPath, useLocation, useNavigate } from 'react-router'
+import {
+  Navigate,
+  Route,
+  Routes,
+  matchPath,
+  useLocation,
+  useNavigate,
+} from 'react-router'
 
 import { appState, minNowPlayingHeight } from './app-state'
 import { authStore } from '../login/auth-store'
@@ -76,7 +83,10 @@ export const App = observer(() => {
     const nextVideoId = videosStore.nextVideoId(getNowPlayingId())
     if (!nextVideoId) return
 
-    const match = matchPath({ path: '/subs/:id', end: false }, location.pathname)
+    const match = matchPath(
+      { path: '/subs/:id', end: false },
+      location.pathname,
+    )
 
     if (match) {
       const subId = match.params.id
@@ -87,9 +97,11 @@ export const App = observer(() => {
       }
     }
 
-    navigate(updatedLink(location, {
-      search: { nowPlaying: nextVideoId },
-    }))
+    navigate(
+      updatedLink(location, {
+        search: { nowPlaying: nextVideoId },
+      }),
+    )
   }
 
   const startResizing = () => {
@@ -137,22 +149,22 @@ export const App = observer(() => {
 
   if (!authStore.isAuthenticated) {
     return (
-      <div className='loader'>
-        <Icon name='sign-in' /> Authenticating...
+      <div className="loader">
+        <Icon name="sign-in" /> Authenticating...
       </div>
     )
   }
 
   if (subsStore.isLoading) {
     return (
-      <div className='loader'>
-        <Icon name='play-circle' spin /> Loading...
+      <div className="loader">
+        <Icon name="play-circle" spin /> Loading...
       </div>
     )
   }
 
   if (!subsStore.subs.length && !location.pathname.includes('/add-channel')) {
-    return <Navigate to='/add-channel' />
+    return <Navigate to="/add-channel" />
   }
 
   const nowPlayingId = getNowPlayingId()
@@ -172,8 +184,12 @@ export const App = observer(() => {
         closeLink={getCloseNowPlayingLink()}
         onEnd={onVideoEnded}
         onToggleAutoPlay={appState.toggleAutoPlay}
-        addedToPlaylist={(playlist: SubModel) => subsStore.addVideoToPlaylist(playlist, nowPlayingId!)}
-        removedFromPlaylist={(playlist: SubModel) => subsStore.removeVideoFromPlaylist(playlist, nowPlayingId!)}
+        addedToPlaylist={(playlist: SubModel) =>
+          subsStore.addVideoToPlaylist(playlist, nowPlayingId!)
+        }
+        removedFromPlaylist={(playlist: SubModel) =>
+          subsStore.removeVideoFromPlaylist(playlist, nowPlayingId!)
+        }
       />
       {nowPlayingId && (
         <Resizer
@@ -185,20 +201,20 @@ export const App = observer(() => {
           onResizeEnd={endResizing}
         />
       )}
-      <div className='subs'>
+      <div className="subs">
         <Subs
           location={location}
           onSortStart={onSortStart}
           onSortEnd={onSortEnd}
         />
         <Routes>
-          <Route path='/' element={<Sub />} />
-          <Route path='add-custom-playlist' element={<AddCustomPlaylist />} />
-          <Route path='add-to-playlist' element={<AddToPlaylist />} />
-          <Route path='add-channel' element={<AddChannel />} />
-          <Route path='add-channel/:query' element={<AddChannel />} />
-          <Route path='subs/:id/page/:pageToken' element={<Sub />} />
-          <Route path='subs/:id' element={<Sub />} />
+          <Route path="/" element={<Sub />} />
+          <Route path="add-custom-playlist" element={<AddCustomPlaylist />} />
+          <Route path="add-to-playlist" element={<AddToPlaylist />} />
+          <Route path="add-channel" element={<AddChannel />} />
+          <Route path="add-channel/:query" element={<AddChannel />} />
+          <Route path="subs/:id/page/:pageToken" element={<Sub />} />
+          <Route path="subs/:id" element={<Sub />} />
         </Routes>
       </div>
     </div>

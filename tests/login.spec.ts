@@ -10,46 +10,67 @@ const { describe } = test
  * subsequent `onAuthStateChanged` call (e.g. from the app after a successful
  * login) reports the now-authenticated user.
  */
-async function stubUnauthenticated (page: Page, { signInSucceeds = true } = {}) {
-  await page.addInitScript(({ signInSucceeds }) => {
-    let signedIn = false
+async function stubUnauthenticated(page: Page, { signInSucceeds = true } = {}) {
+  await page.addInitScript(
+    ({ signInSucceeds }) => {
+      let signedIn = false
 
-    window.__firebaseStubs = {
-      onAuthStateChanged: (callback) => {
-        setTimeout(() => callback(signedIn ? { uid: 'test-user-123' } as never : null), 0)
-        return () => {}
-      },
-
-      signIn: () => {
-        if (!signInSucceeds) return Promise.reject(new Error('invalid credentials'))
-
-        signedIn = true
-        return Promise.resolve({ user: { uid: 'test-user-123' } })
-      },
-
-      signOut: () => Promise.resolve(),
-
-      userDoc: () => ({
-        get: () => Promise.resolve({
-          exists: true,
-          data: () => ({ youtubeApiKey: 'fake-api-key', subs: {}, watchedVideos: {} }),
-        }),
-        onSnapshot: (callback: (snapshot: { exists: boolean, data: () => unknown }) => void) => {
-          setTimeout(() => {
-            callback({
-              exists: true,
-              data: () => ({ youtubeApiKey: 'fake-api-key', subs: {}, watchedVideos: {} }),
-            })
-          }, 0)
+      window.__firebaseStubs = {
+        onAuthStateChanged: (callback) => {
+          setTimeout(
+            () =>
+              callback(signedIn ? ({ uid: 'test-user-123' } as never) : null),
+            0,
+          )
           return () => {}
         },
-        set: () => Promise.resolve(),
-        update: () => Promise.resolve(),
-      }),
 
-      deleteField: () => Promise.resolve(),
-    }
-  }, { signInSucceeds })
+        signIn: () => {
+          if (!signInSucceeds) { return Promise.reject(new Error('invalid credentials')) }
+
+          signedIn = true
+          return Promise.resolve({ user: { uid: 'test-user-123' } })
+        },
+
+        signOut: () => Promise.resolve(),
+
+        userDoc: () => ({
+          get: () =>
+            Promise.resolve({
+              exists: true,
+              data: () => ({
+                youtubeApiKey: 'fake-api-key',
+                subs: {},
+                watchedVideos: {},
+              }),
+            }),
+          onSnapshot: (
+            callback: (snapshot: {
+              exists: boolean
+              data: () => unknown
+            }) => void,
+          ) => {
+            setTimeout(() => {
+              callback({
+                exists: true,
+                data: () => ({
+                  youtubeApiKey: 'fake-api-key',
+                  subs: {},
+                  watchedVideos: {},
+                }),
+              })
+            }, 0)
+            return () => {}
+          },
+          set: () => Promise.resolve(),
+          update: () => Promise.resolve(),
+        }),
+
+        deleteField: () => Promise.resolve(),
+      }
+    },
+    { signInSucceeds },
+  )
 }
 
 describe('Login', () => {
@@ -85,7 +106,9 @@ describe('Login', () => {
     await expect(page.getByText('Login failed. Try again.')).not.toBeVisible()
   })
 
-  test('shows an error message and stays on the login page on failure', async ({ page }) => {
+  test('shows an error message and stays on the login page on failure', async ({
+    page,
+  }) => {
     await stubUnauthenticated(page, { signInSucceeds: false })
 
     await page.goto('/login')

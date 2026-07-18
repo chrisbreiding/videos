@@ -11,39 +11,54 @@ const packages = [
   {
     name: '@fortawesome/free-solid-svg-icons',
     type: 'solid',
-    dir: path.join(__dirname, '../node_modules/@fortawesome/free-solid-svg-icons'),
+    dir: path.join(
+      __dirname,
+      '../node_modules/@fortawesome/free-solid-svg-icons',
+    ),
   },
   {
     name: '@fortawesome/free-regular-svg-icons',
     type: 'regular',
-    dir: path.join(__dirname, '../node_modules/@fortawesome/free-regular-svg-icons'),
+    dir: path.join(
+      __dirname,
+      '../node_modules/@fortawesome/free-regular-svg-icons',
+    ),
   },
   {
     name: '@fortawesome/free-brands-svg-icons',
     type: 'brands',
-    dir: path.join(__dirname, '../node_modules/@fortawesome/free-brands-svg-icons'),
+    dir: path.join(
+      __dirname,
+      '../node_modules/@fortawesome/free-brands-svg-icons',
+    ),
   },
 ]
 
 const validIconName = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
-const commonTypesDtsPath = path.join(__dirname, '../node_modules/@fortawesome/fontawesome-common-types/index.d.ts')
+const commonTypesDtsPath = path.join(
+  __dirname,
+  '../node_modules/@fortawesome/fontawesome-common-types/index.d.ts',
+)
 
 // The canonical list of icon names FontAwesome itself considers valid, across
 // every package/style. Packages occasionally carry stale slugs from older
 // releases (e.g. a renamed or retired brand icon) that this catches.
-function readKnownIconNames () {
+function readKnownIconNames() {
   const dtsContents = fs.readFileSync(commonTypesDtsPath, 'utf8')
   const match = dtsContents.match(/export type IconName = ([^;]+);/s)
 
   return new Set(match[1].match(/'[^']+'/g).map((name) => name.slice(1, -1)))
 }
 
-function versionHeaderRegex (packageName) {
-  return new RegExp(`^// Generated from ${packageName.replace(/\//g, '\\/')}@(\\S+)$`, 'm')
+function versionHeaderRegex(packageName) {
+  return new RegExp(
+    `^// Generated from ${packageName.replace(/\//g, '\\/')}@(\\S+)$`,
+    'm',
+  )
 }
 
-function readGeneratedVersion (pkg) {
+function readGeneratedVersion(pkg) {
   if (!fs.existsSync(outputPath)) return null
 
   const contents = fs.readFileSync(outputPath, 'utf8')
@@ -52,7 +67,7 @@ function readGeneratedVersion (pkg) {
   return match ? match[1] : null
 }
 
-function collectIconNames (pkg) {
+function collectIconNames(pkg) {
   const pack = require(pkg.dir)
   const names = new Set()
 
@@ -64,14 +79,15 @@ function collectIconNames (pkg) {
     // icon[2] holds unicode ligatures (numbers) and alternate names (strings,
     // e.g. 'usd' as an alias of 'dollar-sign') - both resolve at runtime.
     for (const entry of value.icon[2]) {
-      if (typeof entry === 'string' && validIconName.test(entry)) names.add(entry)
+      if (typeof entry === 'string' && validIconName.test(entry))
+        names.add(entry)
     }
   }
 
   return Array.from(names).sort()
 }
 
-function generate (versions) {
+function generate(versions) {
   const knownIconNames = readKnownIconNames()
   const names = {
     solid: new Set(),
@@ -95,7 +111,9 @@ function generate (versions) {
   }
 
   if (unknownNames.size) {
-    console.log(`Dropping ${unknownNames.size} name(s) not recognized by @fortawesome/fontawesome-common-types: ${Array.from(unknownNames).sort().join(', ')}`)
+    console.log(
+      `Dropping ${unknownNames.size} name(s) not recognized by @fortawesome/fontawesome-common-types: ${Array.from(unknownNames).sort().join(', ')}`,
+    )
   }
 
   const header = packages
@@ -122,22 +140,28 @@ export type IconName = typeof solidIconNames[number] | typeof regularIconNames[n
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true })
   fs.writeFileSync(outputPath, contents)
-  console.log(`Generated generated/font-awesome.ts for ${packages.map((pkg) => `${pkg.name}@${versions[pkg.name]}`).join(', ')}`)
+  console.log(
+    `Generated generated/font-awesome.ts for ${packages.map((pkg) => `${pkg.name}@${versions[pkg.name]}`).join(', ')}`,
+  )
 }
 
-function main () {
+function main() {
   const versions = {}
   let upToDate = true
 
   for (const pkg of packages) {
-    const pkgJson = JSON.parse(fs.readFileSync(path.join(pkg.dir, 'package.json'), 'utf8'))
+    const pkgJson = JSON.parse(
+      fs.readFileSync(path.join(pkg.dir, 'package.json'), 'utf8'),
+    )
     versions[pkg.name] = pkgJson.version
 
     if (readGeneratedVersion(pkg) !== pkgJson.version) upToDate = false
   }
 
   if (upToDate) {
-    console.log(`generated/font-awesome.ts is already up to date with ${packages.map((pkg) => `${pkg.name}@${versions[pkg.name]}`).join(', ')}, skipping generation`)
+    console.log(
+      `generated/font-awesome.ts is already up to date with ${packages.map((pkg) => `${pkg.name}@${versions[pkg.name]}`).join(', ')}, skipping generation`,
+    )
     return
   }
 
@@ -147,7 +171,7 @@ function main () {
     if (!fs.existsSync(dtsPath)) {
       throw new Error(
         `Expected ${pkg.name} index.d.ts at "${dtsPath}" in order to generate generated/font-awesome.ts, but it does not exist. ` +
-        `Expected version ${readGeneratedVersion(pkg) ?? 'unknown'}, but the installed version is ${versions[pkg.name]}.`,
+          `Expected version ${readGeneratedVersion(pkg) ?? 'unknown'}, but the installed version is ${versions[pkg.name]}.`,
       )
     }
   }

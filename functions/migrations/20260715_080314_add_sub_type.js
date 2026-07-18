@@ -14,7 +14,8 @@ module.exports = async (admin, db) => {
     const updates = {}
 
     Object.entries(subs).forEach(([id, sub]) => {
-      updates[`subs.${id}.type`] = sub.isCustom || id.startsWith('custom-') ? 'custom' : 'channel'
+      updates[`subs.${id}.type`] =
+        sub.isCustom || id.startsWith('custom-') ? 'custom' : 'channel'
 
       if (sub.isCustom !== undefined) {
         updates[`subs.${id}.isCustom`] = admin.firestore.FieldValue.delete()

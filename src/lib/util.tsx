@@ -7,39 +7,56 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import qs from 'qs'
 
 import type { IconType, LinkLocation, LinkUpdates, ParsedQuery } from './types'
-import { brandsIconNames, type IconName, regularIconNames, solidIconNames } from '../../generated/font-awesome'
+import {
+  brandsIconNames,
+  type IconName,
+  regularIconNames,
+  solidIconNames,
+} from '../../generated/font-awesome'
 
 dayjs.extend(relativeTime)
 
-const re = /^P(?:(\d+(?:[\.,]\d{0,3})?W)|(\d+(?:[\.,]\d{0,3})?Y)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?D)?(?:T(\d+(?:[\.,]\d{0,3})?H)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?S)?)?)$/
+const re =
+  /^P(?:(\d+(?:[\.,]\d{0,3})?W)|(\d+(?:[\.,]\d{0,3})?Y)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?D)?(?:T(\d+(?:[\.,]\d{0,3})?H)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?S)?)?)$/
 const HR = 5
 const MIN = 6
 const S = 7
 
-function parseIso8601Duration (text: string): string[] {
+function parseIso8601Duration(text: string): string[] {
   const matches = text.match(re)!
 
-  return _.reduce([HR, MIN, S], (memo: string[], index) => {
-    if (matches[index]) {
-      memo.push(parseInt(matches[index], 10).toString())
-    } else if (index === MIN || index === S) {
-      memo.push('0')
-    }
-    return memo
-  }, [] as string[])
+  return _.reduce(
+    [HR, MIN, S],
+    (memo: string[], index) => {
+      if (matches[index]) {
+        memo.push(parseInt(matches[index], 10).toString())
+      } else if (index === MIN || index === S) {
+        memo.push('0')
+      }
+      return memo
+    },
+    [] as string[],
+  )
 }
 
-function toTwoDigits (num: string): string {
+function toTwoDigits(num: string): string {
   return num.length === 2 ? num : `0${num}`
 }
 
-export function transformObject<T, R> (obj: Record<string, T>, fn: (value: T) => R): Record<string, R> {
-  return _.transform(obj, (memo: Record<string, R>, value, key) => {
-    memo[key] = fn(value)
-  }, {} as Record<string, R>)
+export function transformObject<T, R>(
+  obj: Record<string, T>,
+  fn: (value: T) => R,
+): Record<string, R> {
+  return _.transform(
+    obj,
+    (memo: Record<string, R>, value, key) => {
+      memo[key] = fn(value)
+    },
+    {} as Record<string, R>,
+  )
 }
 
-export function convertMapToObject<V> (map: Map<string, V>): Record<string, V> {
+export function convertMapToObject<V>(map: Map<string, V>): Record<string, V> {
   const obj: Record<string, V> = {}
   map.forEach((value, key) => {
     obj[key] = value
@@ -47,7 +64,9 @@ export function convertMapToObject<V> (map: Map<string, V>): Record<string, V> {
   return obj
 }
 
-export function convertMapEntriesToObject<V> (mapEntries: Array<[string, V]>): Record<string, V> {
+export function convertMapEntriesToObject<V>(
+  mapEntries: Array<[string, V]>,
+): Record<string, V> {
   const obj: Record<string, V> = {}
   mapEntries.forEach(([key, value]) => {
     obj[key] = value
@@ -56,7 +75,7 @@ export function convertMapEntriesToObject<V> (mapEntries: Array<[string, V]>): R
 }
 
 // Require explicit type for brands and regular to avoid conflicts with solid
-function findIcon (name: IconName, type?: 'solid' | 'regular' | 'brands') {
+function findIcon(name: IconName, type?: 'solid' | 'regular' | 'brands') {
   if (type === 'brands') {
     return findIconDefinition({ prefix: 'fab', iconName: name })
   }
@@ -76,7 +95,7 @@ interface IconProps {
   leftText?: ReactNode
 }
 
-export function Icon ({ name, type, spin, rightText, leftText }: IconProps) {
+export function Icon({ name, type, spin, rightText, leftText }: IconProps) {
   return (
     <span className={`icon${rightText || leftText ? ' with-text' : ''}`}>
       {leftText ? <span>{leftText}</span> : null}
@@ -92,7 +111,10 @@ const iconNamesByType: Record<IconType, readonly string[]> = {
   brands: brandsIconNames,
 }
 
-export function resolveIcon (name: string, type: IconType = 'solid'): { icon: IconName, type: IconType } {
+export function resolveIcon(
+  name: string,
+  type: IconType = 'solid',
+): { icon: IconName; type: IconType } {
   if (iconNamesByType[type].includes(name)) {
     return { icon: name as IconName, type }
   }
@@ -100,7 +122,7 @@ export function resolveIcon (name: string, type: IconType = 'solid'): { icon: Ic
   return { icon: 'circle', type: 'regular' }
 }
 
-export function duration (duration?: string): string | undefined {
+export function duration(duration?: string): string | undefined {
   if (!duration) return
 
   const parsed = parseIso8601Duration(duration)
@@ -109,7 +131,7 @@ export function duration (duration?: string): string | undefined {
   return parts.join(':')
 }
 
-export function durationSeconds (duration?: string): number {
+export function durationSeconds(duration?: string): number {
   if (!duration) return 0
 
   const matches = duration.match(re)
@@ -122,30 +144,31 @@ export function durationSeconds (duration?: string): number {
   return hours * 3600 + mins * 60 + secs
 }
 
-export function date (date: dayjs.ConfigType) {
+export function date(date: dayjs.ConfigType) {
   const dDate = dayjs(date)
   return (
     <span>
       <span>{dDate.fromNow()}</span>
       <br />
-      <span className='formatted'>
-        {dDate.format('MMM D, YYYY h:mma')}
-      </span>
+      <span className="formatted">{dDate.format('MMM D, YYYY h:mma')}</span>
     </span>
   )
 }
 
-export function stringifyQueryString (props: Record<string, unknown>): string {
+export function stringifyQueryString(props: Record<string, unknown>): string {
   return `?${qs.stringify(props)}`
 }
 
-export function parseQueryString (queryString?: string): ParsedQuery {
+export function parseQueryString(queryString?: string): ParsedQuery {
   if (!_.isString(queryString)) return {}
 
   return qs.parse(queryString.replace(/^\?/, '')) as unknown as ParsedQuery
 }
 
-export function updatedLink (location: LinkLocation, updates: LinkUpdates = {}): LinkLocation {
+export function updatedLink(
+  location: LinkLocation,
+  updates: LinkUpdates = {},
+): LinkLocation {
   const pathname = updates.pathname || location.pathname
   let search = location.search
 

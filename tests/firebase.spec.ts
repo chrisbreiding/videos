@@ -10,7 +10,9 @@ const { describe } = test
 // covered indirectly by every other spec.
 
 describe('firebase lib', () => {
-  test('getCurrentUser returns the stubbed user when configured', async ({ page }) => {
+  test('getCurrentUser returns the stubbed user when configured', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
@@ -24,7 +26,9 @@ describe('firebase lib', () => {
     expect(uid).toBe('test-user-123')
   })
 
-  test('getDoc returns undefined when the user document does not exist', async ({ page }) => {
+  test('getDoc returns undefined when the user document does not exist', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       window.__firebaseStubs = {
         onAuthStateChanged: (callback) => {
@@ -49,7 +53,9 @@ describe('firebase lib', () => {
     expect(result).toBeUndefined()
   })
 
-  test('watchDoc ignores snapshots for a user document that does not exist', async ({ page }) => {
+  test('watchDoc ignores snapshots for a user document that does not exist', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       window.__firebaseStubs = {
         onAuthStateChanged: (callback) => {
@@ -73,7 +79,9 @@ describe('firebase lib', () => {
       const { watchDoc } = await import('/src/lib/firebase.ts')
       let called = false
 
-      watchDoc(() => { called = true })
+      watchDoc(() => {
+        called = true
+      })
 
       return called
     })
@@ -81,7 +89,9 @@ describe('firebase lib', () => {
     expect(called).toBe(false)
   })
 
-  test('falls back to the real firebase APIs when no stub is configured', async ({ page }) => {
+  test('falls back to the real firebase APIs when no stub is configured', async ({
+    page,
+  }) => {
     await page.goto('/login')
 
     const results = await page.evaluate(async () => {
@@ -127,7 +137,9 @@ describe('firebase lib', () => {
     expect(results.currentUserThrew).toBeUndefined()
   })
 
-  test('watchDoc, updateDoc and deleteField fall back to the real firestore APIs when only currentUser is stubbed', async ({ page }) => {
+  test('watchDoc, updateDoc and deleteField fall back to the real firestore APIs when only currentUser is stubbed', async ({
+    page,
+  }) => {
     // No stubs are configured before the app loads, so the module initializes
     // a real Firebase `app` (see the "falls back to the real firebase APIs"
     // test above for the same setup). Configuring `window.__firebaseStubs`
@@ -141,7 +153,9 @@ describe('firebase lib', () => {
     const results = await page.evaluate(async () => {
       const firebaseLib = await import('/src/lib/firebase.ts')
 
-      window.__firebaseStubs = { currentUser: { uid: 'real-path-user' } as never }
+      window.__firebaseStubs = {
+        currentUser: { uid: 'real-path-user' } as never,
+      }
 
       const out: Record<string, unknown> = {}
 
@@ -178,7 +192,9 @@ describe('firebase lib', () => {
     expect(results.watchDocRan).toBe(true)
   })
 
-  test('deleteField uses the stubbed user document when userDoc is stubbed without a deleteField stub', async ({ page }) => {
+  test('deleteField uses the stubbed user document when userDoc is stubbed without a deleteField stub', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       window.__deleteFieldUpdates = []
       window.__firebaseStubs = {

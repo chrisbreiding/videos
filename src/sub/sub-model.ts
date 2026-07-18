@@ -1,10 +1,23 @@
 import _ from 'lodash'
-import { action, computed, makeObservable, observable, ObservableMap, toJS } from 'mobx'
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  ObservableMap,
+  toJS,
+} from 'mobx'
 
 import { convertMapToObject, resolveIcon, transformObject } from '../lib/util'
-import type { CustomPlaylistVideo, IconConfig, RemoteIconConfig, SubProps, SubType } from '../lib/types'
+import type {
+  CustomPlaylistVideo,
+  IconConfig,
+  RemoteIconConfig,
+  SubProps,
+  SubType,
+} from '../lib/types'
 
-function resolveIconConfig (icon?: RemoteIconConfig): IconConfig | undefined {
+function resolveIconConfig(icon?: RemoteIconConfig): IconConfig | undefined {
   if (!icon) return undefined
 
   const { icon: name, type } = resolveIcon(icon.icon, icon.type)
@@ -30,11 +43,11 @@ export class SubModel {
   bookmarkedPageToken: string | null = null
   videos: ObservableMap<string, CustomPlaylistVideo> = observable.map()
 
-  get videoIds () {
+  get videoIds() {
     return Array.from(this.videos.keys())
   }
 
-  constructor (props: SubProps) {
+  constructor(props: SubProps) {
     makeObservable(this, {
       author: observable,
       icon: observable,
@@ -67,34 +80,56 @@ export class SubModel {
     this.videos = observable.map(props.videos)
   }
 
-  update (props: Partial<SubProps>) {
+  update(props: Partial<SubProps>) {
     _.extend(this, props)
   }
 
-  addVideo (video: CustomPlaylistVideo) {
+  addVideo(video: CustomPlaylistVideo) {
     this.videos.set(video.id, video)
   }
 
-  removeVideo (videoId: string) {
+  removeVideo(videoId: string) {
     this.videos.delete(videoId)
   }
 
-  updateVideosOrder (videosWithNewOrders: Array<{ id: string, order?: number }>) {
+  updateVideosOrder(
+    videosWithNewOrders: Array<{ id: string; order?: number }>,
+  ) {
     _.map(videosWithNewOrders, ({ id, order }) => {
       this.videos.get(id)!.order = order
     })
   }
 
-  videosObject (): Record<string, CustomPlaylistVideo> {
-    return convertMapToObject(toJS(this.videos) as Map<string, CustomPlaylistVideo>)
+  videosObject(): Record<string, CustomPlaylistVideo> {
+    return convertMapToObject(
+      toJS(this.videos) as Map<string, CustomPlaylistVideo>,
+    )
   }
 
-  serialize (): Record<string, unknown> {
-    const props: Record<string, unknown> = _.pick(this, 'id', 'type', 'markedVideoId', 'order', 'playlistId', 'title', 'bookmarkedPageToken')
+  serialize(): Record<string, unknown> {
+    const props: Record<string, unknown> = _.pick(
+      this,
+      'id',
+      'type',
+      'markedVideoId',
+      'order',
+      'playlistId',
+      'title',
+      'bookmarkedPageToken',
+    )
 
     if (this.type === 'custom') {
-      props.icon = _.pick(this.icon, 'backgroundColor', 'foregroundColor', 'icon', 'type')
-      props.videos = transformObject(this.videosObject(), ({ id, order }) => ({ id, order }))
+      props.icon = _.pick(
+        this.icon,
+        'backgroundColor',
+        'foregroundColor',
+        'icon',
+        'type',
+      )
+      props.videos = transformObject(this.videosObject(), ({ id, order }) => ({
+        id,
+        order,
+      }))
     } else {
       _.extend(props, _.pick(this, 'author', 'thumb'))
     }

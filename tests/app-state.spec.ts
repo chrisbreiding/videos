@@ -14,21 +14,31 @@ interface SaveVideoProgressArgs {
 // The Playwright webServer runs the Vite dev server, which serves source
 // modules by path, so importing the module URL returns the same cached
 // instance (and runs the instrumented code so it counts toward coverage).
-async function callSaveVideoProgress (page: Page, { videoId, watchTimestamp, immediate }: SaveVideoProgressArgs) {
-  return page.evaluate(async (args) => {
-    const { appState } = await import('/src/app/app-state.ts')
+async function callSaveVideoProgress(
+  page: Page,
+  { videoId, watchTimestamp, immediate }: SaveVideoProgressArgs,
+) {
+  return page.evaluate(
+    async (args) => {
+      const { appState } = await import('/src/app/app-state.ts')
 
-    window.__setCalls!.length = 0
-    appState.saveVideoProgress(args.videoId, args.watchTimestamp, args.immediate)
+      window.__setCalls!.length = 0
+      appState.saveVideoProgress(
+        args.videoId,
+        args.watchTimestamp,
+        args.immediate,
+      )
 
-    return {
-      watched: appState.watchedVideos[args.videoId!],
-      setCalls: window.__setCalls,
-    }
-  }, { videoId, watchTimestamp, immediate })
+      return {
+        watched: appState.watchedVideos[args.videoId!],
+        setCalls: window.__setCalls,
+      }
+    },
+    { videoId, watchTimestamp, immediate },
+  )
 }
 
-async function setup (page: Page) {
+async function setup(page: Page) {
   await stubFirebaseAuth(page)
 
   // Record every firestore `set` payload so we can assert whether a save was
@@ -52,26 +62,38 @@ async function setup (page: Page) {
 }
 
 describe('AppState#saveVideoProgress', () => {
-  test('records the watch progress for the video in memory', async ({ page }) => {
+  test('records the watch progress for the video in memory', async ({
+    page,
+  }) => {
     await setup(page)
 
     const { watched } = await callSaveVideoProgress(page, {
-      videoId: 'video-abc', watchTimestamp: 42, immediate: true,
+      videoId: 'video-abc',
+      watchTimestamp: 42,
+      immediate: true,
     })
 
     expect(watched.watchTimestamp).toBe(42)
     expect(typeof watched.updatedAt).toBe('string')
   })
 
-  test('flushes the save immediately when immediate is true', async ({ page }) => {
+  test('flushes the save immediately when immediate is true', async ({
+    page,
+  }) => {
     await setup(page)
 
     const { setCalls } = await callSaveVideoProgress(page, {
-      videoId: 'video-abc', watchTimestamp: 42, immediate: true,
+      videoId: 'video-abc',
+      watchTimestamp: 42,
+      immediate: true,
     })
 
     expect(setCalls).toEqual([
-      { watchedVideos: { 'video-abc': { watchTimestamp: 42, updatedAt: expect.any(String) } } },
+      {
+        watchedVideos: {
+          'video-abc': { watchTimestamp: 42, updatedAt: expect.any(String) },
+        },
+      },
     ])
   })
 
@@ -79,7 +101,9 @@ describe('AppState#saveVideoProgress', () => {
     await setup(page)
 
     const { watched, setCalls } = await callSaveVideoProgress(page, {
-      videoId: 'video-abc', watchTimestamp: 99, immediate: false,
+      videoId: 'video-abc',
+      watchTimestamp: 99,
+      immediate: false,
     })
 
     // progress is tracked in memory right away...
@@ -109,7 +133,9 @@ describe('AppState#saveVideoProgress', () => {
     expect(result.setCalls).toEqual([])
   })
 
-  test('flushes the debounced save on its own once the wait elapses', async ({ page }) => {
+  test('flushes the debounced save on its own once the wait elapses', async ({
+    page,
+  }) => {
     await setup(page)
 
     const setCalls = await page.evaluate(async () => {
@@ -124,7 +150,14 @@ describe('AppState#saveVideoProgress', () => {
     })
 
     expect(setCalls).toEqual([
-      { watchedVideos: { 'video-debounced': { watchTimestamp: 7, updatedAt: expect.any(String) } } },
+      {
+        watchedVideos: {
+          'video-debounced': {
+            watchTimestamp: 7,
+            updatedAt: expect.any(String),
+          },
+        },
+      },
     ])
   })
 })
@@ -168,7 +201,9 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
     expect(result.setCalls).toEqual([])
   })
 
-  test('deletes the remote field instead of saving undefined when unmarked', async ({ page }) => {
+  test('deletes the remote field instead of saving undefined when unmarked', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
 
     // Firestore's real setDoc()/updateDoc() throw when a field value is
@@ -183,7 +218,9 @@ describe('AppState#setAllSubsMarkedVideoId', () => {
         doc.set = (data: Record<string, unknown>) => {
           for (const key in data) {
             if (data[key] === undefined) {
-              throw new Error(`FirebaseError: Function setDoc() called with invalid data. Unsupported field value: undefined (found in field ${key})`)
+              throw new Error(
+                `FirebaseError: Function setDoc() called with invalid data. Unsupported field value: undefined (found in field ${key})`,
+              )
             }
           }
           window.__setCalls!.push(data)
@@ -237,7 +274,9 @@ describe('AppState#setWatchedVideos', () => {
     expect(result).toEqual({ 'video-1': { watchTimestamp: 1 } })
   })
 
-  test('falls back to an empty object when none are given', async ({ page }) => {
+  test('falls back to an empty object when none are given', async ({
+    page,
+  }) => {
     await setup(page)
 
     const result = await page.evaluate(async () => {
@@ -260,7 +299,10 @@ describe('AppState#_onWindowResize', () => {
     const result = await page.evaluate(async () => {
       const { appState } = await import('/src/app/app-state.ts')
 
-      Object.defineProperty(window, 'innerHeight', { configurable: true, value: 555 })
+      Object.defineProperty(window, 'innerHeight', {
+        configurable: true,
+        value: 555,
+      })
       window.dispatchEvent(new Event('resize'))
 
       return appState.windowHeight
@@ -271,7 +313,9 @@ describe('AppState#_onWindowResize', () => {
 })
 
 describe('AppState#updateNowPlayingHeight', () => {
-  test('persists the height to local storage once the debounce elapses', async ({ page }) => {
+  test('persists the height to local storage once the debounce elapses', async ({
+    page,
+  }) => {
     await setup(page)
 
     const height = await page.evaluate(async () => {
@@ -280,7 +324,10 @@ describe('AppState#updateNowPlayingHeight', () => {
       appState.updateNowPlayingHeight(321)
 
       return new Promise((resolve) => {
-        setTimeout(() => resolve(JSON.parse(localStorage.nowPlayingHeight)), 600)
+        setTimeout(
+          () => resolve(JSON.parse(localStorage.nowPlayingHeight)),
+          600,
+        )
       })
     })
 
@@ -289,7 +336,9 @@ describe('AppState#updateNowPlayingHeight', () => {
 })
 
 describe('AppState#toggleAutoPlay', () => {
-  test('persists the toggled value to local storage once the debounce elapses', async ({ page }) => {
+  test('persists the toggled value to local storage once the debounce elapses', async ({
+    page,
+  }) => {
     await setup(page)
 
     const autoPlayEnabled = await page.evaluate(async () => {
@@ -298,9 +347,19 @@ describe('AppState#toggleAutoPlay', () => {
 
       appState.toggleAutoPlay()
 
-      return new Promise<{ before: boolean, after: boolean, stored: boolean }>((resolve) => {
-        setTimeout(() => resolve({ before, after: appState.autoPlayEnabled, stored: JSON.parse(localStorage.autoPlayEnabled) }), 600)
-      })
+      return new Promise<{ before: boolean; after: boolean; stored: boolean }>(
+        (resolve) => {
+          setTimeout(
+            () =>
+              resolve({
+                before,
+                after: appState.autoPlayEnabled,
+                stored: JSON.parse(localStorage.autoPlayEnabled),
+              }),
+            600,
+          )
+        },
+      )
     })
 
     expect(autoPlayEnabled.after).toBe(!autoPlayEnabled.before)

@@ -17,24 +17,30 @@ export const Resizer = ({
 }) => {
   const isDragging = useRef(false)
 
-  const startResize = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault()
-
-    isDragging.current = true
-    onResizeStart()
-  }, [onResizeStart])
-
-  const resize = useCallback((e: MouseEvent | TouchEvent) => {
-    if (isDragging.current) {
+  const startResize = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
       e.preventDefault()
 
-      let height = (e as MouseEvent).pageY
-      if (height < minHeight) height = minHeight
-      if (height > maxHeight) height = maxHeight
+      isDragging.current = true
+      onResizeStart()
+    },
+    [onResizeStart],
+  )
 
-      onResize(height)
-    }
-  }, [minHeight, maxHeight, onResize])
+  const resize = useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      if (isDragging.current) {
+        e.preventDefault()
+
+        let height = (e as MouseEvent).pageY
+        if (height < minHeight) height = minHeight
+        if (height > maxHeight) height = maxHeight
+
+        onResize(height)
+      }
+    },
+    [minHeight, maxHeight, onResize],
+  )
 
   const endResize = useCallback(() => {
     if (isDragging.current) {
@@ -59,7 +65,7 @@ export const Resizer = ({
 
   return (
     <div
-      className='resizer'
+      className="resizer"
       style={{ top: height }}
       onMouseDown={startResize}
       onTouchStart={startResize}

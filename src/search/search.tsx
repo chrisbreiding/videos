@@ -2,7 +2,13 @@ import { useRef, useEffect } from 'react'
 
 import { Icon } from '../lib/util'
 
-export const Search = ({ query, onSearch }: { query?: string, onSearch: (value: string) => void }) => {
+export const Search = ({
+  query,
+  onSearch,
+}: {
+  query?: string
+  onSearch: (value: string) => void
+}) => {
   const queryRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -18,13 +24,9 @@ export const Search = ({ query, onSearch }: { query?: string, onSearch: (value: 
 
   return (
     <form className="search" onSubmit={onSubmit}>
-      <input
-        ref={queryRef}
-        defaultValue={query}
-        placeholder="Search Channel"
-      />
+      <input ref={queryRef} defaultValue={query} placeholder="Search Channel" />
       <button>
-        <Icon name='search' />
+        <Icon name="search" />
       </button>
     </form>
   )

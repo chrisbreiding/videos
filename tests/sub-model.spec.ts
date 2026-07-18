@@ -4,7 +4,9 @@ import { setupApp } from './util/helpers'
 const { describe } = test
 
 describe('sub/sub-model', () => {
-  test('falls back to the circle icon when the icon name is unrecognized', async ({ page }) => {
+  test('falls back to the circle icon when the icon name is unrecognized', async ({
+    page,
+  }) => {
     await setupApp(page)
     await page.goto('/')
     await expect(page.locator('body')).toBeVisible()
@@ -15,13 +17,21 @@ describe('sub/sub-model', () => {
       const withUnknownIcon = new SubModel({
         id: 'custom-1',
         type: 'custom',
-        icon: { icon: 'not-a-real-icon', foregroundColor: '#fff', backgroundColor: '#000' },
+        icon: {
+          icon: 'not-a-real-icon',
+          foregroundColor: '#fff',
+          backgroundColor: '#000',
+        },
       })
 
       const withKnownIcon = new SubModel({
         id: 'custom-2',
         type: 'custom',
-        icon: { icon: 'star', foregroundColor: '#fff', backgroundColor: '#000' },
+        icon: {
+          icon: 'star',
+          foregroundColor: '#fff',
+          backgroundColor: '#000',
+        },
       })
 
       return {

@@ -7,7 +7,7 @@ class AuthStore {
   userId?: string
   youtubeApiKey?: string
 
-  constructor () {
+  constructor() {
     makeObservable(this, {
       userId: observable,
       youtubeApiKey: observable,
@@ -17,11 +17,11 @@ class AuthStore {
     })
   }
 
-  get isAuthenticated () {
+  get isAuthenticated() {
     return !!this.userId && !!this.youtubeApiKey
   }
 
-  async getApiKey (): Promise<string> {
+  async getApiKey(): Promise<string> {
     if (this.youtubeApiKey) return this.youtubeApiKey
 
     const { youtubeApiKey } = (await getDoc())!
@@ -31,11 +31,11 @@ class AuthStore {
     return youtubeApiKey
   }
 
-  setUserId (userId: string) {
+  setUserId(userId: string) {
     this.userId = userId
   }
 
-  setApiKey (youtubeApiKey?: string) {
+  setApiKey(youtubeApiKey?: string) {
     if (!youtubeApiKey) return
 
     this.youtubeApiKey = youtubeApiKey
@@ -47,11 +47,11 @@ class AuthStore {
     return checkApiKeyYoutube(apiKey)
   }
 
-  login (email: string, password: string) {
+  login(email: string, password: string) {
     return signIn(email, password)
   }
 
-  logout () {
+  logout() {
     return signOut()
   }
 }

@@ -9,9 +9,14 @@ const { describe } = test
 // channel search, and paginating through an entire playlist search.
 
 describe('lib/youtube', () => {
-  test('checkApiKey resolves false when the request fails', async ({ page }) => {
+  test('checkApiKey resolves false when the request fails', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
-    await page.route('https://www.googleapis.com/youtube/v3/activities**', (route) => route.abort())
+    await page.route(
+      'https://www.googleapis.com/youtube/v3/activities**',
+      (route) => route.abort(),
+    )
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
@@ -24,38 +29,53 @@ describe('lib/youtube', () => {
     expect(result).toBe(false)
   })
 
-  test('getVideosDataForChannelSearch includes the page token when paginating', async ({ page }) => {
+  test('getVideosDataForChannelSearch includes the page token when paginating', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
 
     let requestedUrl: string | undefined
-    await page.route('https://www.googleapis.com/youtube/v3/search**', async (route, request) => {
-      requestedUrl = request.url()
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: [] }),
-      })
-    })
-    await page.route('https://www.googleapis.com/youtube/v3/videos**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: [] }),
-      })
-    })
+    await page.route(
+      'https://www.googleapis.com/youtube/v3/search**',
+      async (route, request) => {
+        requestedUrl = request.url()
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: [] }),
+        })
+      },
+    )
+    await page.route(
+      'https://www.googleapis.com/youtube/v3/videos**',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: [] }),
+        })
+      },
+    )
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     await page.evaluate(async () => {
-      const { getVideosDataForChannelSearch } = await import('/src/lib/youtube.ts')
+      const { getVideosDataForChannelSearch } =
+        await import('/src/lib/youtube.ts')
 
-      return getVideosDataForChannelSearch('channel-1', 'query', 'page-token-abc')
+      return getVideosDataForChannelSearch(
+        'channel-1',
+        'query',
+        'page-token-abc',
+      )
     })
 
     expect(requestedUrl).toContain('pageToken=page-token-abc')
   })
 
-  test('getVideosDataForChannelSearch keeps the next page token when a full page of results comes back', async ({ page }) => {
+  test('getVideosDataForChannelSearch keeps the next page token when a full page of results comes back', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
 
     const searchItems = Array.from({ length: 25 }, (_, i) => ({
@@ -73,25 +93,35 @@ describe('lib/youtube', () => {
       contentDetails: { duration: 'PT1M' },
     }))
 
-    await page.route('https://www.googleapis.com/youtube/v3/search**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: searchItems, nextPageToken: 'next-page-token' }),
-      })
-    })
-    await page.route('https://www.googleapis.com/youtube/v3/videos**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: videoItems }),
-      })
-    })
+    await page.route(
+      'https://www.googleapis.com/youtube/v3/search**',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            items: searchItems,
+            nextPageToken: 'next-page-token',
+          }),
+        })
+      },
+    )
+    await page.route(
+      'https://www.googleapis.com/youtube/v3/videos**',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: videoItems }),
+        })
+      },
+    )
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { getVideosDataForChannelSearch } = await import('/src/lib/youtube.ts')
+      const { getVideosDataForChannelSearch } =
+        await import('/src/lib/youtube.ts')
 
       return getVideosDataForChannelSearch('channel-1', 'query')
     })
@@ -100,9 +130,19 @@ describe('lib/youtube', () => {
     expect(result.nextPageToken).toBe('next-page-token')
   })
 
-  test('getVideosDataForPlaylistSearch fetches every page of a playlist before filtering', async ({ page }) => {
-    const videoOnFirstPage = createVideo({ id: 'video-1', title: 'Apple Review', description: 'about fruit' })
-    const videoOnSecondPage = createVideo({ id: 'video-2', title: 'Banana Review', description: 'also about fruit' })
+  test('getVideosDataForPlaylistSearch fetches every page of a playlist before filtering', async ({
+    page,
+  }) => {
+    const videoOnFirstPage = createVideo({
+      id: 'video-1',
+      title: 'Apple Review',
+      description: 'about fruit',
+    })
+    const videoOnSecondPage = createVideo({
+      id: 'video-2',
+      title: 'Banana Review',
+      description: 'also about fruit',
+    })
 
     await setupApp(page, {
       videos: [videoOnFirstPage, videoOnSecondPage],
@@ -115,7 +155,8 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { getVideosDataForPlaylistSearch } = await import('/src/lib/youtube.ts')
+      const { getVideosDataForPlaylistSearch } =
+        await import('/src/lib/youtube.ts')
 
       return getVideosDataForPlaylistSearch('UU123', 'apple')
     })

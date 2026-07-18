@@ -1,11 +1,6 @@
 import type { DocumentData } from 'firebase/firestore'
 
-import {
-  deleteField,
-  getDoc,
-  updateDoc,
-  watchDoc,
-} from '../lib/firebase'
+import { deleteField, getDoc, updateDoc, watchDoc } from '../lib/firebase'
 
 export const fetch = () => {
   return getDoc()

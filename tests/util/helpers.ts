@@ -1,5 +1,10 @@
 import type { Page } from '@playwright/test'
-import type { SubProps, VideoData, WatchedVideos, ChannelSearchResult } from '../../src/lib/types'
+import type {
+  SubProps,
+  VideoData,
+  WatchedVideos,
+  ChannelSearchResult,
+} from '../../src/lib/types'
 
 interface StubFirebaseAuthOptions {
   userId?: string
@@ -11,7 +16,10 @@ interface StubFirebaseAuthOptions {
 /**
  * Sets up Firebase stubs for authenticated tests
  */
-export async function stubFirebaseAuth (page: Page, options: StubFirebaseAuthOptions = {}) {
+export async function stubFirebaseAuth(
+  page: Page,
+  options: StubFirebaseAuthOptions = {},
+) {
   const {
     userId = 'test-user-123',
     youtubeApiKey = 'fake-api-key',
@@ -29,56 +37,68 @@ export async function stubFirebaseAuth (page: Page, options: StubFirebaseAuthOpt
   } = options
 
   // Set up Firebase stubs before the app loads
-  await page.addInitScript(({ userId, youtubeApiKey, subs, watchedVideos }) => {
-    let snapshotCallback: (snapshot: { exists: boolean, data: () => unknown }) => void
+  await page.addInitScript(
+    ({ userId, youtubeApiKey, subs, watchedVideos }) => {
+      let snapshotCallback: (snapshot: {
+        exists: boolean
+        data: () => unknown
+      }) => void
 
-    // Lets tests simulate a remote change to the user doc (e.g. another
-    // client editing subs) arriving over the real-time listener, independent
-    // of any local action.
-    window.__triggerSnapshotUpdate = (data: unknown) => {
-      snapshotCallback({
-        exists: true,
-        data: () => data,
-      })
-    }
-
-    window.__firebaseStubs = {
-      currentUser: { uid: userId } as never,
-
-      onAuthStateChanged: (callback) => {
-        // Immediately call with mock user
-        setTimeout(() => callback({ uid: userId } as never), 0)
-        // Return unsubscribe function
-        return () => {}
-      },
-
-      signIn: () => Promise.resolve({ user: { uid: userId } }),
-
-      signOut: () => Promise.resolve(),
-
-      userDoc: () => ({
-        get: () => Promise.resolve({
+      // Lets tests simulate a remote change to the user doc (e.g. another
+      // client editing subs) arriving over the real-time listener, independent
+      // of any local action.
+      window.__triggerSnapshotUpdate = (data: unknown) => {
+        snapshotCallback({
           exists: true,
-          data: () => ({ youtubeApiKey, subs, watchedVideos }),
-        }),
-        onSnapshot: (callback: (snapshot: { exists: boolean, data: () => unknown }) => void) => {
-          snapshotCallback = callback
+          data: () => data,
+        })
+      }
 
-          setTimeout(() => {
-            callback({
-              exists: true,
-              data: () => ({ youtubeApiKey, subs, watchedVideos }),
-            })
-          }, 0)
+      window.__firebaseStubs = {
+        currentUser: { uid: userId } as never,
+
+        onAuthStateChanged: (callback) => {
+          // Immediately call with mock user
+          setTimeout(() => callback({ uid: userId } as never), 0)
+          // Return unsubscribe function
           return () => {}
         },
-        set: () => Promise.resolve(),
-        update: () => Promise.resolve(),
-      }),
 
-      deleteField: () => Promise.resolve(),
-    }
-  }, { userId, youtubeApiKey, subs, watchedVideos })
+        signIn: () => Promise.resolve({ user: { uid: userId } }),
+
+        signOut: () => Promise.resolve(),
+
+        userDoc: () => ({
+          get: () =>
+            Promise.resolve({
+              exists: true,
+              data: () => ({ youtubeApiKey, subs, watchedVideos }),
+            }),
+          onSnapshot: (
+            callback: (snapshot: {
+              exists: boolean
+              data: () => unknown
+            }) => void,
+          ) => {
+            snapshotCallback = callback
+
+            setTimeout(() => {
+              callback({
+                exists: true,
+                data: () => ({ youtubeApiKey, subs, watchedVideos }),
+              })
+            }, 0)
+            return () => {}
+          },
+          set: () => Promise.resolve(),
+          update: () => Promise.resolve(),
+        }),
+
+        deleteField: () => Promise.resolve(),
+      }
+    },
+    { userId, youtubeApiKey, subs, watchedVideos },
+  )
 }
 
 /**
@@ -87,7 +107,7 @@ export async function stubFirebaseAuth (page: Page, options: StubFirebaseAuthOpt
  * instead of depending on a real embedded video. Fake players are tracked on
  * `window.__ytPlayers`, in creation order, with recorded method calls.
  */
-export async function mockYoutubeIframeApi (page: Page) {
+export async function mockYoutubeIframeApi(page: Page) {
   await page.route('https://www.youtube.com/iframe_api', async (route) => {
     await route.fulfill({
       status: 200,
@@ -167,7 +187,7 @@ interface SetupAppOptions {
 /**
  * Setup both Firebase auth and YouTube API mocking together
  */
-export async function setupApp (page: Page, options: SetupAppOptions = {}) {
+export async function setupApp(page: Page, options: SetupAppOptions = {}) {
   const {
     userId = 'test-user-123',
     youtubeApiKey = 'fake-api-key',
@@ -189,153 +209,193 @@ export async function setupApp (page: Page, options: SetupAppOptions = {}) {
   })
 
   // Mock YouTube API requests
-  await page.route('https://www.googleapis.com/youtube/v3/**', async (route, request) => {
-    const url = request.url()
+  await page.route(
+    'https://www.googleapis.com/youtube/v3/**',
+    async (route, request) => {
+      const url = request.url()
 
-    if (url.includes('/search')) {
-      const searchParams = new URL(url).searchParams
-      const channelId = searchParams.get('channelId')
+      if (url.includes('/search')) {
+        const searchParams = new URL(url).searchParams
+        const channelId = searchParams.get('channelId')
 
-      if (channelId) {
-        // Searching for videos within a channel
-        const query = (searchParams.get('q') || '').toLowerCase()
-        const matchingVideos = videos.filter((video) => (
-          video.channelId === channelId && video.title.toLowerCase().includes(query)
-        ))
+        if (channelId) {
+          // Searching for videos within a channel
+          const query = (searchParams.get('q') || '').toLowerCase()
+          const matchingVideos = videos.filter(
+            (video) =>
+              video.channelId === channelId &&
+              video.title.toLowerCase().includes(query),
+          )
 
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              items: matchingVideos.map((video) => ({
+                id: { videoId: video.id },
+              })),
+            }),
+          })
+        } else {
+          // Searching for channels to add as a subscription
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              items: search.map((channel) => ({
+                id: { channelId: channel.id },
+                snippet: {
+                  channelTitle: channel.title,
+                  title: channel.author || channel.title,
+                  thumbnails: {
+                    medium: {
+                      url: channel.thumb || 'https://example.com/thumb.jpg',
+                    },
+                  },
+                },
+              })),
+            }),
+          })
+        }
+      } else if (url.includes('/channels')) {
+        const channelData =
+          channels.length > 0
+            ? channels
+            : [
+              {
+                contentDetails: {
+                  relatedPlaylists: { uploads: 'UU_uploads' },
+                },
+              },
+            ]
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: channelData }),
+        })
+      } else if (url.includes('/playlists')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            items: matchingVideos.map((video) => ({ id: { videoId: video.id } })),
+            items: playlists.map((playlist) => ({
+              id: playlist.id,
+              snippet: {
+                title: playlist.title,
+                description: playlist.description || '',
+                publishedAt: playlist.published || '2024-01-01T00:00:00Z',
+                thumbnails: {
+                  medium: {
+                    url:
+                      playlist.thumb ||
+                      'https://example.com/playlist-thumb.jpg',
+                  },
+                },
+              },
+              contentDetails: {
+                itemCount: playlist.count || 0,
+              },
+            })),
+            pageInfo: { totalResults: playlists.length },
+            nextPageToken: options.playlistsNextPageToken,
           }),
         })
-      } else {
-        // Searching for channels to add as a subscription
+      } else if (url.includes('/playlistItems')) {
+        // Extract page token from URL if present
+        const urlParams = new URL(url).searchParams
+        const pageToken = urlParams.get('pageToken')
+
+        // Get videos based on page token
+        let videosToReturn = videos
+        let prevPageToken: string | undefined
+        let nextPageToken: string | undefined
+
+        if (options.pagination) {
+          const pageData = options.pagination[pageToken || ''] ||
+            options.pagination['default'] || {
+            videos,
+            prevPageToken: undefined,
+            nextPageToken: undefined,
+          }
+          videosToReturn = pageData.videos
+          prevPageToken = pageData.prevPageToken
+          nextPageToken = pageData.nextPageToken
+        } else if (options.nextPageToken) {
+          nextPageToken = options.nextPageToken
+        }
+
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            items: search.map((channel) => ({
-              id: { channelId: channel.id },
+            items: videosToReturn.map((video) => ({
+              contentDetails: { videoId: video.id },
               snippet: {
-                channelTitle: channel.title,
-                title: channel.author || channel.title,
-                thumbnails: { medium: { url: channel.thumb || 'https://example.com/thumb.jpg' } },
+                title: video.title,
+                description: video.description || '',
+                publishedAt: video.published || '2024-01-01T00:00:00Z',
+                thumbnails: {
+                  medium: {
+                    url: video.thumb || 'https://example.com/video-thumb.jpg',
+                  },
+                },
+              },
+            })),
+            prevPageToken,
+            nextPageToken,
+          }),
+        })
+      } else if (url.includes('/videos')) {
+        // Parse requested video IDs from URL
+        const urlParams = new URL(url).searchParams
+        const requestedIds = urlParams.get('id')?.split(',') || []
+
+        // Return requested videos or all videos
+        const videosToReturn =
+          requestedIds.length > 0
+            ? requestedIds
+            .map((id) => videosById[id] || videos.find((v) => v.id === id))
+            .filter((v): v is VideoData => Boolean(v))
+            : videos
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            items: videosToReturn.map((video) => ({
+              id: video.id,
+              snippet: {
+                title: video.title,
+                description: video.description || '',
+                publishedAt: video.published || '2024-01-01T00:00:00Z',
+                thumbnails: {
+                  medium: {
+                    url: video.thumb || 'https://example.com/video-thumb.jpg',
+                  },
+                },
+                channelId: video.channelId || 'channel-1',
+              },
+              contentDetails: {
+                duration: video.duration || 'PT10M0S',
               },
             })),
           }),
         })
+      } else if (url.includes('/activities')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: [] }),
+        })
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: [] }),
+        })
       }
-    } else if (url.includes('/channels')) {
-      const channelData = channels.length > 0 ? channels : [
-        { contentDetails: { relatedPlaylists: { uploads: 'UU_uploads' } } },
-      ]
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: channelData }),
-      })
-    } else if (url.includes('/playlists')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          items: playlists.map((playlist) => ({
-            id: playlist.id,
-            snippet: {
-              title: playlist.title,
-              description: playlist.description || '',
-              publishedAt: playlist.published || '2024-01-01T00:00:00Z',
-              thumbnails: { medium: { url: playlist.thumb || 'https://example.com/playlist-thumb.jpg' } },
-            },
-            contentDetails: {
-              itemCount: playlist.count || 0,
-            },
-          })),
-          pageInfo: { totalResults: playlists.length },
-          nextPageToken: options.playlistsNextPageToken,
-        }),
-      })
-    } else if (url.includes('/playlistItems')) {
-      // Extract page token from URL if present
-      const urlParams = new URL(url).searchParams
-      const pageToken = urlParams.get('pageToken')
-
-      // Get videos based on page token
-      let videosToReturn = videos
-      let prevPageToken: string | undefined
-      let nextPageToken: string | undefined
-
-      if (options.pagination) {
-        const pageData = options.pagination[pageToken || ''] || options.pagination['default'] || { videos, prevPageToken: undefined, nextPageToken: undefined }
-        videosToReturn = pageData.videos
-        prevPageToken = pageData.prevPageToken
-        nextPageToken = pageData.nextPageToken
-      } else if (options.nextPageToken) {
-        nextPageToken = options.nextPageToken
-      }
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          items: videosToReturn.map((video) => ({
-            contentDetails: { videoId: video.id },
-            snippet: {
-              title: video.title,
-              description: video.description || '',
-              publishedAt: video.published || '2024-01-01T00:00:00Z',
-              thumbnails: { medium: { url: video.thumb || 'https://example.com/video-thumb.jpg' } },
-            },
-          })),
-          prevPageToken,
-          nextPageToken,
-        }),
-      })
-    } else if (url.includes('/videos')) {
-      // Parse requested video IDs from URL
-      const urlParams = new URL(url).searchParams
-      const requestedIds = urlParams.get('id')?.split(',') || []
-
-      // Return requested videos or all videos
-      const videosToReturn = requestedIds.length > 0
-        ? requestedIds.map((id) => videosById[id] || videos.find((v) => v.id === id)).filter((v): v is VideoData => Boolean(v))
-        : videos
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          items: videosToReturn.map((video) => ({
-            id: video.id,
-            snippet: {
-              title: video.title,
-              description: video.description || '',
-              publishedAt: video.published || '2024-01-01T00:00:00Z',
-              thumbnails: { medium: { url: video.thumb || 'https://example.com/video-thumb.jpg' } },
-              channelId: video.channelId || 'channel-1',
-            },
-            contentDetails: {
-              duration: video.duration || 'PT10M0S',
-            },
-          })),
-        }),
-      })
-    } else if (url.includes('/activities')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: [] }),
-      })
-    } else {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: [] }),
-      })
-    }
-  })
+    },
+  )
 }
 
 type SubOptions = Partial<Omit<SubProps, 'type'>>
@@ -343,7 +403,7 @@ type SubOptions = Partial<Omit<SubProps, 'type'>>
 /**
  * Create a channel subscription object
  */
-export function createChannel (options: SubOptions = {}): SubProps {
+export function createChannel(options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'channel-1',
     title: options.title || 'Test Channel',
@@ -360,7 +420,7 @@ export function createChannel (options: SubOptions = {}): SubProps {
 /**
  * Create a playlist subscription object
  */
-export function createPlaylist (options: SubOptions = {}): SubProps {
+export function createPlaylist(options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'playlist-1',
     title: options.title || 'Test Playlist',
@@ -377,7 +437,7 @@ export function createPlaylist (options: SubOptions = {}): SubProps {
 /**
  * Create a custom playlist subscription object
  */
-export function createCustomPlaylist (options: SubOptions = {}): SubProps {
+export function createCustomPlaylist(options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'custom-0',
     title: options.title || 'Custom Playlist',
@@ -400,7 +460,7 @@ type VideoOptions = Partial<VideoData>
 /**
  * Create a video object
  */
-export function createVideo (options: VideoOptions = {}): VideoData {
+export function createVideo(options: VideoOptions = {}): VideoData {
   return {
     id: options.id || 'video-1',
     title: options.title || 'Test Video',
@@ -415,7 +475,9 @@ export function createVideo (options: VideoOptions = {}): VideoData {
 /**
  * Create a playlist item for search results
  */
-export function createSearchPlaylist (options: SearchPlaylistOption = {}): Omit<Required<SearchPlaylistOption>, 'published'> {
+export function createSearchPlaylist(
+  options: SearchPlaylistOption = {},
+): Omit<Required<SearchPlaylistOption>, 'published'> {
   return {
     id: options.id || 'playlist-1',
     title: options.title || 'Test Playlist',

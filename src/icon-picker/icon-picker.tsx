@@ -5,7 +5,12 @@ import cs from 'classnames'
 import { Icon } from '../lib/util'
 import { IconThumb } from '../icon-thumb/icon-thumb'
 import type { IconConfig, IconType } from '../lib/types'
-import { brandsIconNames, type IconName, regularIconNames, solidIconNames } from '../../generated/font-awesome'
+import {
+  brandsIconNames,
+  type IconName,
+  regularIconNames,
+  solidIconNames,
+} from '../../generated/font-awesome'
 
 interface IconOption {
   name: IconName
@@ -63,13 +68,15 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
     }, 100)
   }, [onUpdate])
 
-  const onColorChange = (key: string, debounce: boolean) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (debounce) {
-      updateColorDebounced(key, e.target.value)
-    } else {
-      onUpdate({ [`${key}Color`]: e.target.value })
-    }
-  }
+  const onColorChange =
+    (key: string, debounce: boolean) =>
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (debounce) {
+          updateColorDebounced(key, e.target.value)
+        } else {
+          onUpdate({ [`${key}Color`]: e.target.value })
+        }
+      }
 
   const updateFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value)
@@ -84,7 +91,7 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
   const icons = useMemo(() => {
     if (!filteredIcons.length) {
       return (
-        <div className='empty-icons'>
+        <div className="empty-icons">
           <p>No icons matching filter '{filter}'</p>
         </div>
       )
@@ -98,16 +105,23 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
         onUpdate={onUpdate}
       />
     ))
-  }, [filteredIcons, chosenIcon, filter, onUpdate, foregroundColor, backgroundColor])
+  }, [
+    filteredIcons,
+    chosenIcon,
+    filter,
+    onUpdate,
+    foregroundColor,
+    backgroundColor,
+  ])
 
   return (
-    <div className='icon-picker'>
+    <div className="icon-picker">
       <form onSubmit={(e) => e.preventDefault()}>
         <fieldset>
           <label>Foreground Color</label>
-          <div className='fields'>
+          <div className="fields">
             <input
-              type='color'
+              type="color"
               value={foregroundColor}
               onChange={onColorChange('foreground', true)}
             />
@@ -119,9 +133,9 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
         </fieldset>
         <fieldset>
           <label>Background Color</label>
-          <div className='fields'>
+          <div className="fields">
             <input
-              type='color'
+              type="color"
               value={backgroundColor}
               onChange={onColorChange('background', true)}
             />
@@ -133,18 +147,13 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
         </fieldset>
         <fieldset>
           <label>Filter</label>
-          <div className='fields'>
-            <Icon name='filter' />
-            <input
-              value={filter}
-              onChange={updateFilter}
-            />
+          <div className="fields">
+            <Icon name="filter" />
+            <input value={filter} onChange={updateFilter} />
           </div>
         </fieldset>
       </form>
-      <div className='icons'>
-        {icons}
-      </div>
+      <div className="icons">{icons}</div>
     </div>
   )
 }

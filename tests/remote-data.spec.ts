@@ -32,7 +32,9 @@ describe('remote-data lib', () => {
     expect(data.subs['channel-1'].title).toBe('Test Channel')
   })
 
-  test('listen invokes the callback with document changes', async ({ page }) => {
+  test('listen invokes the callback with document changes', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })

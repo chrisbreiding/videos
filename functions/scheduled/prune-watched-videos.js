@@ -33,7 +33,8 @@ exports.pruneWatchedVideos = onSchedule(
 
       for (const [videoId, entry] of Object.entries(watchedVideos)) {
         if (entry && entry.updatedAt < cutoff) {
-          removals[`watchedVideos.${videoId}`] = admin.firestore.FieldValue.delete()
+          removals[`watchedVideos.${videoId}`] =
+            admin.firestore.FieldValue.delete()
           entriesRemoved++
         }
       }

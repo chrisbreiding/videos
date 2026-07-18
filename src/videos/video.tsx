@@ -11,7 +11,7 @@ import type { VideoModel } from './video-model'
 import type { SubModel } from '../sub/sub-model'
 import type { LinkLocation } from '../lib/types'
 
-const WatchProgress = ({ id, duration }: { id: string, duration?: string }) => {
+const WatchProgress = ({ id, duration }: { id: string; duration?: string }) => {
   const watched = appState.watchedVideos[id]
   if (!watched) return null
 
@@ -24,8 +24,8 @@ const WatchProgress = ({ id, duration }: { id: string, duration?: string }) => {
   if (percent < 2) return null
 
   return (
-    <div className='watch-progress'>
-      <div className='watch-progress-bar' style={{ width: `${percent}%` }} />
+    <div className="watch-progress">
+      <div className="watch-progress-bar" style={{ width: `${percent}%` }} />
     </div>
   )
 }
@@ -82,30 +82,41 @@ export const Video = observer((props: VideoProps) => {
           id={videoMarkerName}
           onClick={_.partial(props.addVideoMarkerLink, videoMarkerName)}
         >
-          <div className='remove-video-marker' onClick={removeMark}>
-            <Icon name='remove' />
+          <div className="remove-video-marker" onClick={removeMark}>
+            <Icon name="remove" />
           </div>
         </div>
       )}
-      <div className='contents'>
-        <div className='video-sort-handle' ref={handleRef}>
-          <Icon name='ellipsis-vertical' />
-          <Icon name='ellipsis-vertical' />
+      <div className="contents">
+        <div className="video-sort-handle" ref={handleRef}>
+          <Icon name="ellipsis-vertical" />
+          <Icon name="ellipsis-vertical" />
         </div>
         <aside>
-          <Link className='play-video' to={props.playLink} onClick={props.onPlay}>
+          <Link
+            className="play-video"
+            to={props.playLink}
+            onClick={props.onPlay}
+          >
             <img src={props.video.thumb} />
-            {props.channelImage && <img className='channel' src={props.channelImage} />}
-            <WatchProgress id={props.video.id} duration={props.video.duration} />
+            {props.channelImage && (
+              <img className="channel" src={props.channelImage} />
+            )}
+            <WatchProgress
+              id={props.video.id}
+              duration={props.video.duration}
+            />
           </Link>
         </aside>
         <main>
           <h4>{props.video.title}</h4>
           <div>
-            {durationDisplay && <p className='duration'>
-              <Icon name='clock' rightText={durationDisplay} />
-            </p>}
-            <p className='pub-date'>{date(props.video.published)}</p>
+            {durationDisplay && (
+              <p className="duration">
+                <Icon name="clock" rightText={durationDisplay} />
+              </p>
+            )}
+            <p className="pub-date">{date(props.video.published)}</p>
           </div>
         </main>
       </div>

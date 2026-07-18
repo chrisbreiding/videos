@@ -1,4 +1,11 @@
-import { action, computed, makeObservable, observable, values, toJS } from 'mobx'
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  values,
+  toJS,
+} from 'mobx'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 
@@ -15,7 +22,7 @@ class VideosStore {
   prevPageToken?: string | null
   nextPageToken?: string | null
 
-  constructor () {
+  constructor() {
     makeObservable(this, {
       _videos: observable,
       _isSortable: observable,
@@ -35,7 +42,7 @@ class VideosStore {
     })
   }
 
-  get videos (): VideoModel[] {
+  get videos(): VideoModel[] {
     if (this._isSortable) {
       return _.sortBy(values(this._videos), 'order') as VideoModel[]
     }
@@ -47,16 +54,22 @@ class VideosStore {
     return _.take(sortedVideos, 25)
   }
 
-  async getVideosDataForPlaylist (playlistId: string, pageToken?: string | null) {
+  async getVideosDataForPlaylist(
+    playlistId: string,
+    pageToken?: string | null,
+  ) {
     this._beforeLoad()
 
-    const videosData = await videosService.getVideosDataForPlaylist(playlistId, pageToken)
+    const videosData = await videosService.getVideosDataForPlaylist(
+      playlistId,
+      pageToken,
+    )
 
     this._updateVideosData(videosData)
     this._afterLoad(false)
   }
 
-  async getVideosDataForAllPlaylists (playlistIds: string[]) {
+  async getVideosDataForAllPlaylists(playlistIds: string[]) {
     if (!playlistIds.length) return []
 
     this._beforeLoad()
@@ -72,31 +85,50 @@ class VideosStore {
     this._afterLoad(false)
   }
 
-  async getVideosDataForChannelSearch (channel: SubModel, query: string, pageToken?: string | null) {
+  async getVideosDataForChannelSearch(
+    channel: SubModel,
+    query: string,
+    pageToken?: string | null,
+  ) {
     this._beforeLoad()
 
-    const videosData = await videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
+    const videosData = await videosService.getVideosDataForChannelSearch(
+      channel.id,
+      query,
+      pageToken,
+    )
 
     this._updateVideosData(videosData)
     this._afterLoad(false)
   }
 
-  async getVideosDataForPlaylistSearch (playlistId: string, query: string) {
+  async getVideosDataForPlaylistSearch(playlistId: string, query: string) {
     this._beforeLoad()
 
-    const videosData = await videosService.getVideosDataForPlaylistSearch(playlistId, query)
+    const videosData = await videosService.getVideosDataForPlaylistSearch(
+      playlistId,
+      query,
+    )
 
     this._updateVideosData(videosData)
     this._afterLoad(false)
   }
 
-  async getVideosDataForCustomPlaylist (playlist: SubModel) {
+  async getVideosDataForCustomPlaylist(playlist: SubModel) {
     this._beforeLoad()
 
     let videos = await videosService.getVideosDataForCustomPlaylist(playlist)
 
     videos = _.map(videos, (video) => {
-      return _.extend(video, (toJS(playlist.videos) as unknown as Record<string, CustomPlaylistVideo>)[video.id])
+      return _.extend(
+        video,
+        (
+          toJS(playlist.videos) as unknown as Record<
+            string,
+            CustomPlaylistVideo
+          >
+        )[video.id],
+      )
     })
 
     this._updateVideosData({
@@ -107,11 +139,11 @@ class VideosStore {
     this._afterLoad(true)
   }
 
-  getVideoById (id: string) {
+  getVideoById(id: string) {
     return _.find(this._videos, { id })
   }
 
-  nextVideoId (videoId?: string): string | null {
+  nextVideoId(videoId?: string): string | null {
     if (!videoId || this.videos.length < 2) return null
 
     const videoIndex = _.findIndex(this.videos, { id: videoId })
@@ -123,24 +155,24 @@ class VideosStore {
     return nextVideo.id
   }
 
-  _beforeLoad () {
+  _beforeLoad() {
     this.isLoading = true
     this.prevPageToken = null
     this.nextPageToken = null
   }
 
-  _afterLoad (isSortable: boolean) {
+  _afterLoad(isSortable: boolean) {
     this._isSortable = isSortable
     this.isLoading = false
   }
 
-  _updateVideosData ({ videos, prevPageToken, nextPageToken }: VideosData) {
+  _updateVideosData({ videos, prevPageToken, nextPageToken }: VideosData) {
     if (videos) this._videos = _.map(videos, (video) => new VideoModel(video))
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken
   }
 
-  sort (sortedIds: string[]) {
+  sort(sortedIds: string[]) {
     const ids = _.map(this.videos, 'id')
     if (_.isEqual(ids, sortedIds)) return false
 

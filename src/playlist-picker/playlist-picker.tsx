@@ -11,7 +11,7 @@ interface PlaylistPickerProps {
 }
 
 export const PlaylistPicker = observer((props: PlaylistPickerProps) => {
-  function setPlaylist (playlist: SubModel, inPlaylist: boolean) {
+  function setPlaylist(playlist: SubModel, inPlaylist: boolean) {
     if (inPlaylist) {
       props.addedToPlaylist(playlist)
     } else {
@@ -20,7 +20,7 @@ export const PlaylistPicker = observer((props: PlaylistPickerProps) => {
   }
 
   return (
-    <div className='playlist-picker'>
+    <div className="playlist-picker">
       <span>Playlists:</span>
       <ul>
         {props.customPlaylists.map((playlist) => {
@@ -29,7 +29,10 @@ export const PlaylistPicker = observer((props: PlaylistPickerProps) => {
           return (
             <li key={playlist.id}>
               <button onClick={_.partial(setPlaylist, playlist, !inPlaylist)}>
-                <Icon name={inPlaylist ? 'square-check' : 'square'} type={inPlaylist ? 'solid' : 'regular'} />
+                <Icon
+                  name={inPlaylist ? 'square-check' : 'square'}
+                  type={inPlaylist ? 'solid' : 'regular'}
+                />
                 <span>{playlist.title}</span>
               </button>
             </li>

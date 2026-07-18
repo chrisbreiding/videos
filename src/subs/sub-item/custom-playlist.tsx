@@ -9,40 +9,56 @@ import { Modal } from '../../modal/modal'
 import type { SubModel } from '../../sub/sub-model'
 import type { IconConfig, LinkLocation, SubProps } from '../../lib/types'
 
-export const CustomPlaylist = observer(({ sub, link, onUpdate, handleRef }: {
-  sub: SubModel
-  link: LinkLocation
-  onUpdate: (props: Partial<SubProps>) => void
-  handleRef: (element: Element | null) => void
-}) => {
-  const [isPickingIcon, setIsPickingIcon] = useState(false)
+export const CustomPlaylist = observer(
+  ({
+    sub,
+    link,
+    onUpdate,
+    handleRef,
+  }: {
+    sub: SubModel
+    link: LinkLocation
+    onUpdate: (props: Partial<SubProps>) => void
+    handleRef: (element: Element | null) => void
+  }) => {
+    const [isPickingIcon, setIsPickingIcon] = useState(false)
 
-  const onTitleUpdate = useCallback((title: string) => {
-    onUpdate({ title })
-  }, [onUpdate])
+    const onTitleUpdate = useCallback(
+      (title: string) => {
+        onUpdate({ title })
+      },
+      [onUpdate],
+    )
 
-  const handleIconUpdated = useCallback((updates: Partial<IconConfig>) => {
-    onUpdate({ icon: { ...sub.icon, ...updates } as IconConfig })
-  }, [onUpdate, sub.icon])
+    const handleIconUpdated = useCallback(
+      (updates: Partial<IconConfig>) => {
+        onUpdate({ icon: { ...sub.icon, ...updates } as IconConfig })
+      },
+      [onUpdate, sub.icon],
+    )
 
-  return (
-    <span className='custom-sub-item'>
-      <span className='sub-item-icon' ref={handleRef}>
-        <IconThumb {...sub.icon!} />
+    return (
+      <span className="custom-sub-item">
+        <span className="sub-item-icon" ref={handleRef}>
+          <IconThumb {...sub.icon!} />
+        </span>
+        <button
+          className="sub-item-icon editable"
+          onClick={() => setIsPickingIcon(true)}
+        >
+          <IconThumb {...sub.icon!} />
+        </button>
+        <Title sub={sub} link={link} />
+        <SubTitleInput value={sub.title} onUpdate={onTitleUpdate} />
+        {isPickingIcon && (
+          <Modal
+            className="icon-picker-modal"
+            onClose={() => setIsPickingIcon(false)}
+          >
+            <IconPicker onUpdate={handleIconUpdated} chosenIcon={sub.icon!} />
+          </Modal>
+        )}
       </span>
-      <button className='sub-item-icon editable' onClick={() => setIsPickingIcon(true)} >
-        <IconThumb {...sub.icon!} />
-      </button>
-      <Title sub={sub} link={link} />
-      <SubTitleInput value={sub.title} onUpdate={onTitleUpdate} />
-      {isPickingIcon && (
-        <Modal className='icon-picker-modal' onClose={() => setIsPickingIcon(false)}>
-          <IconPicker
-            onUpdate={handleIconUpdated}
-            chosenIcon={sub.icon!}
-          />
-        </Modal>
-      )}
-    </span>
-  )
-})
+    )
+  },
+)

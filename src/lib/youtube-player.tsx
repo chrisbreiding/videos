@@ -16,10 +16,19 @@ interface YoutubePlayerProps {
   startTime: number
 }
 
-export const YoutubePlayer = ({ id, width, height, onEnd, onTime, startTime }: YoutubePlayerProps) => {
+export const YoutubePlayer = ({
+  id,
+  width,
+  height,
+  onEnd,
+  onTime,
+  startTime,
+}: YoutubePlayerProps) => {
   const playerRef = useRef<YT.Player | null>(null)
   const isReadyRef = useRef(false)
-  const trackIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
+  const trackIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined,
+  )
   const onTimeRef = useRef(onTime)
   const startTimeRef = useRef(startTime)
 
@@ -103,7 +112,10 @@ export const YoutubePlayer = ({ id, width, height, onEnd, onTime, startTime }: Y
       clearInterval(trackIntervalRef.current)
       saveTime(true)
 
-      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+      if (
+        playerRef.current &&
+        typeof playerRef.current.destroy === 'function'
+      ) {
         playerRef.current.destroy()
       }
 

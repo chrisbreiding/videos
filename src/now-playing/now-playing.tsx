@@ -92,7 +92,8 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
   // start from the beginning if progress is within 10% or 10s of end,
   // whichever is greater
   const endThreshold = Math.max(length * 0.1, 10)
-  const isNearEnd = length && watched && watched.watchTimestamp >= length - endThreshold
+  const isNearEnd =
+    length && watched && watched.watchTimestamp >= length - endThreshold
   const startTime = watched && !isNearEnd ? watched.watchTimestamp : 0
 
   return (
@@ -110,54 +111,54 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
         height={appState.nowPlayingHeight}
         startTime={startTime}
         onEnd={props.onEnd}
-        onTime={(watchTimestamp, immediate) => (
+        onTime={(watchTimestamp, immediate) =>
           appState.saveVideoProgress(props.id!, watchTimestamp, immediate)
-        )}
+        }
       />
-      <div className='cover' />
-      <div className='controls'>
-        <Link
-          className='close button'
-          title='Close Video'
-          to={props.closeLink}
-        >
-          <Icon name='remove' />
+      <div className="cover" />
+      <div className="controls">
+        <Link className="close button" title="Close Video" to={props.closeLink}>
+          <Icon name="remove" />
         </Link>
         <button
           className={cs('toggle-auto-play', { enabled: props.autoPlayEnabled })}
-          title='Toggle Auto Play'
+          title="Toggle Auto Play"
           onClick={props.onToggleAutoPlay}
         >
-          <Icon name='forward' />
+          <Icon name="forward" />
         </button>
         <button
-          className={cs('toggle-description', { enabled: state.isShowingDescription })}
-          title='Toggle Description'
+          className={cs('toggle-description', {
+            enabled: state.isShowingDescription,
+          })}
+          title="Toggle Description"
           onClick={state.toggleShowingDescription}
         >
-          <Icon name='info' />
+          <Icon name="info" />
         </button>
         <button
-          className={cs('toggle-playlists', { enabled: state.isShowingPlaylists })}
-          title='Toggle Playlists'
+          className={cs('toggle-playlists', {
+            enabled: state.isShowingPlaylists,
+          })}
+          title="Toggle Playlists"
           onClick={state.toggleShowingPlaylists}
         >
-          <Icon name='list-ul' />
+          <Icon name="list-ul" />
         </button>
       </div>
       <div
-        className='description'
+        className="description"
         dangerouslySetInnerHTML={{ __html: description }}
       />
-      <div className='playlists'>
-        {state.isShowingPlaylists &&
+      <div className="playlists">
+        {state.isShowingPlaylists && (
           <PlaylistPicker
             videoId={props.id}
             customPlaylists={props.customPlaylists}
             addedToPlaylist={props.addedToPlaylist}
             removedFromPlaylist={props.removedFromPlaylist}
           />
-        }
+        )}
       </div>
     </div>
   )

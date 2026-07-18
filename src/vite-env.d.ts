@@ -6,7 +6,7 @@
 interface FirebaseStubs {
   currentUser?: import('firebase/auth').User | null
   onAuthStateChanged?: (
-    callback: (user: import('firebase/auth').User | null) => void
+    callback: (user: import('firebase/auth').User | null) => void,
   ) => () => void
   signIn?: (email: string, password: string) => Promise<unknown>
   signOut?: () => Promise<unknown>

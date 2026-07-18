@@ -1,24 +1,14 @@
-.bundle
-*.log
-tmp
-doc/
-*.swp
-*~
-.project
-.DS_Store
-*.sublime-*
-.sass-cache
-_build
-_dev
 node_modules
 dist
+/.history/
 /generated/
+package-lock.json
+bookmarklet.js
 
 # Playwright
 /test-results/
 /playwright-report/
 /blob-report/
-/playwright/.cache/
 
 # Coverage
 /.nyc_output/

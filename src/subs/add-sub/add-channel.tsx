@@ -7,15 +7,27 @@ import { useNavigate, useParams } from 'react-router'
 import { Icon } from '../../lib/util'
 import { videosService } from '../../videos/videos-service'
 import { subsStore } from '../subs-store'
-import type { ChannelSearchResult, PlaylistSummary, PlaylistsForChannelResult } from '../../lib/types'
+import type {
+  ChannelSearchResult,
+  PlaylistSummary,
+  PlaylistsForChannelResult,
+} from '../../lib/types'
 
 export const AddChannel = observer(() => {
   const navigate = useNavigate()
   const params = useParams()
-  const [loadingPlaylists, setLoadingPlaylists] = useState<Record<string, boolean>>({})
-  const [loadingMorePlaylists, setLoadingMorePlaylists] = useState<Record<string, boolean>>({})
-  const [playlists, setPlaylists] = useState<Record<string, PlaylistsForChannelResult>>({})
-  const [playlistFilters, setPlaylistFilters] = useState<Record<string, string>>({})
+  const [loadingPlaylists, setLoadingPlaylists] = useState<
+    Record<string, boolean>
+  >({})
+  const [loadingMorePlaylists, setLoadingMorePlaylists] = useState<
+    Record<string, boolean>
+  >({})
+  const [playlists, setPlaylists] = useState<
+    Record<string, PlaylistsForChannelResult>
+  >({})
+  const [playlistFilters, setPlaylistFilters] = useState<
+    Record<string, string>
+  >({})
 
   const queryInputRef = useRef<HTMLInputElement>(null)
   const prevQueryRef = useRef('')
@@ -76,7 +88,10 @@ export const AddChannel = observer(() => {
   const loadMorePlaylists = async (channelId: string, pageToken?: string) => {
     setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: true }))
 
-    const newPlaylists = await videosService.getPlaylistsForChannel(channelId, pageToken)
+    const newPlaylists = await videosService.getPlaylistsForChannel(
+      channelId,
+      pageToken,
+    )
 
     setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: false }))
     setPlaylists((prev) => ({
@@ -101,43 +116,57 @@ export const AddChannel = observer(() => {
     })
   }
 
-  const renderPlaylists = (channelId: string, playlistData: PlaylistsForChannelResult) => {
+  const renderPlaylists = (
+    channelId: string,
+    playlistData: PlaylistsForChannelResult,
+  ) => {
     const filter = playlistFilters[channelId] || ''
     const filteredPlaylists = filter
-      ? playlistData.videos.filter((p) => p.title.toLowerCase().includes(filter.toLowerCase()))
+      ? playlistData.videos.filter((p) =>
+        p.title.toLowerCase().includes(filter.toLowerCase()),
+      )
       : playlistData.videos
     const isLoadingMore = loadingMorePlaylists[channelId]
 
     return (
-      <div className='playlists-section'>
-        <div className='playlist-filter'>
+      <div className="playlists-section">
+        <div className="playlist-filter">
           <input
-            placeholder='Filter playlists'
+            placeholder="Filter playlists"
             value={filter}
             onChange={(e) => onFilterChange(channelId, e.target.value)}
           />
           {filter && (
-            <span className='filter-count'>{filteredPlaylists.length} matching</span>
+            <span className="filter-count">
+              {filteredPlaylists.length} matching
+            </span>
           )}
         </div>
-        <ul className='playlists-list'>
+        <ul className="playlists-list">
           {filteredPlaylists.map((playlist) => {
-            const isPlaylistSubscribed = subsStore.isPlaylistSubscribed(playlist.id)
+            const isPlaylistSubscribed = subsStore.isPlaylistSubscribed(
+              playlist.id,
+            )
 
             return (
-              <li key={playlist.id} className={`playlist-item${isPlaylistSubscribed ? ' is-subscribed' : ''}`}>
+              <li
+                key={playlist.id}
+                className={`playlist-item${isPlaylistSubscribed ? ' is-subscribed' : ''}`}
+              >
                 <img src={playlist.thumb} />
-                <div className='playlist-details'>
+                <div className="playlist-details">
                   <h4>{playlist.title}</h4>
-                  <span className='playlist-count'>{playlist.count} videos</span>
+                  <span className="playlist-count">
+                    {playlist.count} videos
+                  </span>
                 </div>
                 {isPlaylistSubscribed ? (
-                  <span className='subscribed-indicator'>
-                    <Icon name='check' />
+                  <span className="subscribed-indicator">
+                    <Icon name="check" />
                   </span>
                 ) : (
                   <button onClick={_.partial(onAddPlaylist, playlist)}>
-                    <Icon name='plus' />
+                    <Icon name="plus" />
                   </button>
                 )}
               </li>
@@ -145,10 +174,12 @@ export const AddChannel = observer(() => {
           })}
         </ul>
         {playlistData.nextPageToken && (
-          <div className='load-more-button-container'>
+          <div className="load-more-button-container">
             <button
-              className='load-more-button'
-              onClick={() => loadMorePlaylists(channelId, playlistData.nextPageToken)}
+              className="load-more-button"
+              onClick={() =>
+                loadMorePlaylists(channelId, playlistData.nextPageToken)
+              }
               disabled={isLoadingMore}
             >
               {isLoadingMore ? 'Loading...' : 'Load more'}
@@ -166,44 +197,63 @@ export const AddChannel = observer(() => {
       const isSubscribed = subsStore.isChannelSubscribed(channel.id)
 
       return (
-        <li key={channel.id} className={cs('channel-item', { 'is-subscribed': isSubscribed })}>
-          <div className='channel-info'>
+        <li
+          key={channel.id}
+          className={cs('channel-item', { 'is-subscribed': isSubscribed })}
+        >
+          <div className="channel-info">
             <img src={channel.thumb} />
-            <div className='channel-details'>
+            <div className="channel-details">
               <h3>{channel.title || channel.author}</h3>
               <button
-                className='load-playlists-button'
-                onClick={() => channelPlaylistData ? hidePlaylists(channel.id) : loadPlaylists(channel.id)}
+                className="load-playlists-button"
+                onClick={() =>
+                  channelPlaylistData
+                    ? hidePlaylists(channel.id)
+                    : loadPlaylists(channel.id)
+                }
                 disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : channelPlaylistData ? 'Hide playlists' : 'Load playlists'}
+                {isLoading
+                  ? 'Loading...'
+                  : channelPlaylistData
+                    ? 'Hide playlists'
+                    : 'Load playlists'}
               </button>
             </div>
             {isSubscribed ? (
-              <span className='subscribed-indicator'>
-                <Icon name='check' />
+              <span className="subscribed-indicator">
+                <Icon name="check" />
               </span>
             ) : (
-              <button className='add-button' onClick={_.partial(onAddChannel, channel)}>
-                <Icon name='plus' />
+              <button
+                className="add-button"
+                onClick={_.partial(onAddChannel, channel)}
+              >
+                <Icon name="plus" />
               </button>
             )}
           </div>
-          {channelPlaylistData && renderPlaylists(channel.id, channelPlaylistData)}
+          {channelPlaylistData &&
+            renderPlaylists(channel.id, channelPlaylistData)}
         </li>
       )
     })
   }
 
   return (
-    <div className='add-sub add-channel'>
+    <div className="add-sub add-channel">
       <form onSubmit={searchSubs}>
-        <input ref={queryInputRef} placeholder='Search Channels' defaultValue={getQuery()} />
+        <input
+          ref={queryInputRef}
+          placeholder="Search Channels"
+          defaultValue={getQuery()}
+        />
         <button>
-          <Icon name='search' />
+          <Icon name="search" />
         </button>
       </form>
-      <ul className='channels-list'>{renderResults()}</ul>
+      <ul className="channels-list">{renderResults()}</ul>
     </div>
   )
 })

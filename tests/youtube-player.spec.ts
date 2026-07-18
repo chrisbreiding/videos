@@ -1,24 +1,43 @@
 import type { Page } from '@playwright/test'
 import { test, expect } from './util/coverage-fixture'
-import { setupApp, createChannel, createVideo, mockYoutubeIframeApi } from './util/helpers'
+import {
+  setupApp,
+  createChannel,
+  createVideo,
+  mockYoutubeIframeApi,
+} from './util/helpers'
 
 const { describe } = test
 
 // Waits for the (index + 1)th fake YT.Player instance to be constructed and
 // returns a locator-free handle for driving it via page.evaluate.
-async function waitForPlayer (page: Page, index = 0) {
-  await page.waitForFunction((i) => window.__ytPlayers && window.__ytPlayers!.length > i, index)
+async function waitForPlayer(page: Page, index = 0) {
+  await page.waitForFunction(
+    (i) => window.__ytPlayers && window.__ytPlayers!.length > i,
+    index,
+  )
 }
 
 describe('YoutubePlayer', () => {
-  test('marks the player ready and tracks progress while playing', async ({ page }) => {
+  test('marks the player ready and tracks progress while playing', async ({
+    page,
+  }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'track-1', title: 'Tracked Video', duration: 'PT10M0S' }),
+        createVideo({
+          id: 'track-1',
+          title: 'Tracked Video',
+          duration: 'PT10M0S',
+        }),
       ],
     })
 
@@ -54,11 +73,18 @@ describe('YoutubePlayer', () => {
     await expect(progressBar).toHaveAttribute('style', /width:\s*10%/)
   })
 
-  test('reuses the already-loaded API script when opening a second video', async ({ page }) => {
+  test('reuses the already-loaded API script when opening a second video', async ({
+    page,
+  }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
         createVideo({ id: 'reuse-1', title: 'First Video' }),
@@ -84,14 +110,25 @@ describe('YoutubePlayer', () => {
     expect(await page.evaluate(() => window.__ytPlayers!.length)).toBe(2)
   })
 
-  test('saves progress immediately when the video is paused', async ({ page }) => {
+  test('saves progress immediately when the video is paused', async ({
+    page,
+  }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'pause-1', title: 'Paused Video', duration: 'PT10M0S' }),
+        createVideo({
+          id: 'pause-1',
+          title: 'Paused Video',
+          duration: 'PT10M0S',
+        }),
       ],
     })
 
@@ -113,14 +150,25 @@ describe('YoutubePlayer', () => {
     await expect(progressBar).toHaveAttribute('style', /width:\s*50%/)
   })
 
-  test('ignores non-numeric current time values when saving progress', async ({ page }) => {
+  test('ignores non-numeric current time values when saving progress', async ({
+    page,
+  }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'invalid-time', title: 'Invalid Time Video', duration: 'PT10M0S' }),
+        createVideo({
+          id: 'invalid-time',
+          title: 'Invalid Time Video',
+          duration: 'PT10M0S',
+        }),
       ],
     })
 
@@ -140,11 +188,18 @@ describe('YoutubePlayer', () => {
     await expect(page.locator('.watch-progress')).toHaveCount(0)
   })
 
-  test('advances to the next video and reloads the player when playback ends', async ({ page }) => {
+  test('advances to the next video and reloads the player when playback ends', async ({
+    page,
+  }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
         createVideo({ id: 'end-1', title: 'Ending Video' }),
@@ -160,7 +215,9 @@ describe('YoutubePlayer', () => {
 
     await waitForPlayer(page)
     await page.evaluate(() => window.__ytPlayers![0].simulateReady())
-    await page.evaluate(() => window.__ytPlayers![0].simulateStateChange(window.YT.PlayerState.ENDED))
+    await page.evaluate(() =>
+      window.__ytPlayers![0].simulateStateChange(window.YT.PlayerState.ENDED),
+    )
 
     // the app advances to the next video, which changes the player's `id`
     // prop and reloads the existing player instance rather than remounting it
@@ -172,15 +229,20 @@ describe('YoutubePlayer', () => {
     expect(await page.evaluate(() => window.__ytPlayers!.length)).toBe(1)
   })
 
-  test('resizes the player when the now-playing dimensions change', async ({ page }) => {
+  test('resizes the player when the now-playing dimensions change', async ({
+    page,
+  }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'resize-1', title: 'Resizable Video' }),
-      ],
+      videos: [createVideo({ id: 'resize-1', title: 'Resizable Video' })],
     })
 
     await page.goto('/subs/channel-1?nowPlaying=resize-1')
@@ -197,18 +259,25 @@ describe('YoutubePlayer', () => {
     await page.mouse.move(box.x + box.width / 2, box.y + 150)
     await page.mouse.up()
 
-    await expect.poll(() => page.evaluate(() => window.__ytPlayers![0].calls.setSize.length)).toBeGreaterThan(0)
+    await expect
+    .poll(() =>
+      page.evaluate(() => window.__ytPlayers![0].calls.setSize.length),
+    )
+    .toBeGreaterThan(0)
   })
 
   test('destroys the player when it is closed', async ({ page }) => {
     await mockYoutubeIframeApi(page)
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'destroy-1', title: 'Destroyable Video' }),
-      ],
+      videos: [createVideo({ id: 'destroy-1', title: 'Destroyable Video' })],
     })
 
     await page.goto('/subs/channel-1?nowPlaying=destroy-1')
@@ -220,6 +289,8 @@ describe('YoutubePlayer', () => {
     await page.locator('.now-playing .close').click()
     await expect(page.locator('.now-playing')).toHaveCount(0)
 
-    expect(await page.evaluate(() => window.__ytPlayers![0].calls.destroy)).toBe(1)
+    expect(
+      await page.evaluate(() => window.__ytPlayers![0].calls.destroy),
+    ).toBe(1)
   })
 })

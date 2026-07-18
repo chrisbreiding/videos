@@ -34,10 +34,17 @@ export const Sub = observer(() => {
   }
 
   const finishedLoadingVideos = () => {
-    return previousLoadingValueRef.current === true && videosStore.isLoading === false
+    return (
+      previousLoadingValueRef.current === true &&
+      videosStore.isLoading === false
+    )
   }
 
-  const shouldLoadAllPlaylists = (sub: SubModel | undefined, oldPlaylistId: string | null | undefined, newPlaylistId: string | null | undefined) => {
+  const shouldLoadAllPlaylists = (
+    sub: SubModel | undefined,
+    oldPlaylistId: string | null | undefined,
+    newPlaylistId: string | null | undefined,
+  ) => {
     if (sub) return false
     if (oldPlaylistId && !newPlaylistId) return true
     if (videosStore.hasLoadedAllPlaylists) return false
@@ -78,15 +85,22 @@ export const Sub = observer(() => {
     isAllSubsRef.current = false
 
     if (
-      oldPlaylistId !== newPlaylistId
-      || oldToken !== newToken
-      || oldSearchQuery !== newSearchQuery
+      oldPlaylistId !== newPlaylistId ||
+      oldToken !== newToken ||
+      oldSearchQuery !== newSearchQuery
     ) {
       if (newSearchQuery) {
         if (sub.type === 'playlist') {
-          videosStore.getVideosDataForPlaylistSearch(sub.playlistId!, newSearchQuery)
+          videosStore.getVideosDataForPlaylistSearch(
+            sub.playlistId!,
+            newSearchQuery,
+          )
         } else {
-          videosStore.getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+          videosStore.getVideosDataForChannelSearch(
+            sub,
+            newSearchQuery,
+            newToken,
+          )
         }
       } else if (sub.type === 'custom') {
         videosStore.getVideosDataForCustomPlaylist(sub)
@@ -96,7 +110,10 @@ export const Sub = observer(() => {
     }
   }
 
-  const paginatorLink = (subId: string | undefined, pageToken: string | null | undefined) => {
+  const paginatorLink = (
+    subId: string | undefined,
+    pageToken: string | null | undefined,
+  ) => {
     if (!pageToken) return
 
     return updatedLink(location, {
@@ -114,28 +131,42 @@ export const Sub = observer(() => {
     return sub ? sub.markedVideoId : null
   }
 
-  const updateVideoMark = useCallback((id?: string) => {
-    const sub = getSub()
+  const updateVideoMark = useCallback(
+    (id?: string) => {
+      const sub = getSub()
 
-    if (isAllSubsRef.current) {
-      appState.setAllSubsMarkedVideoId(id)
-    } else if (sub) {
-      subsStore.update(sub.id, { markedVideoId: id })
-    }
-  }, [getSub])
+      if (isAllSubsRef.current) {
+        appState.setAllSubsMarkedVideoId(id)
+      } else if (sub) {
+        subsStore.update(sub.id, { markedVideoId: id })
+      }
+    },
+    [getSub],
+  )
 
-  const updateVideoMarkerLink = useCallback((marker?: string) => {
-    navigate(updatedLink(location, {
-      search: { marker },
-    }), { replace: true })
-    scrollToMarker(marker)
-  }, [navigate, location])
+  const updateVideoMarkerLink = useCallback(
+    (marker?: string) => {
+      navigate(
+        updatedLink(location, {
+          search: { marker },
+        }),
+        { replace: true },
+      )
+      scrollToMarker(marker)
+    },
+    [navigate, location],
+  )
 
-  const updateBookmark = useCallback((sub: SubModel) => () => {
-    const bookmarkedPageToken = isPageBookMarked(sub) ? null : pageTokenRef.current
-    sub.update({ bookmarkedPageToken })
-    subsStore.save()
-  }, [])
+  const updateBookmark = useCallback(
+    (sub: SubModel) => () => {
+      const bookmarkedPageToken = isPageBookMarked(sub)
+        ? null
+        : pageTokenRef.current
+      sub.update({ bookmarkedPageToken })
+      subsStore.save()
+    },
+    [],
+  )
 
   const removeVideoMark = useCallback(() => {
     updateVideoMark()
@@ -146,36 +177,42 @@ export const Sub = observer(() => {
     appState.setSorting(true)
   }, [])
 
-  const onSortEnd = useCallback((sortProps: string[]) => {
-    appState.setSorting(false)
-    const changed = videosStore.sort(sortProps)
+  const onSortEnd = useCallback(
+    (sortProps: string[]) => {
+      appState.setSorting(false)
+      const changed = videosStore.sort(sortProps)
 
-    if (changed) {
-      subsStore.updatePlaylistVideosOrder(params.id, videosStore.videos)
-      subsStore.save()
-    }
-  }, [params.id])
+      if (changed) {
+        subsStore.updatePlaylistVideosOrder(params.id, videosStore.videos)
+        subsStore.save()
+      }
+    },
+    [params.id],
+  )
 
-  const onSearchUpdate = useCallback((searchTerm?: string) => {
-    navigate(updatedLink({
-      pathname: `/subs/${params.id}`,
-    }, {
-      search: {
-        search: searchTerm || undefined,
-        pageToken: undefined,
-      },
-    }))
-  }, [navigate, params.id])
+  const onSearchUpdate = useCallback(
+    (searchTerm?: string) => {
+      navigate(
+        updatedLink(
+          {
+            pathname: `/subs/${params.id}`,
+          },
+          {
+            search: {
+              search: searchTerm || undefined,
+              pageToken: undefined,
+            },
+          },
+        ),
+      )
+    },
+    [navigate, params.id],
+  )
 
   const renderSearch = (sub: SubModel | undefined) => {
     if (!sub || sub.type === 'custom') return null
 
-    return (
-      <Search
-        query={query.search}
-        onSearch={onSearchUpdate}
-      />
-    )
+    return <Search query={query.search} onSearch={onSearchUpdate} />
   }
 
   const renderBookmark = (sub: SubModel | undefined) => {
@@ -186,7 +223,7 @@ export const Sub = observer(() => {
         className={cs('bookmark', { 'is-bookmarked': isPageBookMarked(sub) })}
         onClick={updateBookmark(sub)}
       >
-        <Icon name='bookmark' />
+        <Icon name="bookmark" />
       </button>
     )
   }
@@ -194,10 +231,10 @@ export const Sub = observer(() => {
   const renderVideos = (sub: SubModel | undefined) => {
     if (!videosStore.videos.length) {
       return (
-        <div className='videos-empty'>
-          <Icon name='film' />
+        <div className="videos-empty">
+          <Icon name="film" />
           No videos
-          <Icon name='film' />
+          <Icon name="film" />
         </div>
       )
     }
@@ -221,10 +258,10 @@ export const Sub = observer(() => {
 
   const renderLoader = () => {
     return (
-      <div className='loader'>
-        <Icon name='play-circle' spin />
-        <Icon name='play-circle' spin />
-        <Icon name='play-circle' spin />
+      <div className="loader">
+        <Icon name="play-circle" spin />
+        <Icon name="play-circle" spin />
+        <Icon name="play-circle" spin />
       </div>
     )
   }
@@ -246,7 +283,7 @@ export const Sub = observer(() => {
   const nextLink = paginatorLink(subId, nextPageToken)
 
   return (
-    <main className='videos'>
+    <main className="videos">
       {!query.nowPlaying && (
         <DocumentTitle title={`${sub?.title || 'All Subs'} | Videos`} />
       )}

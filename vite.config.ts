@@ -9,12 +9,14 @@ export default defineConfig(async () => {
   if (process.env.COVERAGE) {
     const istanbul = (await import('vite-plugin-istanbul')).default
 
-    plugins.push(istanbul({
-      include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['node_modules', 'tests', '**/*.d.ts'],
-      extension: ['.ts', '.tsx'],
-      requireEnv: false,
-    }))
+    plugins.push(
+      istanbul({
+        include: ['src/**/*.ts', 'src/**/*.tsx'],
+        exclude: ['node_modules', 'tests', '**/*.d.ts'],
+        extension: ['.ts', '.tsx'],
+        requireEnv: false,
+      }),
+    )
   }
 
   return {

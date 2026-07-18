@@ -15,18 +15,35 @@ describe('lib/util', () => {
       const iconNoText = util.Icon({ name: 'star' })
       const iconRightText = util.Icon({ name: 'star', rightText: 'right' })
       const iconLeftText = util.Icon({ name: 'star', leftText: 'left' })
-      const iconBothText = util.Icon({ name: 'star', rightText: 'right', leftText: 'left' })
+      const iconBothText = util.Icon({
+        name: 'star',
+        rightText: 'right',
+        leftText: 'left',
+      })
 
-      const textOf = (child: { props?: { children?: unknown } } | null) => child?.props?.children ?? null
+      const textOf = (child: { props?: { children?: unknown } } | null) =>
+        child?.props?.children ?? null
 
       return {
         iconNoTextClassName: iconNoText.props.className,
-        iconNoTextChildren: [textOf(iconNoText.props.children[0]), textOf(iconNoText.props.children[2])],
+        iconNoTextChildren: [
+          textOf(iconNoText.props.children[0]),
+          textOf(iconNoText.props.children[2]),
+        ],
         iconRightTextClassName: iconRightText.props.className,
-        iconRightTextChildren: [textOf(iconRightText.props.children[0]), textOf(iconRightText.props.children[2])],
+        iconRightTextChildren: [
+          textOf(iconRightText.props.children[0]),
+          textOf(iconRightText.props.children[2]),
+        ],
         iconLeftTextClassName: iconLeftText.props.className,
-        iconLeftTextChildren: [textOf(iconLeftText.props.children[0]), textOf(iconLeftText.props.children[2])],
-        iconBothTextChildren: [textOf(iconBothText.props.children[0]), textOf(iconBothText.props.children[2])],
+        iconLeftTextChildren: [
+          textOf(iconLeftText.props.children[0]),
+          textOf(iconLeftText.props.children[2]),
+        ],
+        iconBothTextChildren: [
+          textOf(iconBothText.props.children[0]),
+          textOf(iconBothText.props.children[2]),
+        ],
 
         durationUndefined: util.duration(undefined),
         durationWithHours: util.duration('PT1H2M3S'),
@@ -37,17 +54,37 @@ describe('lib/util', () => {
         durationSecondsInvalid: util.durationSeconds('not-a-duration'),
         durationSecondsValid: util.durationSeconds('PT1H2M3S'),
 
-        transformed: util.transformObject({ a: 1, b: 2 }, (value: number) => value * 2),
-        mapObj: util.convertMapToObject(new Map([['a', 1], ['b', 2]])),
-        entriesObj: util.convertMapEntriesToObject([['a', 1], ['b', 2]]),
+        transformed: util.transformObject(
+          { a: 1, b: 2 },
+          (value: number) => value * 2,
+        ),
+        mapObj: util.convertMapToObject(
+          new Map([
+            ['a', 1],
+            ['b', 2],
+          ]),
+        ),
+        entriesObj: util.convertMapEntriesToObject([
+          ['a', 1],
+          ['b', 2],
+        ]),
 
         queryStringified: util.stringifyQueryString({ a: '1', b: '2' }),
         queryParsedFromNonString: util.parseQueryString(null),
         queryParsedFromString: util.parseQueryString('?a=1&b=2'),
 
-        linkWithDefaultUpdates: util.updatedLink({ pathname: '/foo', search: '?x=1' }),
-        linkWithSearchUpdate: util.updatedLink({ pathname: '/foo', search: '?x=1' }, { search: { y: '2' } }),
-        linkWithPathnameUpdate: util.updatedLink({ pathname: '/foo', search: '' }, { pathname: '/bar' }),
+        linkWithDefaultUpdates: util.updatedLink({
+          pathname: '/foo',
+          search: '?x=1',
+        }),
+        linkWithSearchUpdate: util.updatedLink(
+          { pathname: '/foo', search: '?x=1' },
+          { search: { y: '2' } },
+        ),
+        linkWithPathnameUpdate: util.updatedLink(
+          { pathname: '/foo', search: '' },
+          { pathname: '/bar' },
+        ),
       }
     })
 
@@ -76,8 +113,17 @@ describe('lib/util', () => {
     expect(result.queryParsedFromNonString).toEqual({})
     expect(result.queryParsedFromString).toEqual({ a: '1', b: '2' })
 
-    expect(result.linkWithDefaultUpdates).toEqual({ pathname: '/foo', search: '?x=1' })
-    expect(result.linkWithSearchUpdate).toEqual({ pathname: '/foo', search: '?x=1&y=2' })
-    expect(result.linkWithPathnameUpdate).toEqual({ pathname: '/bar', search: '' })
+    expect(result.linkWithDefaultUpdates).toEqual({
+      pathname: '/foo',
+      search: '?x=1',
+    })
+    expect(result.linkWithSearchUpdate).toEqual({
+      pathname: '/foo',
+      search: '?x=1&y=2',
+    })
+    expect(result.linkWithPathnameUpdate).toEqual({
+      pathname: '/bar',
+      search: '',
+    })
   })
 })

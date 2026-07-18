@@ -19,12 +19,12 @@ document.addEventListener('touchstart', () => {
 
 createRoot(document.getElementById('app')!).render(
   <>
-    <DocumentTitle title='Videos' />
+    <DocumentTitle title="Videos" />
     <BrowserRouter>
       <Routes>
-        <Route path='/login' element={<Login />} />
-        <Route path='/logout' element={<Logout />} />
-        <Route path='/*' element={<App />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/*" element={<App />} />
       </Routes>
     </BrowserRouter>
   </>,

@@ -4,13 +4,24 @@ import { setupApp, createChannel, createVideo } from './util/helpers'
 const { describe } = test
 
 describe('Watch Progress Bar', () => {
-  test('shows a progress bar for a partially-watched video', async ({ page }) => {
+  test('shows a progress bar for a partially-watched video', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'Half Watched Video', duration: 'PT10M0S' }),
+        createVideo({
+          id: 'video-1',
+          title: 'Half Watched Video',
+          duration: 'PT10M0S',
+        }),
       ],
       // 300s watched out of 600s total => 50%
       watchedVideos: {
@@ -20,7 +31,9 @@ describe('Watch Progress Bar', () => {
 
     await page.goto('/subs/channel-1')
 
-    await expect(page.getByText('Half Watched Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Half Watched Video')).toBeVisible({
+      timeout: 10000,
+    })
 
     // The progress bar should render, filled to the watched percentage
     const progressBar = page.locator('.watch-progress .watch-progress-bar')
@@ -31,10 +44,19 @@ describe('Watch Progress Bar', () => {
   test('does not show a progress bar when barely watched', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'Barely Watched Video', duration: 'PT10M0S' }),
+        createVideo({
+          id: 'video-1',
+          title: 'Barely Watched Video',
+          duration: 'PT10M0S',
+        }),
       ],
       // 5s watched out of 600s total => ~0.8%, below the 2% threshold
       watchedVideos: {
@@ -44,18 +66,31 @@ describe('Watch Progress Bar', () => {
 
     await page.goto('/subs/channel-1')
 
-    await expect(page.getByText('Barely Watched Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Barely Watched Video')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('.watch-progress')).toHaveCount(0)
   })
 
-  test('does not show a progress bar when the video has no length', async ({ page }) => {
+  test('does not show a progress bar when the video has no length', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
         // a zero-length duration parses to 0 seconds
-        createVideo({ id: 'video-1', title: 'No Duration Video', duration: 'PT0S' }),
+        createVideo({
+          id: 'video-1',
+          title: 'No Duration Video',
+          duration: 'PT0S',
+        }),
       ],
       watchedVideos: {
         'video-1': { watchTimestamp: 300, updatedAt: '2024-01-01T00:00:00Z' },
@@ -64,29 +99,46 @@ describe('Watch Progress Bar', () => {
 
     await page.goto('/subs/channel-1')
 
-    await expect(page.getByText('No Duration Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('No Duration Video')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('.watch-progress')).toHaveCount(0)
   })
 
-  test('does not show a progress bar for an unwatched video', async ({ page }) => {
+  test('does not show a progress bar for an unwatched video', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'Unwatched Video', duration: 'PT10M0S' }),
+        createVideo({
+          id: 'video-1',
+          title: 'Unwatched Video',
+          duration: 'PT10M0S',
+        }),
       ],
     })
 
     await page.goto('/subs/channel-1')
 
-    await expect(page.getByText('Unwatched Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Unwatched Video')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('.watch-progress')).toHaveCount(0)
   })
 })
 
 describe('Removing a Video Marker', () => {
-  test('removes the marker when the remove button is clicked', async ({ page }) => {
+  test('removes the marker when the remove button is clicked', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
         'channel-1': createChannel({

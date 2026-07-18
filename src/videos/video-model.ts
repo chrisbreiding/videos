@@ -13,7 +13,7 @@ export class VideoModel {
   thumb?: string
   title?: string
 
-  constructor (props: VideoData) {
+  constructor(props: VideoData) {
     makeObservable(this, {
       duration: observable,
       id: observable,
@@ -36,7 +36,7 @@ export class VideoModel {
     this.title = props.title
   }
 
-  update ({ order }: { order?: number }) {
+  update({ order }: { order?: number }) {
     this.order = order
   }
 }

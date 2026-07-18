@@ -19,7 +19,7 @@ class AppState {
   watchedVideos: WatchedVideos = {}
   savedLocation?: Location
 
-  constructor () {
+  constructor() {
     makeObservable(this, {
       _nowPlayingHeight: observable,
       autoPlayEnabled: observable,
@@ -46,11 +46,11 @@ class AppState {
     this._setProp('_nowPlayingHeight', getItem('nowPlayingHeight'))
   }
 
-  get maxNowPlayingHeight () {
+  get maxNowPlayingHeight() {
     return this.windowHeight - maxNowPlayingHeightOffset
   }
 
-  get nowPlayingHeight () {
+  get nowPlayingHeight() {
     let height = this._nowPlayingHeight
     if (height > this.maxNowPlayingHeight) height = this.maxNowPlayingHeight
     if (height < minNowPlayingHeight) height = minNowPlayingHeight
@@ -58,35 +58,46 @@ class AppState {
     return height
   }
 
-  get nowPlayingWidth () {
+  get nowPlayingWidth() {
     return Math.floor(this.nowPlayingHeight / nowPlayingSizeRatio)
   }
 
-  _setProp<K extends keyof AppState> (key: K, value: AppState[K] | null | undefined) {
+  _setProp<K extends keyof AppState>(
+    key: K,
+    value: AppState[K] | null | undefined,
+  ) {
     if (value == null) return
 
     ;(this as Record<K, AppState[K]>)[key] = value
   }
 
-  setSorting (isSorting: boolean) {
+  setSorting(isSorting: boolean) {
     this.isSorting = isSorting
   }
 
-  setAllSubsMarkedVideoId (allSubsMarkedVideoId?: string, save = true) {
+  setAllSubsMarkedVideoId(allSubsMarkedVideoId?: string, save = true) {
     this.allSubsMarkedVideoId = allSubsMarkedVideoId
 
     if (save) this.save()
   }
 
-  setWatchedVideos (watchedVideos?: WatchedVideos) {
+  setWatchedVideos(watchedVideos?: WatchedVideos) {
     this.watchedVideos = watchedVideos || {}
   }
 
-  saveVideoProgress (videoId: string, watchTimestamp: number, immediate?: boolean) {
+  saveVideoProgress(
+    videoId: string,
+    watchTimestamp: number,
+    immediate?: boolean,
+  ) {
     this._updateVideoProgress(videoId, watchTimestamp, immediate)
   }
 
-  _updateVideoProgress (videoId: string | undefined, watchTimestamp: number, immediate?: boolean) {
+  _updateVideoProgress(
+    videoId: string | undefined,
+    watchTimestamp: number,
+    immediate?: boolean,
+  ) {
     if (!videoId) return
 
     const entry: WatchedVideo = {
@@ -108,15 +119,19 @@ class AppState {
     update({ watchedVideos: { [videoId]: entry } })
   }
 
-  _saveVideoProgressDebounced = _.debounce((videoId: string, entry: WatchedVideo) => {
-    update({ watchedVideos: { [videoId]: entry } })
-  }, 5000, { maxWait: 5000 })
+  _saveVideoProgressDebounced = _.debounce(
+    (videoId: string, entry: WatchedVideo) => {
+      update({ watchedVideos: { [videoId]: entry } })
+    },
+    5000,
+    { maxWait: 5000 },
+  )
 
   _onWindowResize = () => {
     this.windowHeight = window.innerHeight
   }
 
-  updateNowPlayingHeight (height: number) {
+  updateNowPlayingHeight(height: number) {
     this._saveNowPlayingHeight(height)
     this._nowPlayingHeight = height
   }
@@ -134,11 +149,11 @@ class AppState {
     setItem('autoPlayEnabled', isEnabled)
   }, 500)
 
-  setSavedLocation (location?: Location) {
+  setSavedLocation(location?: Location) {
     this.savedLocation = location
   }
 
-  save () {
+  save() {
     if (this.allSubsMarkedVideoId == null) {
       deleteField('allSubsMarkedVideoId')
     } else {

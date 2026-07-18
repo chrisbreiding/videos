@@ -16,9 +16,9 @@ export const Logout = observer(() => {
   }, [navigate])
 
   return (
-    <div className='logout'>
-      <div className='loader'>
-        <Icon name='sign-out' /> Logging out...
+    <div className="logout">
+      <div className="loader">
+        <Icon name="sign-out" /> Logging out...
       </div>
     </div>
   )

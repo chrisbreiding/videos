@@ -9,7 +9,9 @@ const { describe } = test
 // video2" sort branch, and nextVideoId's not-found/last-video branches.
 
 describe('videos/videos-store', () => {
-  test('videos getter sorts newer videos before older ones', async ({ page }) => {
+  test('videos getter sorts newer videos before older ones', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
@@ -19,8 +21,16 @@ describe('videos/videos-store', () => {
 
       videosStore._updateVideosData({
         videos: [
-          { id: 'video-1', title: 'Older Video', published: '2024-01-01T00:00:00Z' },
-          { id: 'video-2', title: 'Newer Video', published: '2024-02-01T00:00:00Z' },
+          {
+            id: 'video-1',
+            title: 'Older Video',
+            published: '2024-01-01T00:00:00Z',
+          },
+          {
+            id: 'video-2',
+            title: 'Newer Video',
+            published: '2024-02-01T00:00:00Z',
+          },
         ],
       })
 
@@ -30,7 +40,9 @@ describe('videos/videos-store', () => {
     expect(titles).toEqual(['Newer Video', 'Older Video'])
   })
 
-  test('nextVideoId returns null when the given video id is not found', async ({ page }) => {
+  test('nextVideoId returns null when the given video id is not found', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
@@ -40,8 +52,16 @@ describe('videos/videos-store', () => {
 
       videosStore._updateVideosData({
         videos: [
-          { id: 'video-1', title: 'Video 1', published: '2024-01-01T00:00:00Z' },
-          { id: 'video-2', title: 'Video 2', published: '2024-01-02T00:00:00Z' },
+          {
+            id: 'video-1',
+            title: 'Video 1',
+            published: '2024-01-01T00:00:00Z',
+          },
+          {
+            id: 'video-2',
+            title: 'Video 2',
+            published: '2024-01-02T00:00:00Z',
+          },
         ],
       })
 
@@ -51,7 +71,9 @@ describe('videos/videos-store', () => {
     expect(result).toBe(null)
   })
 
-  test('nextVideoId returns null when the given video is the last one', async ({ page }) => {
+  test('nextVideoId returns null when the given video is the last one', async ({
+    page,
+  }) => {
     await stubFirebaseAuth(page)
     await page.goto('/')
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
@@ -61,8 +83,16 @@ describe('videos/videos-store', () => {
 
       videosStore._updateVideosData({
         videos: [
-          { id: 'video-1', title: 'Video 1', published: '2024-01-02T00:00:00Z' },
-          { id: 'video-2', title: 'Video 2', published: '2024-01-01T00:00:00Z' },
+          {
+            id: 'video-1',
+            title: 'Video 1',
+            published: '2024-01-02T00:00:00Z',
+          },
+          {
+            id: 'video-2',
+            title: 'Video 2',
+            published: '2024-01-01T00:00:00Z',
+          },
         ],
       })
 

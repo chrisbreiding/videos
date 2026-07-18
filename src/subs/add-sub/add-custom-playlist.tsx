@@ -28,14 +28,20 @@ export const AddCustomPlaylist = observer(() => {
     titleRef.current!.focus()
   }, [])
 
-  const iconUpdated = useCallback((updates: Partial<IconConfig>) => {
-    setIconState((prev) => ({ ...prev, ...updates }))
-  }, [setIconState])
+  const iconUpdated = useCallback(
+    (updates: Partial<IconConfig>) => {
+      setIconState((prev) => ({ ...prev, ...updates }))
+    },
+    [setIconState],
+  )
 
-  const toggleIconPicker = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsPickingIcon(!isPickingIcon)
-  }, [setIsPickingIcon, isPickingIcon])
+  const toggleIconPicker = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      setIsPickingIcon(!isPickingIcon)
+    },
+    [setIsPickingIcon, isPickingIcon],
+  )
 
   const add = (e: React.SubmitEvent) => {
     e.preventDefault()
@@ -52,32 +58,29 @@ export const AddCustomPlaylist = observer(() => {
 
     return (
       <Modal
-        className='icon-picker-modal'
+        className="icon-picker-modal"
         onClose={_.partial(setIsPickingIcon, false)}
       >
-        <IconPicker
-          onUpdate={iconUpdated}
-          chosenIcon={iconState}
-        />
+        <IconPicker onUpdate={iconUpdated} chosenIcon={iconState} />
       </Modal>
     )
   }
 
   return (
-    <form className='add-sub add-custom-playlist' onSubmit={add}>
+    <form className="add-sub add-custom-playlist" onSubmit={add}>
       <fieldset>
         <label>Title</label>
         <input ref={titleRef} />
       </fieldset>
       <fieldset>
         <label>Thumbnail</label>
-        <button className='pick-icon' onClick={toggleIconPicker}>
+        <button className="pick-icon" onClick={toggleIconPicker}>
           <IconThumb {...iconState} />
         </button>
       </fieldset>
-      <fieldset className='controls'>
-        <button className='submit'>
-          <Icon name='plus' /> Add Custom Playlist
+      <fieldset className="controls">
+        <button className="submit">
+          <Icon name="plus" /> Add Custom Playlist
         </button>
       </fieldset>
       {renderIconPicker()}

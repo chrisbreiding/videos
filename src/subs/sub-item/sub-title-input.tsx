@@ -1,7 +1,10 @@
 import _ from 'lodash'
 import { useEffect, useRef, useState } from 'react'
 
-export const SubTitleInput = ({ value, onUpdate }: {
+export const SubTitleInput = ({
+  value,
+  onUpdate,
+}: {
   value?: string
   onUpdate: (title: string) => void
 }) => {
@@ -10,9 +13,11 @@ export const SubTitleInput = ({ value, onUpdate }: {
   const onUpdateRef = useRef(onUpdate)
   onUpdateRef.current = onUpdate
 
-  const debouncedUpdateRef = useRef(_.debounce((value: string) => {
-    onUpdateRef.current(value)
-  }, 500))
+  const debouncedUpdateRef = useRef(
+    _.debounce((value: string) => {
+      onUpdateRef.current(value)
+    }, 500),
+  )
 
   useEffect(() => {
     const debouncedUpdate = debouncedUpdateRef.current

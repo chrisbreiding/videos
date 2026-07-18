@@ -33,62 +33,77 @@ const BookmarkLink = observer(({ link }: { link?: BookmarkLinkTo }) => {
   }
 
   return (
-    <NavLink onClick={onClick} to={link} className='sub-bookmark'>
-      <Icon name='bookmark' />
+    <NavLink onClick={onClick} to={link} className="sub-bookmark">
+      <Icon name="bookmark" />
     </NavLink>
   )
 })
 
-const Channel = observer(({ sub, link, bookmarkLink, onUpdate, handleRef }: {
-  sub: SubModel
-  link: LinkLocation
-  bookmarkLink?: BookmarkLinkTo
-  onUpdate: (props: Partial<SubProps>) => void
-  handleRef: HandleRef
-}) => {
-  const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
+const Channel = observer(
+  ({
+    sub,
+    link,
+    bookmarkLink,
+    onUpdate,
+    handleRef,
+  }: {
+    sub: SubModel
+    link: LinkLocation
+    bookmarkLink?: BookmarkLinkTo
+    onUpdate: (props: Partial<SubProps>) => void
+    handleRef: HandleRef
+  }) => {
+    const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
 
-  const onTitleUpdate = useCallback((title: string) => {
-    onUpdate({ title })
-  }, [onUpdate])
+    const onTitleUpdate = useCallback(
+      (title: string) => {
+        onUpdate({ title })
+      },
+      [onUpdate],
+    )
 
-  const onThumbClick = useCallback(async () => {
-    if (isUpdatingThumb) return
+    const onThumbClick = useCallback(async () => {
+      if (isUpdatingThumb) return
 
-    setIsUpdatingThumb(true)
+      setIsUpdatingThumb(true)
 
-    try {
-      const getDetails = sub.type === 'channel'
-        ? getChannelDetails(sub.id)
-        : getPlaylistDetails(sub.playlistId!)
+      try {
+        const getDetails =
+          sub.type === 'channel'
+            ? getChannelDetails(sub.id)
+            : getPlaylistDetails(sub.playlistId!)
 
-      const details = await getDetails
-      onUpdate({ thumb: details.thumb })
-    } catch (err) {
-      console.error('Failed to update thumbnail:', err) // eslint-disable-line no-console
-    } finally {
-      setIsUpdatingThumb(false)
-    }
-  }, [isUpdatingThumb, onUpdate, setIsUpdatingThumb, sub])
+        const details = await getDetails
+        onUpdate({ thumb: details.thumb })
+      } catch (err) {
+        console.error('Failed to update thumbnail:', err) // eslint-disable-line no-console
+      } finally {
+        setIsUpdatingThumb(false)
+      }
+    }, [isUpdatingThumb, onUpdate, setIsUpdatingThumb, sub])
 
-  return (
-    <span className={`${sub.type}-sub-item`}>
-      <span className='sub-item-icon' ref={handleRef}>
-        <img src={sub.thumb} />
+    return (
+      <span className={`${sub.type}-sub-item`}>
+        <span className="sub-item-icon" ref={handleRef}>
+          <img src={sub.thumb} />
+        </span>
+        <button
+          className="sub-item-icon editable"
+          onClick={onThumbClick}
+          disabled={isUpdatingThumb}
+        >
+          <img src={sub.thumb} />
+        </button>
+        <Title sub={sub} link={link} />
+        <SubTitleInput
+          value={sub.title || sub.author}
+          onUpdate={onTitleUpdate}
+        />
+        <BookmarkLink link={bookmarkLink} />
       </span>
-      <button
-        className='sub-item-icon editable'
-        onClick={onThumbClick}
-        disabled={isUpdatingThumb}
-      >
-        <img src={sub.thumb} />
-      </button>
-      <Title sub={sub} link={link} />
-      <SubTitleInput value={sub.title || sub.author} onUpdate={onTitleUpdate} />
-      <BookmarkLink link={bookmarkLink} />
-    </span>
-  )
-})
+    )
+  },
+)
 
 export const SubItem = observer((props: SubItemProps) => {
   const { ref, handleRef } = useSortable({
@@ -96,19 +111,21 @@ export const SubItem = observer((props: SubItemProps) => {
     index: props.index,
   })
 
-  function remove () {
+  function remove() {
     if (confirm(`Remove ${props.sub.title || props.sub.author}?`)) {
       props.onRemove()
     }
   }
 
   return (
-    <li className='sub-item' ref={ref}>
-      {props.sub.type === 'custom'
-        ? <CustomPlaylist {...props} handleRef={handleRef} />
-        : <Channel {...props} handleRef={handleRef} />}
-      <button className='remove' onClick={remove}>
-        <Icon name='minus-circle' />
+    <li className="sub-item" ref={ref}>
+      {props.sub.type === 'custom' ? (
+        <CustomPlaylist {...props} handleRef={handleRef} />
+      ) : (
+        <Channel {...props} handleRef={handleRef} />
+      )}
+      <button className="remove" onClick={remove}>
+        <Icon name="minus-circle" />
       </button>
     </li>
   )

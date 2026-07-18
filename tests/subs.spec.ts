@@ -1,11 +1,19 @@
 import { test, expect } from './util/coverage-fixture'
-import { setupApp, createChannel, createVideo, createSearchPlaylist, createCustomPlaylist } from './util/helpers'
+import {
+  setupApp,
+  createChannel,
+  createVideo,
+  createSearchPlaylist,
+  createCustomPlaylist,
+} from './util/helpers'
 import type { ChannelSearchResult } from '../src/lib/types'
 
 const { describe } = test
 
 describe('No Subscriptions', () => {
-  test('redirects to add-channel page when no subscriptions exist', async ({ page }) => {
+  test('redirects to add-channel page when no subscriptions exist', async ({
+    page,
+  }) => {
     await setupApp(page, { subs: {} })
 
     await page.goto('/')
@@ -13,13 +21,17 @@ describe('No Subscriptions', () => {
     await expect(page).toHaveURL(/\/add-channel/)
   })
 
-  test('shows empty message when navigating to add-channel without subs', async ({ page }) => {
+  test('shows empty message when navigating to add-channel without subs', async ({
+    page,
+  }) => {
     await setupApp(page, { subs: {} })
 
     await page.goto('/add-channel')
 
     await expect(page.locator('.add-channel')).toBeVisible({ timeout: 10000 })
-    await expect(page.locator('input[placeholder="Search Channels"]')).toBeVisible()
+    await expect(
+      page.locator('input[placeholder="Search Channels"]'),
+    ).toBeVisible()
   })
 })
 
@@ -31,7 +43,9 @@ describe('Adding a Channel', () => {
         createChannel({ id: 'channel-1', title: 'Test Channel 1' }),
         createChannel({ id: 'channel-2', title: 'Test Channel 2' }),
       ] as ChannelSearchResult[],
-      channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
+      channels: [
+        { contentDetails: { relatedPlaylists: { uploads: 'UU123' } } },
+      ],
     })
 
     await page.goto('/add-channel')
@@ -42,23 +56,36 @@ describe('Adding a Channel', () => {
     await page.locator('.add-channel form button').click()
 
     // Wait for search results
-    await expect(page.getByText('Test Channel 1')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Test Channel 1')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.getByText('Test Channel 2')).toBeVisible()
 
     // Add the first channel
     await page.locator('.channel-item').first().locator('.add-button').click()
 
     // Channel should show as subscribed
-    await expect(page.locator('.channel-item.is-subscribed').first()).toBeVisible()
+    await expect(
+      page.locator('.channel-item.is-subscribed').first(),
+    ).toBeVisible()
   })
 
-  test('falls back to the channel author when the channel has no title', async ({ page }) => {
+  test('falls back to the channel author when the channel has no title', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {},
       search: [
-        { id: 'channel-1', title: '', author: 'Author Only Channel', thumb: 'https://example.com/thumb.jpg' },
+        {
+          id: 'channel-1',
+          title: '',
+          author: 'Author Only Channel',
+          thumb: 'https://example.com/thumb.jpg',
+        },
       ] as ChannelSearchResult[],
-      channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
+      channels: [
+        { contentDetails: { relatedPlaylists: { uploads: 'UU123' } } },
+      ],
     })
 
     await page.goto('/add-channel')
@@ -67,7 +94,9 @@ describe('Adding a Channel', () => {
     await searchInput.fill('Author')
     await page.locator('.add-channel form button').click()
 
-    await expect(page.getByText('Author Only Channel')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Author Only Channel')).toBeVisible({
+      timeout: 10000,
+    })
   })
 })
 
@@ -80,7 +109,9 @@ describe('Adding Multiple Channels', () => {
         createChannel({ id: 'channel-2', title: 'Second Channel' }),
         createChannel({ id: 'channel-3', title: 'Third Channel' }),
       ] as ChannelSearchResult[],
-      channels: [{ contentDetails: { relatedPlaylists: { uploads: 'UU123' } } }],
+      channels: [
+        { contentDetails: { relatedPlaylists: { uploads: 'UU123' } } },
+      ],
     })
 
     await page.goto('/add-channel')
@@ -90,7 +121,9 @@ describe('Adding Multiple Channels', () => {
     await page.locator('.add-channel form button').click()
 
     // Wait for results
-    await expect(page.getByText('First Channel')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('First Channel')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Add all three channels
     const channelItems = page.locator('.channel-item')
@@ -106,11 +139,23 @@ describe('Adding Multiple Channels', () => {
 })
 
 describe('Viewing All Subs', () => {
-  test('displays All Subs view with videos from all channels', async ({ page }) => {
+  test('displays All Subs view with videos from all channels', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel One', playlistId: 'UU111', order: 0 }),
-        'channel-2': createChannel({ id: 'channel-2', title: 'Channel Two', playlistId: 'UU222', order: 1 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel One',
+          playlistId: 'UU111',
+          order: 0,
+        }),
+        'channel-2': createChannel({
+          id: 'channel-2',
+          title: 'Channel Two',
+          playlistId: 'UU222',
+          order: 1,
+        }),
       },
       videos: [
         createVideo({ id: 'video-1', title: 'Video from Channel One' }),
@@ -121,7 +166,9 @@ describe('Viewing All Subs', () => {
     await page.goto('/')
 
     // All Subs should be visible in sidebar
-    await expect(page.getByRole('heading', { name: 'All Subs' })).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading', { name: 'All Subs' })).toBeVisible({
+      timeout: 10000,
+    })
 
     // Videos should be displayed
     await expect(page.locator('.videos-list')).toBeVisible({ timeout: 10000 })
@@ -130,11 +177,14 @@ describe('Viewing All Subs', () => {
   test('clicking All Subs shows aggregated videos', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Test Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Test Video' })],
     })
 
     await page.goto('/subs/channel-1')
@@ -154,8 +204,16 @@ describe('Loading Playlists and Adding a Playlist', () => {
         createChannel({ id: 'channel-1', title: 'Channel With Playlists' }),
       ] as ChannelSearchResult[],
       playlists: [
-        createSearchPlaylist({ id: 'playlist-1', title: 'Awesome Playlist', count: 42 }),
-        createSearchPlaylist({ id: 'playlist-2', title: 'Another Playlist', count: 10 }),
+        createSearchPlaylist({
+          id: 'playlist-1',
+          title: 'Awesome Playlist',
+          count: 42,
+        }),
+        createSearchPlaylist({
+          id: 'playlist-2',
+          title: 'Another Playlist',
+          count: 10,
+        }),
       ],
     })
 
@@ -167,7 +225,9 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await page.locator('.add-channel form button').click()
 
     // Wait for results
-    await expect(page.getByText('Channel With Playlists')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Channel With Playlists')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Load playlists. The channel list re-renders as subscription data settles,
     // which can drop a single click, so retry the click until the load actually
@@ -176,18 +236,24 @@ describe('Loading Playlists and Adding a Playlist', () => {
     // synchronizes on both the network and the rendered state.
     await expect(async () => {
       await page.getByRole('button', { name: 'Load playlists' }).click()
-      await expect(page.getByRole('button', { name: 'Hide playlists' })).toBeVisible({ timeout: 2000 })
+      await expect(
+        page.getByRole('button', { name: 'Hide playlists' }),
+      ).toBeVisible({ timeout: 2000 })
     }).toPass()
 
     // Playlists should now be rendered; target the structural playlist item
-    await expect(page.locator('.playlist-item', { hasText: 'Awesome Playlist' })).toBeVisible()
+    await expect(
+      page.locator('.playlist-item', { hasText: 'Awesome Playlist' }),
+    ).toBeVisible()
     await expect(page.getByText('42 videos')).toBeVisible()
 
     // Add a playlist
     await page.locator('.playlist-item').first().locator('button').click()
 
     // Playlist should show as subscribed
-    await expect(page.locator('.playlist-item.is-subscribed').first()).toBeVisible()
+    await expect(
+      page.locator('.playlist-item.is-subscribed').first(),
+    ).toBeVisible()
   })
 
   test('can filter playlists when loaded', async ({ page }) => {
@@ -209,15 +275,22 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await searchInput.fill('Channel')
     await page.locator('.add-channel form button').click()
 
-    await expect(page.getByRole('heading', { name: 'Channel' })).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading', { name: 'Channel' })).toBeVisible({
+      timeout: 10000,
+    })
 
     // Retry the click until the load takes effect (see the sibling test above)
     await expect(async () => {
       await page.getByRole('button', { name: 'Load playlists' }).click()
-      await expect(page.getByRole('button', { name: 'Hide playlists' })).toBeVisible({ timeout: 2000 })
+      await expect(
+        page.getByRole('button', { name: 'Hide playlists' }),
+      ).toBeVisible({ timeout: 2000 })
     }).toPass()
 
-    await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(3, { timeout: 10000 })
+    await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(
+      3,
+      { timeout: 10000 },
+    )
 
     // Filter playlists
     await page.locator('input[placeholder="Filter playlists"]').fill('Gaming')
@@ -227,15 +300,20 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await expect(page.getByText('2 matching')).toBeVisible()
   })
 
-  test('can load more playlists when a next page is available', async ({ page }) => {
-    const firstPagePlaylists = Array.from({ length: 25 }, (_, i) => (
-      createSearchPlaylist({ id: `playlist-${i}`, title: `Playlist ${i}` })
-    ))
+  test('can load more playlists when a next page is available', async ({
+    page,
+  }) => {
+    const firstPagePlaylists = Array.from({ length: 25 }, (_, i) =>
+      createSearchPlaylist({ id: `playlist-${i}`, title: `Playlist ${i}` }),
+    )
 
     await setupApp(page, {
       subs: {},
       search: [
-        createChannel({ id: 'channel-1', title: 'Channel With More Playlists' }),
+        createChannel({
+          id: 'channel-1',
+          title: 'Channel With More Playlists',
+        }),
       ] as ChannelSearchResult[],
       playlists: firstPagePlaylists,
       playlistsNextPageToken: 'page-2',
@@ -247,11 +325,15 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await searchInput.fill('More')
     await page.locator('.add-channel form button').click()
 
-    await expect(page.getByText('Channel With More Playlists')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Channel With More Playlists')).toBeVisible({
+      timeout: 10000,
+    })
 
     await expect(async () => {
       await page.getByRole('button', { name: 'Load playlists' }).click()
-      await expect(page.getByRole('button', { name: 'Hide playlists' })).toBeVisible({ timeout: 2000 })
+      await expect(
+        page.getByRole('button', { name: 'Hide playlists' }),
+      ).toBeVisible({ timeout: 2000 })
     }).toPass()
 
     await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(25)
@@ -261,7 +343,10 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await expect(loadMoreButton).toBeVisible()
     await loadMoreButton.click()
 
-    await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(50, { timeout: 10000 })
+    await expect(page.locator('.playlists-list .playlist-item')).toHaveCount(
+      50,
+      { timeout: 10000 },
+    )
   })
 
   test('can hide playlists after loading them', async ({ page }) => {
@@ -281,11 +366,15 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await searchInput.fill('Hide')
     await page.locator('.add-channel form button').click()
 
-    await expect(page.getByText('Channel To Hide')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Channel To Hide')).toBeVisible({
+      timeout: 10000,
+    })
 
     await expect(async () => {
       await page.getByRole('button', { name: 'Load playlists' }).click()
-      await expect(page.getByRole('button', { name: 'Hide playlists' })).toBeVisible({ timeout: 2000 })
+      await expect(
+        page.getByRole('button', { name: 'Hide playlists' }),
+      ).toBeVisible({ timeout: 2000 })
     }).toPass()
 
     await expect(page.locator('.playlists-section')).toBeVisible()
@@ -293,15 +382,23 @@ describe('Loading Playlists and Adding a Playlist', () => {
     await page.getByRole('button', { name: 'Hide playlists' }).click()
 
     await expect(page.locator('.playlists-section')).not.toBeVisible()
-    await expect(page.getByRole('button', { name: 'Load playlists' })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Load playlists' }),
+    ).toBeVisible()
   })
 })
 
 describe('Leaving the Add Channel Page', () => {
-  test('clears search results when navigating away from add-channel', async ({ page }) => {
+  test('clears search results when navigating away from add-channel', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Existing Channel', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Existing Channel',
+          order: 0,
+        }),
       },
       search: [
         createChannel({ id: 'channel-2', title: 'Some Search Result' }),
@@ -315,7 +412,9 @@ describe('Leaving the Add Channel Page', () => {
     await searchInput.fill('Some')
     await page.locator('.add-channel form button').click()
 
-    await expect(page.getByText('Some Search Result')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Some Search Result')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Navigate away, unmounting the component and clearing search results
     await page.getByRole('link', { name: /Custom Playlist/ }).click()
@@ -333,7 +432,11 @@ describe('Adding a Custom Playlist', () => {
   test('can create a custom playlist', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Existing Channel', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Existing Channel',
+          order: 0,
+        }),
       },
       videos: [],
     })
@@ -358,13 +461,19 @@ describe('Adding a Custom Playlist', () => {
   test('can pick an icon for custom playlist', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel',
+          order: 0,
+        }),
       },
       videos: [],
     })
 
     await page.goto('/add-custom-playlist')
-    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Click the icon picker button
     await page.locator('.pick-icon').click()
@@ -377,21 +486,31 @@ describe('Adding a Custom Playlist', () => {
     await expect(page.locator('.icon-picker-modal')).not.toBeVisible()
   })
 
-  test('can filter icons and see an empty message when none match', async ({ page }) => {
+  test('can filter icons and see an empty message when none match', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel',
+          order: 0,
+        }),
       },
       videos: [],
     })
 
     await page.goto('/add-custom-playlist')
-    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.pick-icon').click()
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
 
-    const filterInput = page.locator('.icon-picker fieldset', { hasText: 'Filter' }).locator('input')
+    const filterInput = page
+    .locator('.icon-picker fieldset', { hasText: 'Filter' })
+    .locator('input')
 
     // Filter down to matching icons
     await filterInput.fill('adjust')
@@ -400,40 +519,61 @@ describe('Adding a Custom Playlist', () => {
     // Filter to something that matches nothing
     await filterInput.fill('not-a-real-icon-name')
     await expect(page.locator('.icon-picker .empty-icons')).toBeVisible()
-    await expect(page.getByText('No icons matching filter \'not-a-real-icon-name\'')).toBeVisible()
+    await expect(
+      page.getByText('No icons matching filter \'not-a-real-icon-name\''),
+    ).toBeVisible()
 
     // Submitting the form should be prevented and not navigate away
-    await page.locator('.icon-picker form').evaluate((form) => (form as HTMLFormElement).requestSubmit())
+    await page
+    .locator('.icon-picker form')
+    .evaluate((form) => (form as HTMLFormElement).requestSubmit())
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
   })
 
   test('can change the foreground and background colors', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel',
+          order: 0,
+        }),
       },
       videos: [],
     })
 
     await page.goto('/add-custom-playlist')
-    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.pick-icon').click()
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
 
-    const fgFieldset = page.locator('.icon-picker fieldset', { hasText: 'Foreground Color' })
-    const bgFieldset = page.locator('.icon-picker fieldset', { hasText: 'Background Color' })
+    const fgFieldset = page.locator('.icon-picker fieldset', {
+      hasText: 'Foreground Color',
+    })
+    const bgFieldset = page.locator('.icon-picker fieldset', {
+      hasText: 'Background Color',
+    })
 
     // Text input (non-debounced) updates
     await fgFieldset.locator('input:not([type="color"])').fill('#123456')
-    await expect(fgFieldset.locator('input[type="color"]')).toHaveValue('#123456')
+    await expect(fgFieldset.locator('input[type="color"]')).toHaveValue(
+      '#123456',
+    )
 
     await bgFieldset.locator('input:not([type="color"])').fill('#654321')
-    await expect(bgFieldset.locator('input[type="color"]')).toHaveValue('#654321')
+    await expect(bgFieldset.locator('input[type="color"]')).toHaveValue(
+      '#654321',
+    )
 
     // Color input (debounced) updates
     await fgFieldset.locator('input[type="color"]').fill('#abcdef')
-    await expect(fgFieldset.locator('input:not([type="color"])')).toHaveValue('#abcdef', { timeout: 2000 })
+    await expect(fgFieldset.locator('input:not([type="color"])')).toHaveValue(
+      '#abcdef',
+      { timeout: 2000 },
+    )
   })
 })
 
@@ -441,7 +581,11 @@ describe('Editing a Custom Playlist Sub Item', () => {
   test('renders a custom playlist in the subs list', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'My Favorites', order: 0 }),
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'My Favorites',
+          order: 0,
+        }),
       },
       videos: [],
     })
@@ -452,13 +596,21 @@ describe('Editing a Custom Playlist Sub Item', () => {
     // The custom playlist renders with its icon and title
     const customItem = page.locator('.custom-sub-item')
     await expect(customItem).toBeVisible()
-    await expect(customItem.getByRole('heading', { name: 'My Favorites' })).toBeVisible()
+    await expect(
+      customItem.getByRole('heading', { name: 'My Favorites' }),
+    ).toBeVisible()
   })
 
-  test('can rename a custom playlist and update its icon while editing', async ({ page }) => {
+  test('can rename a custom playlist and update its icon while editing', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'My Favorites', order: 0 }),
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'My Favorites',
+          order: 0,
+        }),
       },
       videos: [],
     })
@@ -492,16 +644,24 @@ describe('Editing a Custom Playlist Sub Item', () => {
 })
 
 describe('Adding a Second Custom Playlist', () => {
-  test('derives a new id from an existing custom playlist', async ({ page }) => {
+  test('derives a new id from an existing custom playlist', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'Existing Playlist', order: 0 }),
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'Existing Playlist',
+          order: 0,
+        }),
       },
       videos: [],
     })
 
     await page.goto('/add-custom-playlist')
-    await expect(page.locator('.add-custom-playlist')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.add-custom-playlist')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.add-custom-playlist input').fill('Second Playlist')
     await page.locator('.add-custom-playlist button.submit').click()
@@ -512,11 +672,21 @@ describe('Adding a Second Custom Playlist', () => {
 })
 
 describe('Remote Subs Changes', () => {
-  test('removes a sub when it is dropped from a remote update', async ({ page }) => {
+  test('removes a sub when it is dropped from a remote update', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
-        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'First Channel',
+          order: 0,
+        }),
+        'channel-2': createChannel({
+          id: 'channel-2',
+          title: 'Second Channel',
+          order: 1,
+        }),
       },
       videos: [],
     })
@@ -550,11 +720,21 @@ describe('Remote Subs Changes', () => {
 })
 
 describe('Reordering Subs', () => {
-  test('does not resave the order when a sub is dropped back in place', async ({ page }) => {
+  test('does not resave the order when a sub is dropped back in place', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
-        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'First Channel',
+          order: 0,
+        }),
+        'channel-2': createChannel({
+          id: 'channel-2',
+          title: 'Second Channel',
+          order: 1,
+        }),
       },
       videos: [],
     })
@@ -566,7 +746,10 @@ describe('Reordering Subs', () => {
     await expect(subItems).toHaveCount(2)
     await expect(subItems.nth(0)).toContainText('First Channel')
 
-    const firstHandleBox = (await subItems.nth(0).locator('span.sub-item-icon').boundingBox())!
+    const firstHandleBox = (await subItems
+    .nth(0)
+    .locator('span.sub-item-icon')
+    .boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
@@ -574,7 +757,10 @@ describe('Reordering Subs', () => {
     )
     await page.mouse.down()
     // A tiny move that isn't enough to cross into the next item's position
-    await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, firstHandleBox.y + 2)
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + 2,
+    )
     await page.mouse.up()
 
     // Order should be unchanged since the drop landed at the same index
@@ -582,11 +768,21 @@ describe('Reordering Subs', () => {
     await expect(subItems.nth(1)).toContainText('Second Channel')
   })
 
-  test('dragging a sub by its handle reorders the subs list', async ({ page }) => {
+  test('dragging a sub by its handle reorders the subs list', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
-        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'First Channel',
+          order: 0,
+        }),
+        'channel-2': createChannel({
+          id: 'channel-2',
+          title: 'Second Channel',
+          order: 1,
+        }),
       },
       videos: [],
     })
@@ -598,7 +794,10 @@ describe('Reordering Subs', () => {
     await expect(subItems).toHaveCount(2)
     await expect(subItems.nth(0)).toContainText('First Channel')
 
-    const firstHandleBox = (await subItems.nth(0).locator('span.sub-item-icon').boundingBox())!
+    const firstHandleBox = (await subItems
+    .nth(0)
+    .locator('span.sub-item-icon')
+    .boundingBox())!
     const secondItemBox = (await subItems.nth(1).boundingBox())!
 
     await page.mouse.move(
@@ -610,7 +809,10 @@ describe('Reordering Subs', () => {
     // Move in small steps to give dnd-kit a chance to track the drag
     const steps = 10
     for (let i = 1; i <= steps; i++) {
-      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      const y =
+        firstHandleBox.y +
+        ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) /
+          steps
       await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
     }
 
@@ -621,11 +823,21 @@ describe('Reordering Subs', () => {
     await expect(subItems.nth(1)).toContainText('First Channel')
   })
 
-  test('canceling a sub drag with escape leaves the order unchanged', async ({ page }) => {
+  test('canceling a sub drag with escape leaves the order unchanged', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'First Channel', order: 0 }),
-        'channel-2': createChannel({ id: 'channel-2', title: 'Second Channel', order: 1 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'First Channel',
+          order: 0,
+        }),
+        'channel-2': createChannel({
+          id: 'channel-2',
+          title: 'Second Channel',
+          order: 1,
+        }),
       },
       videos: [],
     })
@@ -637,7 +849,10 @@ describe('Reordering Subs', () => {
     await expect(subItems).toHaveCount(2)
     await expect(subItems.nth(0)).toContainText('First Channel')
 
-    const firstHandleBox = (await subItems.nth(0).locator('span.sub-item-icon').boundingBox())!
+    const firstHandleBox = (await subItems
+    .nth(0)
+    .locator('span.sub-item-icon')
+    .boundingBox())!
     const secondItemBox = (await subItems.nth(1).boundingBox())!
 
     await page.mouse.move(
@@ -648,7 +863,10 @@ describe('Reordering Subs', () => {
 
     const steps = 10
     for (let i = 1; i <= steps; i++) {
-      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      const y =
+        firstHandleBox.y +
+        ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) /
+          steps
       await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
     }
 

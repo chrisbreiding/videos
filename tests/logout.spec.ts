@@ -9,7 +9,7 @@ const { describe } = test
  * /login, and reports the user as signed out afterward so /login doesn't
  * immediately bounce back to /.
  */
-async function stubAuthenticatedThenSignOut (page: Page) {
+async function stubAuthenticatedThenSignOut(page: Page) {
   await page.addInitScript(() => {
     let signedOut = false
 
@@ -17,29 +17,48 @@ async function stubAuthenticatedThenSignOut (page: Page) {
       currentUser: { uid: 'test-user-123' } as never,
 
       onAuthStateChanged: (callback) => {
-        setTimeout(() => callback(signedOut ? null : { uid: 'test-user-123' } as never), 0)
+        setTimeout(
+          () =>
+            callback(signedOut ? null : ({ uid: 'test-user-123' } as never)),
+          0,
+        )
         return () => {}
       },
 
       signIn: () => Promise.resolve({ user: { uid: 'test-user-123' } }),
 
-      signOut: () => new Promise<void>((resolve) => {
-        setTimeout(() => {
-          signedOut = true
-          resolve()
-        }, 300)
-      }),
+      signOut: () =>
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            signedOut = true
+            resolve()
+          }, 300)
+        }),
 
       userDoc: () => ({
-        get: () => Promise.resolve({
-          exists: true,
-          data: () => ({ youtubeApiKey: 'fake-api-key', subs: {}, watchedVideos: {} }),
-        }),
-        onSnapshot: (callback: (snapshot: { exists: boolean, data: () => unknown }) => void) => {
+        get: () =>
+          Promise.resolve({
+            exists: true,
+            data: () => ({
+              youtubeApiKey: 'fake-api-key',
+              subs: {},
+              watchedVideos: {},
+            }),
+          }),
+        onSnapshot: (
+          callback: (snapshot: {
+            exists: boolean
+            data: () => unknown
+          }) => void,
+        ) => {
           setTimeout(() => {
             callback({
               exists: true,
-              data: () => ({ youtubeApiKey: 'fake-api-key', subs: {}, watchedVideos: {} }),
+              data: () => ({
+                youtubeApiKey: 'fake-api-key',
+                subs: {},
+                watchedVideos: {},
+              }),
             })
           }, 0)
           return () => {}

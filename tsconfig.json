@@ -19,5 +19,11 @@
 
     "types": ["node", "youtube", "vite/client"]
   },
-  "include": ["src", "generated", "vite.config.ts", "playwright.config.ts", "tests"]
+  "include": [
+    "src",
+    "generated",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "tests"
+  ]
 }

@@ -3,7 +3,11 @@ import { createPortal } from 'react-dom'
 import cs from 'classnames'
 import { Icon } from '../lib/util'
 
-export const Modal = ({ className, onClose, children }: {
+export const Modal = ({
+  className,
+  onClose,
+  children,
+}: {
   className?: string
   onClose: () => void
   children?: ReactNode
@@ -25,13 +29,11 @@ export const Modal = ({ className, onClose, children }: {
   }, [className])
 
   return createPortal(
-    <div className='modal-box'>
-      <button className='modal-close' onClick={onClose}>
-        <Icon name='remove' />
+    <div className="modal-box">
+      <button className="modal-close" onClick={onClose}>
+        <Icon name="remove" />
       </button>
-      <div className='modal-content'>
-        {children}
-      </div>
+      <div className="modal-content">{children}</div>
     </div>,
     elRef.current,
   )

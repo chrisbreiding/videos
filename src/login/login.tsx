@@ -49,7 +49,7 @@ export const Login = observer(() => {
   }
 
   return (
-    <div className='login'>
+    <div className="login">
       <form onSubmit={handleLogin}>
         <h2>Please Log In</h2>
         {loginFailed && <p>Login failed. Try again.</p>}
@@ -59,10 +59,12 @@ export const Login = observer(() => {
         </fieldset>
         <fieldset>
           <label htmlFor="password">Password</label>
-          <input ref={passwordRef} name="password" type='password' />
+          <input ref={passwordRef} name="password" type="password" />
         </fieldset>
-        <fieldset className='controls'>
-          <button type="submit"><Icon name='sign-in' /> Log In</button>
+        <fieldset className="controls">
+          <button type="submit">
+            <Icon name="sign-in" /> Log In
+          </button>
         </fieldset>
       </form>
     </div>

@@ -39,7 +39,9 @@ const VideosList = observer((props: VideosProps) => {
     <div className={cs('videos-list', { 'videos-is-sortable': isSortable })}>
       {_.map(videosStore.videos, (video, index) => {
         const id = video.id
-        const playVideoLink = updatedLink(location, { search: { nowPlaying: id } })
+        const playVideoLink = updatedLink(location, {
+          search: { nowPlaying: id },
+        })
 
         return (
           <Video
@@ -53,9 +55,15 @@ const VideosList = observer((props: VideosProps) => {
             video={video}
             isMarked={id === markedVideoId}
             onRemoveMark={onRemoveMark}
-            channelImage={showChannelImage && subsStore.getChannelImage(video.channelId)}
-            addedToPlaylist={(playlist: SubModel) => subsStore.addVideoToPlaylist(playlist, id)}
-            removedFromPlaylist={(playlist: SubModel) => subsStore.removeVideoFromPlaylist(playlist, id)}
+            channelImage={
+              showChannelImage && subsStore.getChannelImage(video.channelId)
+            }
+            addedToPlaylist={(playlist: SubModel) =>
+              subsStore.addVideoToPlaylist(playlist, id)
+            }
+            removedFromPlaylist={(playlist: SubModel) =>
+              subsStore.removeVideoFromPlaylist(playlist, id)
+            }
           />
         )
       })}

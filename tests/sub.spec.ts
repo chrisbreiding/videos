@@ -1,5 +1,11 @@
 import { test, expect } from './util/coverage-fixture'
-import { setupApp, createChannel, createPlaylist, createCustomPlaylist, createVideo } from './util/helpers'
+import {
+  setupApp,
+  createChannel,
+  createPlaylist,
+  createCustomPlaylist,
+  createVideo,
+} from './util/helpers'
 import type { ChannelSearchResult } from '../src/lib/types'
 
 const { describe } = test
@@ -8,47 +14,77 @@ describe('Loading Videos for a Single Sub', () => {
   test('loads and displays videos for a channel sub', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'My Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'My Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Channel Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Channel Video' })],
     })
 
     await page.goto('/subs/channel-1')
 
     await expect(page.locator('main.videos')).toBeVisible({ timeout: 10000 })
-    await expect(page.getByText('Channel Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Channel Video')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page).toHaveTitle(/My Channel \| Videos/)
   })
 
   test('loads and displays videos for a playlist sub', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'playlist-1': createPlaylist({ id: 'playlist-1', title: 'My Playlist', playlistId: 'PL123', order: 0 }),
+        'playlist-1': createPlaylist({
+          id: 'playlist-1',
+          title: 'My Playlist',
+          playlistId: 'PL123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Playlist Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Playlist Video' })],
     })
 
     await page.goto('/subs/playlist-1')
 
-    await expect(page.getByText('Playlist Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Playlist Video')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page).toHaveTitle(/My Playlist \| Videos/)
   })
 })
 
 describe('Loading All Subs', () => {
-  test('loads videos aggregated from all channels and skips search/bookmark UI', async ({ page }) => {
+  test('loads videos aggregated from all channels and skips search/bookmark UI', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel One', playlistId: 'UU111', order: 0 }),
-        'channel-2': createChannel({ id: 'channel-2', title: 'Channel Two', playlistId: 'UU222', order: 1 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel One',
+          playlistId: 'UU111',
+          order: 0,
+        }),
+        'channel-2': createChannel({
+          id: 'channel-2',
+          title: 'Channel Two',
+          playlistId: 'UU222',
+          order: 1,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'Video One', channelId: 'channel-1' }),
-        createVideo({ id: 'video-2', title: 'Video Two', channelId: 'channel-2' }),
+        createVideo({
+          id: 'video-1',
+          title: 'Video One',
+          channelId: 'channel-1',
+        }),
+        createVideo({
+          id: 'video-2',
+          title: 'Video Two',
+          channelId: 'channel-2',
+        }),
       ],
     })
 
@@ -72,14 +108,19 @@ describe('Loading All Subs', () => {
     await expect(page.locator('.videos-list')).toBeVisible()
   })
 
-  test('transitioning from a sub with a playlist to All Subs triggers a fresh all-playlists load', async ({ page }) => {
+  test('transitioning from a sub with a playlist to All Subs triggers a fresh all-playlists load', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Solo Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Solo Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Solo Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Solo Video' })],
     })
 
     await page.goto('/subs/channel-1')
@@ -91,17 +132,33 @@ describe('Loading All Subs', () => {
     await expect(page.locator('.videos-list')).toBeVisible({ timeout: 10000 })
   })
 
-  test('returning to All Subs after searching for a channel to add does not crash', async ({ page }) => {
+  test('returning to All Subs after searching for a channel to add does not crash', async ({
+    page,
+  }) => {
     const search: ChannelSearchResult[] = [
-      { id: 'channel-2', title: 'Found Channel', author: 'Found Channel', thumb: 'https://example.com/thumb.jpg' },
+      {
+        id: 'channel-2',
+        title: 'Found Channel',
+        author: 'Found Channel',
+        thumb: 'https://example.com/thumb.jpg',
+      },
     ]
 
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel One', playlistId: 'UU111', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel One',
+          playlistId: 'UU111',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'Video One', channelId: 'channel-1' }),
+        createVideo({
+          id: 'video-1',
+          title: 'Video One',
+          channelId: 'channel-1',
+        }),
       ],
       search,
     })
@@ -115,7 +172,9 @@ describe('Loading All Subs', () => {
     await searchInput.fill('Found Channel')
     await page.locator('.add-channel button').click()
 
-    await expect(page.getByText('Found Channel')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Found Channel')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.all-subs .sub-title').click()
 
@@ -125,14 +184,29 @@ describe('Loading All Subs', () => {
 })
 
 describe('Searching', () => {
-  test('searches within a channel sub via getVideosDataForChannelSearch', async ({ page }) => {
+  test('searches within a channel sub via getVideosDataForChannelSearch', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Tech Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Tech Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'iPhone Review', channelId: 'channel-1' }),
-        createVideo({ id: 'video-2', title: 'Android Review', channelId: 'channel-1' }),
+        createVideo({
+          id: 'video-1',
+          title: 'iPhone Review',
+          channelId: 'channel-1',
+        }),
+        createVideo({
+          id: 'video-2',
+          title: 'Android Review',
+          channelId: 'channel-1',
+        }),
       ],
     })
 
@@ -145,7 +219,9 @@ describe('Searching', () => {
     await page.locator('.search button').click()
 
     await expect(page).toHaveURL(/search=iPhone/)
-    await expect(page.getByText('iPhone Review')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('iPhone Review')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.getByText('Android Review')).not.toBeVisible()
 
     // Clearing the search field and resubmitting sends an empty search term,
@@ -154,13 +230,22 @@ describe('Searching', () => {
     await page.locator('.search button').click()
 
     await expect(page).not.toHaveURL(/search=/)
-    await expect(page.getByText('Android Review')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Android Review')).toBeVisible({
+      timeout: 10000,
+    })
   })
 
-  test('searches within a playlist sub via getVideosDataForPlaylistSearch', async ({ page }) => {
+  test('searches within a playlist sub via getVideosDataForPlaylistSearch', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'playlist-1': createPlaylist({ id: 'playlist-1', title: 'Cool Playlist', playlistId: 'PL123', order: 0 }),
+        'playlist-1': createPlaylist({
+          id: 'playlist-1',
+          title: 'Cool Playlist',
+          playlistId: 'PL123',
+          order: 0,
+        }),
       },
       videos: [
         createVideo({ id: 'video-1', title: 'Cats Compilation' }),
@@ -177,16 +262,24 @@ describe('Searching', () => {
     await page.locator('.search button').click()
 
     await expect(page).toHaveURL(/search=Cats/)
-    await expect(page.getByText('Cats Compilation')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Cats Compilation')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.getByText('Dogs Compilation')).not.toBeVisible()
   })
 })
 
 describe('Custom Playlists', () => {
-  test('loads videos via getVideosDataForCustomPlaylist and hides search', async ({ page }) => {
+  test('loads videos via getVideosDataForCustomPlaylist and hides search', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Owner Channel', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Owner Channel',
+          order: 0,
+        }),
         'custom-0': createCustomPlaylist({
           id: 'custom-0',
           title: 'My Favorites',
@@ -198,8 +291,16 @@ describe('Custom Playlists', () => {
         }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'Favorite One', channelId: 'channel-1' }),
-        createVideo({ id: 'video-2', title: 'Favorite Two', channelId: 'channel-1' }),
+        createVideo({
+          id: 'video-1',
+          title: 'Favorite One',
+          channelId: 'channel-1',
+        }),
+        createVideo({
+          id: 'video-2',
+          title: 'Favorite Two',
+          channelId: 'channel-1',
+        }),
       ],
     })
 
@@ -217,10 +318,16 @@ describe('Custom Playlists', () => {
     await expect(page.locator('.videos-is-sortable')).toBeVisible()
   })
 
-  test('shows the empty videos message when a custom playlist has no videos', async ({ page }) => {
+  test('shows the empty videos message when a custom playlist has no videos', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'custom-0': createCustomPlaylist({ id: 'custom-0', title: 'Empty List', order: 0 }),
+        'custom-0': createCustomPlaylist({
+          id: 'custom-0',
+          title: 'Empty List',
+          order: 0,
+        }),
       },
       videos: [],
     })
@@ -231,7 +338,9 @@ describe('Custom Playlists', () => {
     await expect(page.getByText('No videos')).toBeVisible()
   })
 
-  test('dragging a video handle reorders and saves the custom playlist', async ({ page }) => {
+  test('dragging a video handle reorders and saves the custom playlist', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
         'custom-0': createCustomPlaylist({
@@ -265,16 +374,23 @@ describe('Custom Playlists', () => {
 
     const steps = 10
     for (let i = 1; i <= steps; i++) {
-      const y = firstHandleBox.y + ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) / steps
+      const y =
+        firstHandleBox.y +
+        ((secondItemBox.y + secondItemBox.height - firstHandleBox.y) * i) /
+          steps
       await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, y)
     }
 
     await page.mouse.up()
 
-    await expect.poll(() => page.locator('.video h4').allTextContents()).not.toEqual(['First Video', 'Second Video'])
+    await expect
+    .poll(() => page.locator('.video h4').allTextContents())
+    .not.toEqual(['First Video', 'Second Video'])
   })
 
-  test('dropping a video back in its original spot does not resave the order', async ({ page }) => {
+  test('dropping a video back in its original spot does not resave the order', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
         'custom-0': createCustomPlaylist({
@@ -305,7 +421,10 @@ describe('Custom Playlists', () => {
     )
     await page.mouse.down()
     // Move just a couple pixels - not enough to cross into the next item's slot
-    await page.mouse.move(firstHandleBox.x + firstHandleBox.width / 2, firstHandleBox.y + 2)
+    await page.mouse.move(
+      firstHandleBox.x + firstHandleBox.width / 2,
+      firstHandleBox.y + 2,
+    )
     await page.mouse.up()
 
     await expect(page.locator('.video h4').first()).toHaveText('Stay First')
@@ -313,14 +432,21 @@ describe('Custom Playlists', () => {
 })
 
 describe('Pagination', () => {
-  test('navigating to a page URL loads that page and shows the bookmark button', async ({ page }) => {
-    const videos = Array.from({ length: 25 }, (_, i) => (
-      createVideo({ id: `video-${i + 1}`, title: `Paged Video ${i + 1}` })
-    ))
+  test('navigating to a page URL loads that page and shows the bookmark button', async ({
+    page,
+  }) => {
+    const videos = Array.from({ length: 25 }, (_, i) =>
+      createVideo({ id: `video-${i + 1}`, title: `Paged Video ${i + 1}` }),
+    )
 
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Paged Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Paged Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
       videos,
       pagination: {
@@ -330,7 +456,9 @@ describe('Pagination', () => {
     })
 
     await page.goto('/subs/channel-1')
-    await expect(page.getByRole('heading', { name: 'Paged Video 1', exact: true })).toBeVisible({ timeout: 10000 })
+    await expect(
+      page.getByRole('heading', { name: 'Paged Video 1', exact: true }),
+    ).toBeVisible({ timeout: 10000 })
 
     // No bookmark button without a page token in the URL
     await expect(page.locator('.bookmark')).not.toBeVisible()
@@ -350,15 +478,20 @@ describe('Bookmarking a Page', () => {
   test('toggles the bookmark for a channel sub page', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Bookmark Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Bookmark Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Bookmarkable Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Bookmarkable Video' })],
     })
 
     await page.goto('/subs/channel-1/page/PAGE_A')
-    await expect(page.getByText('Bookmarkable Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Bookmarkable Video')).toBeVisible({
+      timeout: 10000,
+    })
 
     const bookmarkButton = page.locator('.bookmark')
     await expect(bookmarkButton).toBeVisible()
@@ -381,13 +514,13 @@ describe('Bookmarking a Page', () => {
           videos: { 'video-1': { id: 'video-1', order: 0 } },
         }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Custom Bookmark Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Custom Bookmark Video' })],
     })
 
     await page.goto('/subs/custom-0/page/PAGE_B')
-    await expect(page.getByText('Custom Bookmark Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Custom Bookmark Video')).toBeVisible({
+      timeout: 10000,
+    })
 
     const bookmarkButton = page.locator('.bookmark')
     await expect(bookmarkButton).toBeVisible()
@@ -404,40 +537,55 @@ describe('Loading Indicator', () => {
   test('shows the loader while videos are being fetched', async ({ page }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Slow Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Slow Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Slow Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Slow Video' })],
     })
 
     // Delay the underlying playlistItems/videos responses so the loader has
     // time to render before the data resolves.
-    await page.route('https://www.googleapis.com/youtube/v3/**', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 750))
-      await route.fallback()
-    })
+    await page.route(
+      'https://www.googleapis.com/youtube/v3/**',
+      async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 750))
+        await route.fallback()
+      },
+    )
 
     await page.goto('/subs/channel-1')
 
-    await expect(page.locator('main.videos .loader')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('main.videos .loader')).toBeVisible({
+      timeout: 5000,
+    })
     await expect(page.getByText('Slow Video')).toBeVisible({ timeout: 10000 })
   })
 })
 
 describe('Marking and Playing Videos', () => {
-  test('playing a video within a sub marks it, and removing the mark clears the URL', async ({ page }) => {
+  test('playing a video within a sub marks it, and removing the mark clears the URL', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Mark Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Mark Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Markable Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Markable Video' })],
     })
 
     await page.goto('/subs/channel-1')
-    await expect(page.getByText('Markable Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Markable Video')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.play-video').first().click()
     await expect(page).toHaveURL(/nowPlaying=video-1/)
@@ -447,7 +595,9 @@ describe('Marking and Playing Videos', () => {
     await expect(page).toHaveTitle(/Markable Video \| Videos/)
     await expect(page).not.toHaveTitle(/Mark Channel/)
 
-    await expect(page.locator('.video.is-marked')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.video.is-marked')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('.video-marker')).toBeVisible()
 
     // Clicking the marker banner itself (not the remove icon) updates the
@@ -462,23 +612,38 @@ describe('Marking and Playing Videos', () => {
     await expect(page.locator('.video.is-marked')).not.toBeVisible()
   })
 
-  test('playing a video from All Subs marks it via appState and removing clears it', async ({ page }) => {
+  test('playing a video from All Subs marks it via appState and removing clears it', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Channel A', playlistId: 'UU111', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Channel A',
+          playlistId: 'UU111',
+          order: 0,
+        }),
       },
       videos: [
-        createVideo({ id: 'video-1', title: 'All Subs Video', channelId: 'channel-1' }),
+        createVideo({
+          id: 'video-1',
+          title: 'All Subs Video',
+          channelId: 'channel-1',
+        }),
       ],
     })
 
     await page.goto('/')
-    await expect(page.getByText('All Subs Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('All Subs Video')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.play-video').first().click()
     await expect(page).toHaveURL(/nowPlaying=video-1/)
 
-    await expect(page.locator('.video.is-marked')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.video.is-marked')).toBeVisible({
+      timeout: 10000,
+    })
 
     await page.locator('.remove-video-marker').click()
     await expect(page.locator('.video.is-marked')).not.toBeVisible()
@@ -486,23 +651,32 @@ describe('Marking and Playing Videos', () => {
 })
 
 describe('Deep Linking to a Marker', () => {
-  test('deep-linking with a marker query param and no existing mark does not crash', async ({ page }) => {
+  test('deep-linking with a marker query param and no existing mark does not crash', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Deep Link Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Deep Link Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Deep Link Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Deep Link Video' })],
     })
 
     await page.goto('/subs/channel-1?marker=video-marker')
 
-    await expect(page.getByText('Deep Link Video')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Deep Link Video')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('main.videos')).toBeVisible()
   })
 
-  test('deep-linking with a marker query param and an existing mark scrolls to it on load', async ({ page }) => {
+  test('deep-linking with a marker query param and an existing mark scrolls to it on load', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
         'channel-1': createChannel({
@@ -513,20 +687,22 @@ describe('Deep Linking to a Marker', () => {
           markedVideoId: 'video-1',
         }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Already Marked Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Already Marked Video' })],
     })
 
     await page.goto('/subs/channel-1?marker=video-marker')
 
-    await expect(page.locator('.video.is-marked')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.video.is-marked')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('.video-marker')).toBeVisible()
   })
 })
 
 describe('No Subscriptions', () => {
-  test('does not render a Sub route when there are no subscriptions', async ({ page }) => {
+  test('does not render a Sub route when there are no subscriptions', async ({
+    page,
+  }) => {
     await setupApp(page, { subs: {} })
 
     await page.goto('/')
@@ -535,14 +711,19 @@ describe('No Subscriptions', () => {
     await expect(page.locator('main.videos')).not.toBeVisible()
   })
 
-  test('removing the last subscription remotely while viewing it does not render a Sub route', async ({ page }) => {
+  test('removing the last subscription remotely while viewing it does not render a Sub route', async ({
+    page,
+  }) => {
     await setupApp(page, {
       subs: {
-        'channel-1': createChannel({ id: 'channel-1', title: 'Only Channel', playlistId: 'UU123', order: 0 }),
+        'channel-1': createChannel({
+          id: 'channel-1',
+          title: 'Only Channel',
+          playlistId: 'UU123',
+          order: 0,
+        }),
       },
-      videos: [
-        createVideo({ id: 'video-1', title: 'Only Video' }),
-      ],
+      videos: [createVideo({ id: 'video-1', title: 'Only Video' })],
     })
 
     await page.goto('/subs/channel-1')

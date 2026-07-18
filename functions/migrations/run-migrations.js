@@ -12,8 +12,14 @@ const db = admin.firestore()
 // single `async (admin, db) => {}` function. Sorting the filenames sorts them
 // chronologically since the timestamp is the leading, fixed-width segment.
 const loadMigrations = () => {
-  return fs.readdirSync(__dirname)
-    .filter((file) => file.endsWith('.js') && file !== 'index.js' && file !== 'run-migrations.js')
+  return fs
+    .readdirSync(__dirname)
+    .filter(
+      (file) =>
+        file.endsWith('.js') &&
+        file !== 'index.js' &&
+        file !== 'run-migrations.js',
+    )
     .sort()
     .map((file) => ({
       name: path.basename(file, '.js'),

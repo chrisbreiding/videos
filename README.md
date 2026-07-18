@@ -18,12 +18,12 @@ This project uses [Playwright](https://playwright.dev/) for end-to-end testing.
 
 ### Running Tests
 
-| Command | Description |
-|---------|-------------|
-| `npm test` | Run all tests headlessly |
-| `npm run test:ui` | Open interactive UI mode |
-| `npm run test:headed` | Run tests with visible browser |
-| `npm run test:debug` | Debug tests step by step |
+| Command                 | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| `npm test`              | Run all tests headlessly                          |
+| `npm run test:ui`       | Open interactive UI mode                          |
+| `npm run test:headed`   | Run tests with visible browser                    |
+| `npm run test:debug`    | Debug tests step by step                          |
 | `npm run test:coverage` | Run all tests and generate a code coverage report |
 
 ### Code Coverage

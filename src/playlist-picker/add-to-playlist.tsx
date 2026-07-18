@@ -33,10 +33,8 @@ export const AddToPlaylist = observer(() => {
   }, [location])
 
   return (
-    <div className='add-to-playlist'>
-      {!state.error && (
-        <p>Adding video to playlist...</p>
-      )}
+    <div className="add-to-playlist">
+      {!state.error && <p>Adding video to playlist...</p>}
       {!!state.error && (
         <>
           <p>Failed to add video to playlist:</p>
