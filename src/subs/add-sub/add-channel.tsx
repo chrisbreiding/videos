@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import _ from 'lodash'
 import { observer } from 'mobx-react'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
@@ -165,7 +164,7 @@ export const AddChannel = observer(() => {
                     <Icon name="check" />
                   </span>
                 ) : (
-                  <button onClick={_.partial(onAddPlaylist, playlist)}>
+                  <button onClick={() => onAddPlaylist(playlist)}>
                     <Icon name="plus" />
                   </button>
                 )}
@@ -228,7 +227,7 @@ export const AddChannel = observer(() => {
             ) : (
               <button
                 className="add-button"
-                onClick={_.partial(onAddChannel, channel)}
+                onClick={() => onAddChannel(channel)}
               >
                 <Icon name="plus" />
               </button>

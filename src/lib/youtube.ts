@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { getItem } from './local-data'
 import { authStore } from '../login/auth-store'
 import type {
@@ -85,7 +84,7 @@ async function queryYouTube<T>(url: string, data: QueryParams): Promise<T> {
 function mapChannelDetails(
   result: YouTubeListResult<YouTubeSearchResultItem>,
 ): ChannelSearchResult[] {
-  return _.map(result.items, (item) => {
+  return result.items.map((item) => {
     return {
       id: item.id.channelId,
       title: item.snippet.channelTitle,
@@ -98,17 +97,17 @@ function mapChannelDetails(
 function videoIdsFromContentDetails(
   videos: YouTubePlaylistItemItem[],
 ): string[] {
-  return _(videos).map('contentDetails').map('videoId').value()
+  return videos.map((video) => video.contentDetails.videoId)
 }
 
 function videoIdsFromId(videos: YouTubeSearchResultItem[]): string[] {
-  return _(videos).map('id').map('videoId').value()
+  return videos.map((video) => video.id.videoId)
 }
 
 function mapVideoDetails(
   result: YouTubeListResult<YouTubeVideoItem>,
 ): VideoData[] {
-  return _.map(result.items, (video) => {
+  return result.items.map((video) => {
     return {
       id: video.id,
       channelId: video.snippet.channelId,
@@ -268,13 +267,13 @@ export async function getVideosDataForPlaylistSearch(
 export async function getVideosDataForAllPlaylists(
   playlistIds: string[],
 ): Promise<VideoData[]> {
-  const getVideos = _.map(playlistIds, (playlistId) => {
+  const getVideos = playlistIds.map((playlistId) => {
     return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
   })
 
   const playlists = await Promise.all(getVideos)
 
-  return _.flatMap(playlists, 'videos')
+  return playlists.flatMap((playlist) => playlist.videos)
 }
 
 export async function getPlaylistIdForChannel(

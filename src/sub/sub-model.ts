@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {
   action,
   computed,
@@ -81,7 +80,7 @@ export class SubModel {
   }
 
   update(props: Partial<SubProps>) {
-    _.extend(this, props)
+    Object.assign(this, props)
   }
 
   addVideo(video: CustomPlaylistVideo) {
@@ -95,7 +94,7 @@ export class SubModel {
   updateVideosOrder(
     videosWithNewOrders: Array<{ id: string; order?: number }>,
   ) {
-    _.map(videosWithNewOrders, ({ id, order }) => {
+    videosWithNewOrders.forEach(({ id, order }) => {
       this.videos.get(id)!.order = order
     })
   }
@@ -107,31 +106,30 @@ export class SubModel {
   }
 
   serialize(): Record<string, unknown> {
-    const props: Record<string, unknown> = _.pick(
-      this,
-      'id',
-      'type',
-      'markedVideoId',
-      'order',
-      'playlistId',
-      'title',
-      'bookmarkedPageToken',
-    )
+    const props: Record<string, unknown> = {
+      id: this.id,
+      type: this.type,
+      markedVideoId: this.markedVideoId,
+      order: this.order,
+      playlistId: this.playlistId,
+      title: this.title,
+      bookmarkedPageToken: this.bookmarkedPageToken,
+    }
 
     if (this.type === 'custom') {
-      props.icon = _.pick(
-        this.icon,
-        'backgroundColor',
-        'foregroundColor',
-        'icon',
-        'type',
-      )
+      props.icon = {
+        backgroundColor: this.icon?.backgroundColor,
+        foregroundColor: this.icon?.foregroundColor,
+        icon: this.icon?.icon,
+        type: this.icon?.type,
+      }
       props.videos = transformObject(this.videosObject(), ({ id, order }) => ({
         id,
         order,
       }))
     } else {
-      _.extend(props, _.pick(this, 'author', 'thumb'))
+      props.author = this.author
+      props.thumb = this.thumb
     }
 
     return props

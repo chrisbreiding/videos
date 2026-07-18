@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import debounce from 'lodash.debounce'
 import { action, computed, makeObservable, observable } from 'mobx'
 import type { Location } from 'react-router'
 
@@ -119,7 +119,7 @@ class AppState {
     update({ watchedVideos: { [videoId]: entry } })
   }
 
-  _saveVideoProgressDebounced = _.debounce(
+  _saveVideoProgressDebounced = debounce(
     (videoId: string, entry: WatchedVideo) => {
       update({ watchedVideos: { [videoId]: entry } })
     },
@@ -136,7 +136,7 @@ class AppState {
     this._nowPlayingHeight = height
   }
 
-  _saveNowPlayingHeight = _.debounce((height: number) => {
+  _saveNowPlayingHeight = debounce((height: number) => {
     setItem('nowPlayingHeight', height)
   }, 500)
 
@@ -145,7 +145,7 @@ class AppState {
     this._saveAutoPlay(this.autoPlayEnabled)
   }
 
-  _saveAutoPlay = _.debounce((isEnabled: boolean) => {
+  _saveAutoPlay = debounce((isEnabled: boolean) => {
     setItem('autoPlayEnabled', isEnabled)
   }, 500)
 

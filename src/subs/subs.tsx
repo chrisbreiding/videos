@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import _ from 'lodash'
 import { observer } from 'mobx-react'
 import { useState } from 'react'
 import { NavLink, type Location } from 'react-router'
@@ -41,7 +40,7 @@ export const Subs = observer(
 
       if (event.canceled) return
 
-      const ids = _.map(subsStore.subs, 'id')
+      const ids = subsStore.subs.map((sub) => sub.id)
       const sortedIds = move(ids, event)
 
       subsStore.sort(sortedIds)
@@ -79,7 +78,7 @@ export const Subs = observer(
           <li className="sub-item all-subs">
             <span>
               <span className="thumb">
-                {_.map(subsStore.fourChannels, (sub) => (
+                {subsStore.fourChannels.map((sub) => (
                   <img key={sub.id} src={sub.thumb} />
                 ))}
               </span>
@@ -103,9 +102,7 @@ export const Subs = observer(
               sub.bookmarkedPageToken &&
               updatedLink(location, {
                 pathname: `/subs/${sub.id}/page/${sub.bookmarkedPageToken}`,
-                search: _.extend({}, search, {
-                  marker: 'video-marker',
-                }),
+                search: { ...search, marker: 'video-marker' },
               })
 
             return (
@@ -115,8 +112,8 @@ export const Subs = observer(
                 sub={sub}
                 link={link}
                 bookmarkLink={bookmarkLink}
-                onUpdate={_.partial(updateSub, sub.id)}
-                onRemove={_.partial(removeSub, sub.id)}
+                onUpdate={(props) => updateSub(sub.id, props)}
+                onRemove={() => removeSub(sub.id)}
               />
             )
           })}

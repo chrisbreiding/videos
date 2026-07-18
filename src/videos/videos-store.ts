@@ -1,12 +1,4 @@
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  values,
-  toJS,
-} from 'mobx'
-import _ from 'lodash'
+import { action, computed, makeObservable, observable, toJS } from 'mobx'
 import dayjs from 'dayjs'
 
 import { videosService } from './videos-service'
@@ -44,14 +36,16 @@ class VideosStore {
 
   get videos(): VideoModel[] {
     if (this._isSortable) {
-      return _.sortBy(values(this._videos), 'order') as VideoModel[]
+      return this._videos
+      .slice()
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     }
 
     const sortedVideos = this._videos.slice().sort((video1, video2) => {
       return dayjs(video1.published).isBefore(video2.published) ? 1 : -1
     })
 
-    return _.take(sortedVideos, 25)
+    return sortedVideos.slice(0, 25)
   }
 
   async getVideosDataForPlaylist(
@@ -119,8 +113,8 @@ class VideosStore {
 
     let videos = await videosService.getVideosDataForCustomPlaylist(playlist)
 
-    videos = _.map(videos, (video) => {
-      return _.extend(
+    videos = videos.map((video) => {
+      return Object.assign(
         video,
         (
           toJS(playlist.videos) as unknown as Record<
@@ -140,13 +134,13 @@ class VideosStore {
   }
 
   getVideoById(id: string) {
-    return _.find(this._videos, { id })
+    return this._videos.find((video) => video.id === id)
   }
 
   nextVideoId(videoId?: string): string | null {
     if (!videoId || this.videos.length < 2) return null
 
-    const videoIndex = _.findIndex(this.videos, { id: videoId })
+    const videoIndex = this.videos.findIndex((video) => video.id === videoId)
     if (videoIndex === -1) return null
 
     const nextVideo = this.videos[videoIndex + 1]
@@ -167,16 +161,21 @@ class VideosStore {
   }
 
   _updateVideosData({ videos, prevPageToken, nextPageToken }: VideosData) {
-    if (videos) this._videos = _.map(videos, (video) => new VideoModel(video))
+    if (videos) this._videos = videos.map((video) => new VideoModel(video))
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken
   }
 
   sort(sortedIds: string[]) {
-    const ids = _.map(this.videos, 'id')
-    if (_.isEqual(ids, sortedIds)) return false
+    const ids = this.videos.map((video) => video.id)
+    if (
+      ids.length === sortedIds.length &&
+      ids.every((id, index) => id === sortedIds[index])
+    ) {
+      return false
+    }
 
-    _.each(sortedIds, (id, order) => {
+    sortedIds.forEach((id, order) => {
       this.getVideoById(id)!.update({ order })
     })
 

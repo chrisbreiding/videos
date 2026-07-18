@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import _ from 'lodash'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -140,7 +139,7 @@ export const App = observer(() => {
     unsubscribers.push(unsubscribe)
 
     return () => {
-      _.each(unsubscribers, (unsubscribe) => {
+      unsubscribers.forEach((unsubscribe) => {
         unsubscribe()
       })
     }

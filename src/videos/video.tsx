@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import _ from 'lodash'
 import { observer } from 'mobx-react'
 import { Link } from 'react-router'
 import { useSortable } from '@dnd-kit/react/sortable'
@@ -80,7 +79,7 @@ export const Video = observer((props: VideoProps) => {
         <div
           className={videoMarkerName}
           id={videoMarkerName}
-          onClick={_.partial(props.addVideoMarkerLink, videoMarkerName)}
+          onClick={() => props.addVideoMarkerLink(videoMarkerName)}
         >
           <div className="remove-video-marker" onClick={removeMark}>
             <Icon name="remove" />

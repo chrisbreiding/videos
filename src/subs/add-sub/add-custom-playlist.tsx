@@ -1,6 +1,5 @@
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
-import _ from 'lodash'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -59,7 +58,7 @@ export const AddCustomPlaylist = observer(() => {
     return (
       <Modal
         className="icon-picker-modal"
-        onClose={_.partial(setIsPickingIcon, false)}
+        onClose={() => setIsPickingIcon(false)}
       >
         <IconPicker onUpdate={iconUpdated} chosenIcon={iconState} />
       </Modal>

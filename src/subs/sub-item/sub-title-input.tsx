@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import debounce from 'lodash.debounce'
 import { useEffect, useRef, useState } from 'react'
 
 export const SubTitleInput = ({
@@ -14,7 +14,7 @@ export const SubTitleInput = ({
   onUpdateRef.current = onUpdate
 
   const debouncedUpdateRef = useRef(
-    _.debounce((value: string) => {
+    debounce((value: string) => {
       onUpdateRef.current(value)
     }, 500),
   )

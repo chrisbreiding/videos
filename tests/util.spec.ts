@@ -85,6 +85,36 @@ describe('lib/util', () => {
           { pathname: '/foo', search: '' },
           { pathname: '/bar' },
         ),
+
+        sortedAscDefault: util.sortByProperty(
+          [{ name: 'c' }, { name: 'a' }, { name: 'b' }],
+          'name',
+        ),
+        sortedAscExplicit: util.sortByProperty(
+          [{ value: 3 }, { value: 1 }, { value: 2 }],
+          'value',
+          'asc',
+        ),
+        sortedDesc: util.sortByProperty(
+          [{ value: 3 }, { value: 1 }, { value: 2 }],
+          'value',
+          'desc',
+        ),
+        sortedWithEqualValues: util.sortByProperty(
+          [
+            { name: 'b', id: 1 },
+            { name: 'a', id: 2 },
+            { name: 'b', id: 3 },
+          ],
+          'name',
+        ),
+        sortedEmpty: util.sortByProperty([], 'name'),
+        sortedMutatesOriginal: (() => {
+          const arr = [{ value: 2 }, { value: 1 }]
+          const result = util.sortByProperty(arr, 'value')
+
+          return result === arr
+        })(),
       }
     })
 
@@ -125,5 +155,28 @@ describe('lib/util', () => {
       pathname: '/bar',
       search: '',
     })
+
+    expect(result.sortedAscDefault).toEqual([
+      { name: 'a' },
+      { name: 'b' },
+      { name: 'c' },
+    ])
+    expect(result.sortedAscExplicit).toEqual([
+      { value: 1 },
+      { value: 2 },
+      { value: 3 },
+    ])
+    expect(result.sortedDesc).toEqual([
+      { value: 3 },
+      { value: 2 },
+      { value: 1 },
+    ])
+    expect(result.sortedWithEqualValues).toEqual([
+      { name: 'a', id: 2 },
+      { name: 'b', id: 1 },
+      { name: 'b', id: 3 },
+    ])
+    expect(result.sortedEmpty).toEqual([])
+    expect(result.sortedMutatesOriginal).toBe(true)
   })
 })

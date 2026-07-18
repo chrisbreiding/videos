@@ -1,6 +1,5 @@
 import { findIconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import _ from 'lodash'
 import type { ReactNode } from 'react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -25,18 +24,14 @@ const S = 7
 function parseIso8601Duration(text: string): string[] {
   const matches = text.match(re)!
 
-  return _.reduce(
-    [HR, MIN, S],
-    (memo: string[], index) => {
-      if (matches[index]) {
-        memo.push(parseInt(matches[index], 10).toString())
-      } else if (index === MIN || index === S) {
-        memo.push('0')
-      }
-      return memo
-    },
-    [] as string[],
-  )
+  return [HR, MIN, S].reduce((memo: string[], index) => {
+    if (matches[index]) {
+      memo.push(parseInt(matches[index], 10).toString())
+    } else if (index === MIN || index === S) {
+      memo.push('0')
+    }
+    return memo
+  }, [] as string[])
 }
 
 function toTwoDigits(num: string): string {
@@ -47,10 +42,10 @@ export function transformObject<T, R>(
   obj: Record<string, T>,
   fn: (value: T) => R,
 ): Record<string, R> {
-  return _.transform(
-    obj,
-    (memo: Record<string, R>, value, key) => {
+  return Object.entries(obj).reduce(
+    (memo: Record<string, R>, [key, value]) => {
       memo[key] = fn(value)
+      return memo
     },
     {} as Record<string, R>,
   )
@@ -126,7 +121,7 @@ export function duration(duration?: string): string | undefined {
   if (!duration) return
 
   const parsed = parseIso8601Duration(duration)
-  let parts = _.map(parsed.slice(1), toTwoDigits)
+  let parts = parsed.slice(1).map(toTwoDigits)
   parts.unshift(parsed[0])
   return parts.join(':')
 }
@@ -160,7 +155,7 @@ export function stringifyQueryString(props: Record<string, unknown>): string {
 }
 
 export function parseQueryString(queryString?: string): ParsedQuery {
-  if (!_.isString(queryString)) return {}
+  if (typeof queryString !== 'string') return {}
 
   return qs.parse(queryString.replace(/^\?/, '')) as unknown as ParsedQuery
 }
@@ -174,8 +169,20 @@ export function updatedLink(
 
   if (updates.search) {
     const queryObject = parseQueryString(search)
-    search = stringifyQueryString(_.extend({}, queryObject, updates.search))
+    search = stringifyQueryString({ ...queryObject, ...updates.search })
   }
 
   return { pathname, search }
+}
+
+export function sortByProperty<T>(
+  arr: T[],
+  property: keyof T,
+  direction: 'asc' | 'desc' = 'asc',
+): T[] {
+  return arr.sort((a, b) => {
+    if (a[property] < b[property]) return direction === 'asc' ? -1 : 1
+    if (a[property] > b[property]) return direction === 'asc' ? 1 : -1
+    return 0
+  })
 }

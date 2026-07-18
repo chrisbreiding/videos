@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import debounce from 'lodash.debounce'
 import { useCallback, useMemo, useState } from 'react'
 import cs from 'classnames'
 
@@ -18,9 +18,9 @@ interface IconOption {
 }
 
 const allIcons: IconOption[] = [
-  ..._.map(solidIconNames, (name) => ({ name, type: 'solid' as const })),
-  ..._.map(regularIconNames, (name) => ({ name, type: 'regular' as const })),
-  ..._.map(brandsIconNames, (name) => ({ name, type: 'brands' as const })),
+  ...solidIconNames.map((name) => ({ name, type: 'solid' as const })),
+  ...regularIconNames.map((name) => ({ name, type: 'regular' as const })),
+  ...brandsIconNames.map((name) => ({ name, type: 'brands' as const })),
 ]
 
 interface IconItemProps {
@@ -63,15 +63,15 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
   const { foregroundColor, backgroundColor } = chosenIcon
 
   const updateColorDebounced = useMemo(() => {
-    return _.debounce((key: string, color: string) => {
+    return debounce((key: string, color: string) => {
       onUpdate({ [`${key}Color`]: color })
     }, 100)
   }, [onUpdate])
 
   const onColorChange =
-    (key: string, debounce: boolean) =>
+    (key: string, shouldDebounce: boolean) =>
       (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (debounce) {
+        if (shouldDebounce) {
           updateColorDebounced(key, e.target.value)
         } else {
           onUpdate({ [`${key}Color`]: e.target.value })
@@ -84,7 +84,7 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
 
   const filteredIcons = useMemo(() => {
     return filter
-      ? _.filter(allIcons, ({ name }) => name.includes(filter))
+      ? allIcons.filter(({ name }) => name.includes(filter))
       : allIcons
   }, [filter])
 
@@ -97,7 +97,7 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
       )
     }
 
-    return _.map(filteredIcons, ({ name, type }) => (
+    return filteredIcons.map(({ name, type }) => (
       <IconItem
         key={`${type}-${name}`}
         icon={{ icon: name, type, foregroundColor, backgroundColor }}

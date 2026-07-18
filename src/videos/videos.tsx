@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import _ from 'lodash'
 import { observer } from 'mobx-react'
 import type { Location } from 'react-router'
 import { DragDropProvider, type DragEndEvent } from '@dnd-kit/react'
@@ -37,7 +36,7 @@ const VideosList = observer((props: VideosProps) => {
 
   return (
     <div className={cs('videos-list', { 'videos-is-sortable': isSortable })}>
-      {_.map(videosStore.videos, (video, index) => {
+      {videosStore.videos.map((video, index) => {
         const id = video.id
         const playVideoLink = updatedLink(location, {
           search: { nowPlaying: id },
@@ -48,7 +47,7 @@ const VideosList = observer((props: VideosProps) => {
             key={id}
             index={index}
             isSortable={isSortable}
-            onPlay={_.partial(onPlay, id)}
+            onPlay={() => onPlay(id)}
             playLink={playVideoLink}
             addVideoMarkerLink={onUpdateVideoMarkerLink}
             customPlaylists={subsStore.customPlaylists}
@@ -73,7 +72,7 @@ const VideosList = observer((props: VideosProps) => {
 
 export const Videos = (props: VideosProps) => {
   const handleDragEnd = (event: DragEndEvent) => {
-    const ids = _.map(videosStore.videos, 'id')
+    const ids = videosStore.videos.map((video) => video.id)
     const sortedIds = event.canceled ? ids : move(ids, event)
 
     props.onSortEnd(sortedIds)

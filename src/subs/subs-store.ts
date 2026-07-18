@@ -1,9 +1,12 @@
-import _ from 'lodash'
 import { action, computed, makeObservable, observable, values } from 'mobx'
 
 import { SubModel } from '../sub/sub-model'
 import { removeSub, removeVideoFromSub, update } from '../lib/remote-data'
-import { convertMapEntriesToObject, transformObject } from '../lib/util'
+import {
+  convertMapEntriesToObject,
+  sortByProperty,
+  transformObject,
+} from '../lib/util'
 import { getPlaylistIdForChannel, searchChannels } from '../lib/youtube'
 import type {
   ChannelSearchResult,
@@ -37,40 +40,36 @@ class SubsStore {
   }
 
   get subs(): SubModel[] {
-    return _.sortBy(values(this._subs), 'order')
+    return sortByProperty(values(this._subs).slice(), 'order')
   }
 
   get channels(): SubModel[] {
-    return _.filter(this.subs, (sub) => sub.type === 'channel')
+    return this.subs.filter((sub) => sub.type === 'channel')
   }
 
   get channelIds(): string[] {
-    return _.map(this.channels, 'playlistId') as string[]
+    return this.channels.map((sub) => sub.playlistId) as string[]
   }
 
   get fourChannels(): SubModel[] {
-    return _.take(this.channels, 4)
+    return this.channels.slice(0, 4)
   }
 
   get customPlaylists(): SubModel[] {
-    return _.filter(this.subs, (sub) => sub.type === 'custom')
+    return this.subs.filter((sub) => sub.type === 'custom')
   }
 
   get subscribedChannelIds(): Set<string> {
     return new Set(
-      _.map(
-        _.filter(this.subs, (sub) => sub.type === 'channel'),
-        'id',
-      ),
+      this.subs.filter((sub) => sub.type === 'channel').map((sub) => sub.id),
     )
   }
 
   get subscribedPlaylistIds(): Set<string | undefined> {
     return new Set(
-      _.map(
-        _.filter(this.subs, (sub) => sub.type === 'playlist'),
-        'playlistId',
-      ),
+      this.subs
+        .filter((sub) => sub.type === 'playlist')
+        .map((sub) => sub.playlistId),
     )
   }
 
@@ -97,14 +96,14 @@ class SubsStore {
   }
 
   setSubs(subs: Record<string, SubProps>) {
-    _.each(subs, (sub) => {
+    Object.values(subs).forEach((sub) => {
       this._subs.set(sub.id, new SubModel(sub))
     })
 
-    const oldIds = _.map(this._subsObject(), 'id')
-    const newIds = _.map(subs, 'id')
-    const missingIds = _.difference(oldIds, newIds)
-    _.each(missingIds, (id) => {
+    const oldIds = Object.values(this._subsObject()).map((sub) => sub.id)
+    const newIds = Object.values(subs).map((sub) => sub.id)
+    const missingIds = oldIds.filter((id) => !newIds.includes(id))
+    missingIds.forEach((id) => {
       this._subs.delete(id)
     })
 
@@ -159,7 +158,7 @@ class SubsStore {
   }
 
   _addSub = (base: object, props: Partial<SubProps>) => {
-    const sub = _.extend(base, props, {
+    const sub = Object.assign(base, props, {
       order: this._newOrder(this._subsObject()),
     }) as unknown as SubProps
     this._subs.set(sub.id, new SubModel(sub))
@@ -167,21 +166,20 @@ class SubsStore {
   }
 
   _newOrder(items: Record<string, { order?: number }>) {
-    return this._next(_.map(items, (item) => item.order || 0))
+    return this._next(Object.values(items).map((item) => item.order || 0))
   }
 
   _newId(subs: Record<string, SubModel>) {
-    const customIds = _(subs)
-    .filter((sub) => sub.type === 'custom')
-    .map((playlist) => parseInt(playlist.id.match(/\d+/)![0], 10))
-    .value()
+    const customIds = Object.values(subs)
+      .filter((sub) => sub.type === 'custom')
+      .map((playlist) => parseInt(playlist.id.match(/\d+/)![0], 10))
 
     return this._next(customIds)
   }
 
   _next(orders: number[]) {
     if (!orders.length) return 0
-    return _.max(orders)! + 1
+    return Math.max(...orders) + 1
   }
 
   addVideoToPlaylist(playlist: SubModel, videoId: string) {
@@ -208,10 +206,15 @@ class SubsStore {
   }
 
   sort(sortedIds: string[]) {
-    const ids = _.map(this.subs, 'id')
-    if (_.isEqual(ids, sortedIds)) return
+    const ids = this.subs.map((sub) => sub.id)
+    if (
+      ids.length === sortedIds.length &&
+      ids.every((id, index) => id === sortedIds[index])
+    ) {
+      return
+    }
 
-    _.each(sortedIds, (id, order) => {
+    sortedIds.forEach((id, order) => {
       this.getSubById(id)!.update({ order })
     })
 
