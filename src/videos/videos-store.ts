@@ -47,69 +47,64 @@ class VideosStore {
     return _.take(sortedVideos, 25)
   }
 
-  getVideosDataForPlaylist (playlistId: string, pageToken?: string | null) {
+  async getVideosDataForPlaylist (playlistId: string, pageToken?: string | null) {
     this._beforeLoad()
 
-    return videosService.getVideosDataForPlaylist(playlistId, pageToken)
-    .then((videosData) => {
-      this._updateVideosData(videosData)
-      this._afterLoad(false)
-    })
+    const videosData = await videosService.getVideosDataForPlaylist(playlistId, pageToken)
+
+    this._updateVideosData(videosData)
+    this._afterLoad(false)
   }
 
-  getVideosDataForAllPlaylists (playlistIds: string[]) {
-    if (!playlistIds.length) return Promise.resolve([])
+  async getVideosDataForAllPlaylists (playlistIds: string[]) {
+    if (!playlistIds.length) return []
 
     this._beforeLoad()
 
-    return videosService.getVideosDataForAllPlaylists(playlistIds)
-    .then((videos) => {
-      this._updateVideosData({
-        videos,
-        prevPageToken: null,
-        nextPageToken: null,
-      })
-      this.hasLoadedAllPlaylists = true
-      this._afterLoad(false)
+    const videos = await videosService.getVideosDataForAllPlaylists(playlistIds)
+
+    this._updateVideosData({
+      videos,
+      prevPageToken: null,
+      nextPageToken: null,
     })
+    this.hasLoadedAllPlaylists = true
+    this._afterLoad(false)
   }
 
-  getVideosDataForChannelSearch (channel: SubModel, query: string, pageToken?: string | null) {
+  async getVideosDataForChannelSearch (channel: SubModel, query: string, pageToken?: string | null) {
     this._beforeLoad()
 
-    return videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
-    .then((videosData) => {
-      this._updateVideosData(videosData)
-      this._afterLoad(false)
-    })
+    const videosData = await videosService.getVideosDataForChannelSearch(channel.id, query, pageToken)
+
+    this._updateVideosData(videosData)
+    this._afterLoad(false)
   }
 
-  getVideosDataForPlaylistSearch (playlistId: string, query: string) {
+  async getVideosDataForPlaylistSearch (playlistId: string, query: string) {
     this._beforeLoad()
 
-    return videosService.getVideosDataForPlaylistSearch(playlistId, query)
-    .then((videosData) => {
-      this._updateVideosData(videosData)
-      this._afterLoad(false)
-    })
+    const videosData = await videosService.getVideosDataForPlaylistSearch(playlistId, query)
+
+    this._updateVideosData(videosData)
+    this._afterLoad(false)
   }
 
-  getVideosDataForCustomPlaylist (playlist: SubModel) {
+  async getVideosDataForCustomPlaylist (playlist: SubModel) {
     this._beforeLoad()
 
-    return videosService.getVideosDataForCustomPlaylist(playlist)
-    .then((videos) => {
-      videos = _.map(videos, (video) => {
-        return _.extend(video, (toJS(playlist.videos) as unknown as Record<string, CustomPlaylistVideo>)[video.id])
-      })
+    let videos = await videosService.getVideosDataForCustomPlaylist(playlist)
 
-      this._updateVideosData({
-        videos,
-        prevPageToken: null,
-        nextPageToken: null,
-      })
-      this._afterLoad(true)
+    videos = _.map(videos, (video) => {
+      return _.extend(video, (toJS(playlist.videos) as unknown as Record<string, CustomPlaylistVideo>)[video.id])
     })
+
+    this._updateVideosData({
+      videos,
+      prevPageToken: null,
+      nextPageToken: null,
+    })
+    this._afterLoad(true)
   }
 
   getVideoById (id: string) {

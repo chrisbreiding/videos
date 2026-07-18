@@ -55,6 +55,51 @@ describe('lib/youtube', () => {
     expect(requestedUrl).toContain('pageToken=page-token-abc')
   })
 
+  test('getVideosDataForChannelSearch keeps the next page token when a full page of results comes back', async ({ page }) => {
+    await stubFirebaseAuth(page)
+
+    const searchItems = Array.from({ length: 25 }, (_, i) => ({
+      id: { videoId: `video-${i}` },
+    }))
+    const videoItems = searchItems.map(({ id }) => ({
+      id: id.videoId,
+      snippet: {
+        channelId: 'channel-1',
+        title: id.videoId,
+        description: '',
+        publishedAt: '2024-01-01T00:00:00Z',
+        thumbnails: { medium: { url: 'https://example.com/thumb.jpg' } },
+      },
+      contentDetails: { duration: 'PT1M' },
+    }))
+
+    await page.route('https://www.googleapis.com/youtube/v3/search**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ items: searchItems, nextPageToken: 'next-page-token' }),
+      })
+    })
+    await page.route('https://www.googleapis.com/youtube/v3/videos**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ items: videoItems }),
+      })
+    })
+    await page.goto('/')
+    await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
+
+    const result = await page.evaluate(async () => {
+      const { getVideosDataForChannelSearch } = await import('/src/lib/youtube.ts')
+
+      return getVideosDataForChannelSearch('channel-1', 'query')
+    })
+
+    expect(result.videos).toHaveLength(25)
+    expect(result.nextPageToken).toBe('next-page-token')
+  })
+
   test('getVideosDataForPlaylistSearch fetches every page of a playlist before filtering', async ({ page }) => {
     const videoOnFirstPage = createVideo({ id: 'video-1', title: 'Apple Review', description: 'about fruit' })
     const videoOnSecondPage = createVideo({ id: 'video-2', title: 'Banana Review', description: 'also about fruit' })

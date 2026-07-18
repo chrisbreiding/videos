@@ -64,28 +64,28 @@ export const AddChannel = observer(() => {
     setPlaylistFilters((prev) => ({ ...prev, [channelId]: value }))
   }
 
-  const loadPlaylists = (channelId: string) => {
+  const loadPlaylists = async (channelId: string) => {
     setLoadingPlaylists((prev) => ({ ...prev, [channelId]: true }))
 
-    videosService.getPlaylistsForChannel(channelId).then((playlistsData) => {
-      setLoadingPlaylists((prev) => ({ ...prev, [channelId]: false }))
-      setPlaylists((prev) => ({ ...prev, [channelId]: playlistsData }))
-    })
+    const playlistsData = await videosService.getPlaylistsForChannel(channelId)
+
+    setLoadingPlaylists((prev) => ({ ...prev, [channelId]: false }))
+    setPlaylists((prev) => ({ ...prev, [channelId]: playlistsData }))
   }
 
-  const loadMorePlaylists = (channelId: string, pageToken?: string) => {
+  const loadMorePlaylists = async (channelId: string, pageToken?: string) => {
     setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: true }))
 
-    videosService.getPlaylistsForChannel(channelId, pageToken).then((newPlaylists) => {
-      setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: false }))
-      setPlaylists((prev) => ({
-        ...prev,
-        [channelId]: {
-          ...newPlaylists,
-          videos: [...prev[channelId].videos, ...newPlaylists.videos],
-        },
-      }))
-    })
+    const newPlaylists = await videosService.getPlaylistsForChannel(channelId, pageToken)
+
+    setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: false }))
+    setPlaylists((prev) => ({
+      ...prev,
+      [channelId]: {
+        ...newPlaylists,
+        videos: [...prev[channelId].videos, ...newPlaylists.videos],
+      },
+    }))
   }
 
   const hidePlaylists = (channelId: string) => {

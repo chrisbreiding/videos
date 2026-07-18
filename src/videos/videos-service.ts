@@ -36,10 +36,8 @@ class VideosService {
     return getPlaylistsForChannel(channelId, pageToken)
   }
 
-  getVideo (id: string) {
-    return getVideos([id]).then((videos) => {
-      return videos[0]
-    })
+  async getVideo (id: string) {
+    return (await getVideos([id]))[0]
   }
 }
 

@@ -19,14 +19,14 @@ function getBaseUrl (): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function queryYouTube (url: string, data: QueryParams): Promise<any> {
+async function queryYouTube (url: string, data: QueryParams): Promise<any> {
   const baseUrl = getBaseUrl()
 
-  return authStore.getApiKey().then((apiKey) => {
-    const params = new URLSearchParams({ key: apiKey, ...data } as Record<string, string>)
-    return fetch(`${baseUrl}${url}?${params}`)
-    .then((response) => response.json())
-  })
+  const apiKey = await authStore.getApiKey()
+  const params = new URLSearchParams({ key: apiKey, ...data } as Record<string, string>)
+  const response = await fetch(`${baseUrl}${url}?${params}`)
+
+  return response.json()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,30 +68,38 @@ function mapVideoDetails (result: any): VideoData[] {
   })
 }
 
-export function getVideos (ids: string[]): Promise<VideoData[]> {
-  return queryYouTube('videos', {
+export async function getVideos (ids: string[]): Promise<VideoData[]> {
+  const result = await queryYouTube('videos', {
     id: ids.join(),
     part: 'snippet,contentDetails',
-  }).then(mapVideoDetails)
+  })
+
+  return mapVideoDetails(result)
 }
 
-export function checkApiKey (apiKey: string): Promise<boolean> {
+export async function checkApiKey (apiKey: string): Promise<boolean> {
   const params = { key: apiKey, part: 'id', channelId: 'UCJTWU5K7kl9EE109HBeoldA' }
-  return queryYouTube('activities', params)
-  .then(() => true)
-  .catch(() => false)
+
+  try {
+    await queryYouTube('activities', params)
+    return true
+  } catch {
+    return false
+  }
 }
 
-export function searchChannels (query: string): Promise<ChannelSearchResult[]> {
-  return queryYouTube('search', {
+export async function searchChannels (query: string): Promise<ChannelSearchResult[]> {
+  const result = await queryYouTube('search', {
     q: query,
     part: 'snippet',
     type: 'channel',
     maxResults: 10,
-  }).then(mapChannelDetails)
+  })
+
+  return mapChannelDetails(result)
 }
 
-export function getVideosDataForChannelSearch (channelId: string, query: string, pageToken?: string | null): Promise<VideosData> {
+export async function getVideosDataForChannelSearch (channelId: string, query: string, pageToken?: string | null): Promise<VideosData> {
   const params: QueryParams = {
     channelId,
     maxResults: RESULTS_PER_PAGE,
@@ -101,19 +109,24 @@ export function getVideosDataForChannelSearch (channelId: string, query: string,
   }
   if (pageToken) params.pageToken = pageToken
 
-  return queryYouTube('search', params)
-  .then(({ items, prevPageToken, nextPageToken }) => {
+  const {
+    items,
+    prevPageToken,
+    nextPageToken,
+  } = await queryYouTube('search', params)
+
+  const videos = await getVideos(videoIdsFromId(items))
+
+  return {
+    videos,
+    prevPageToken,
     // there seems to be a bug with the youtube api where it returns
     // a nextPageToken even if there are no more results after this page
-    if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
-
-    return getVideos(videoIdsFromId(items)).then((videos) => {
-      return { videos, prevPageToken, nextPageToken }
-    })
-  })
+    nextPageToken: items.length < RESULTS_PER_PAGE ? undefined : nextPageToken,
+  }
 }
 
-export function getVideosDataForPlaylist (playlistId: string, pageToken?: string | null, maxResults: number = RESULTS_PER_PAGE): Promise<VideosData> {
+export async function getVideosDataForPlaylist (playlistId: string, pageToken?: string | null, maxResults: number = RESULTS_PER_PAGE): Promise<VideosData> {
   const params: QueryParams = {
     playlistId,
     part: 'snippet,contentDetails',
@@ -121,19 +134,24 @@ export function getVideosDataForPlaylist (playlistId: string, pageToken?: string
   }
   if (pageToken) params.pageToken = pageToken
 
-  return queryYouTube('playlistItems', params)
-  .then(({ items, prevPageToken, nextPageToken }) => {
+  const {
+    items,
+    prevPageToken,
+    nextPageToken,
+  } = await queryYouTube('playlistItems', params)
+
+  const videos = await getVideos(videoIdsFromContentDetails(items))
+
+  return {
+    videos,
+    prevPageToken,
     // there seems to be a bug with the youtube api where it returns
     // a nextPageToken even if there are no more results after this page
-    if (items.length < RESULTS_PER_PAGE) nextPageToken = undefined
-
-    return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
-      return { videos, prevPageToken, nextPageToken }
-    })
-  })
+    nextPageToken: items.length < RESULTS_PER_PAGE ? undefined : nextPageToken
+  }
 }
 
-function getAllVideosFromPlaylist (playlistId: string, pageToken: string | null = null, accumulatedVideos: VideoData[] = []): Promise<VideoData[]> {
+async function getAllVideosFromPlaylist (playlistId: string, pageToken: string | null = null, accumulatedVideos: VideoData[] = []): Promise<VideoData[]> {
   const params: QueryParams = {
     playlistId,
     part: 'snippet,contentDetails',
@@ -141,81 +159,80 @@ function getAllVideosFromPlaylist (playlistId: string, pageToken: string | null 
   }
   if (pageToken) params.pageToken = pageToken
 
-  return queryYouTube('playlistItems', params)
-  .then(({ items, nextPageToken }) => {
-    return getVideos(videoIdsFromContentDetails(items)).then((videos) => {
-      const allVideos = accumulatedVideos.concat(videos)
+  const { items, nextPageToken } = await queryYouTube('playlistItems', params)
+  const videos = await getVideos(videoIdsFromContentDetails(items))
+  const allVideos = accumulatedVideos.concat(videos)
 
-      if (nextPageToken) {
-        return getAllVideosFromPlaylist(playlistId, nextPageToken, allVideos)
-      }
+  if (nextPageToken) {
+    return getAllVideosFromPlaylist(playlistId, nextPageToken, allVideos)
+  }
 
-      return allVideos
-    })
-  })
+  return allVideos
 }
 
-export function getVideosDataForPlaylistSearch (playlistId: string, query: string): Promise<VideosData> {
-  return getAllVideosFromPlaylist(playlistId).then((videos) => {
-    const lowerQuery = query.toLowerCase()
-    const filteredVideos = videos.filter((video) => {
-      return video.title.toLowerCase().includes(lowerQuery) ||
-             video.description.toLowerCase().includes(lowerQuery)
-    })
-
-    return {
-      videos: filteredVideos,
-      prevPageToken: null,
-      nextPageToken: null,
-    }
+export async function getVideosDataForPlaylistSearch (playlistId: string, query: string): Promise<VideosData> {
+  const videos = await getAllVideosFromPlaylist(playlistId)
+  const lowerQuery = query.toLowerCase()
+  const filteredVideos = videos.filter((video) => {
+    return video.title.toLowerCase().includes(lowerQuery) ||
+           video.description.toLowerCase().includes(lowerQuery)
   })
+
+  return {
+    videos: filteredVideos,
+    prevPageToken: null,
+    nextPageToken: null,
+  }
 }
 
-export function getVideosDataForAllPlaylists (playlistIds: string[]): Promise<VideoData[]> {
+export async function getVideosDataForAllPlaylists (playlistIds: string[]): Promise<VideoData[]> {
   const getVideos = _.map(playlistIds, (playlistId) => {
     return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
   })
 
-  return Promise.all(getVideos)
-  .then((playlists) => _.flatMap(playlists, 'videos'))
+  const playlists = await Promise.all(getVideos)
+
+  return _.flatMap(playlists, 'videos')
 }
 
-export function getPlaylistIdForChannel (channelId: string): Promise<string> {
-  return queryYouTube('channels', {
+export async function getPlaylistIdForChannel (channelId: string): Promise<string> {
+  const result = await queryYouTube('channels', {
     id: channelId,
     part: 'contentDetails',
-  }).then((result) => result.items[0].contentDetails.relatedPlaylists.uploads)
+  })
+
+  return result.items[0].contentDetails.relatedPlaylists.uploads
 }
 
-export function getChannelDetails (channelId: string): Promise<ChannelDetails> {
-  return queryYouTube('channels', {
+export async function getChannelDetails (channelId: string): Promise<ChannelDetails> {
+  const result = await queryYouTube('channels', {
     id: channelId,
     part: 'snippet',
-  }).then((result) => {
-    const item = result.items[0]
-    return {
-      id: item.id,
-      title: item.snippet.title,
-      thumb: item.snippet.thumbnails.medium.url,
-    }
   })
+  const item = result.items[0]
+
+  return {
+    id: item.id,
+    title: item.snippet.title,
+    thumb: item.snippet.thumbnails.medium.url,
+  }
 }
 
-export function getPlaylistDetails (playlistId: string): Promise<PlaylistDetails> {
-  return queryYouTube('playlists', {
+export async function getPlaylistDetails (playlistId: string): Promise<PlaylistDetails> {
+  const result = await queryYouTube('playlists', {
     id: playlistId,
     part: 'snippet',
-  }).then((result) => {
-    const item = result.items[0]
-    return {
-      id: item.id,
-      title: item.snippet.title,
-      thumb: item.snippet.thumbnails.medium.url,
-    }
   })
+  const item = result.items[0]
+
+  return {
+    id: item.id,
+    title: item.snippet.title,
+    thumb: item.snippet.thumbnails.medium.url,
+  }
 }
 
-export function getPlaylistsForChannel (channelId: string, pageToken?: string | null): Promise<PlaylistsForChannelResult> {
+export async function getPlaylistsForChannel (channelId: string, pageToken?: string | null): Promise<PlaylistsForChannelResult> {
   const params: QueryParams = {
     channelId,
     part: 'contentDetails,snippet',
@@ -223,25 +240,25 @@ export function getPlaylistsForChannel (channelId: string, pageToken?: string | 
   }
   if (pageToken) params.pageToken = pageToken
 
-  return queryYouTube('playlists', params).then((result) => {
-    // there seems to be a bug with the youtube api where it returns
-    // a nextPageToken even if there are no more results after this page
-    const nextPageToken = result.items.length < RESULTS_PER_PAGE ? undefined : result.nextPageToken
+  const result = await queryYouTube('playlists', params)
 
-    return {
-      nextPageToken,
-      totalResults: result.pageInfo.totalResults,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      videos: result.items.map((playlist: any) => ({
-        author: playlist.snippet.title,
-        channelId,
-        count: playlist.contentDetails.itemCount,
-        description: playlist.snippet.description,
-        id: playlist.id,
-        published: playlist.snippet.publishedAt,
-        thumb: playlist.snippet.thumbnails.medium.url,
-        title: playlist.snippet.title,
-      })),
-    }
-  })
+  // there seems to be a bug with the youtube api where it returns
+  // a nextPageToken even if there are no more results after this page
+  const nextPageToken = result.items.length < RESULTS_PER_PAGE ? undefined : result.nextPageToken
+
+  return {
+    nextPageToken,
+    totalResults: result.pageInfo.totalResults,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    videos: result.items.map((playlist: any) => ({
+      author: playlist.snippet.title,
+      channelId,
+      count: playlist.contentDetails.itemCount,
+      description: playlist.snippet.description,
+      id: playlist.id,
+      published: playlist.snippet.publishedAt,
+      thumb: playlist.snippet.thumbnails.medium.url,
+      title: playlist.snippet.title,
+    })),
+  }
 }
