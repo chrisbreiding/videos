@@ -2,7 +2,7 @@
   align-items: center;
   display: flex;
   font-size: 2.6em;
-  height: square-thumb-height;
+  height: var(--square-thumb-height);
   justify-content: center;
-  width: thumb-width;
+  width: var(--thumb-width);
 }

@@ -12,7 +12,7 @@
 }
 
 .modal-box {
-  background: light-color;
+  background: var(--light-color);
   max-height: 95%;
   max-width: 95%;
   overflow-y: scroll;

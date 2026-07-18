@@ -6,8 +6,8 @@
 
 .is-resizing {
   cursor: row-resize;
-  user-select: none; // disable text selection
-   -webkit-overflow-scrolling: touch; // disable elastic scrolling
+  user-select: none; /* disable text selection */
+  -webkit-overflow-scrolling: touch; /* disable elastic scrolling */
 }
 
 .resizer {

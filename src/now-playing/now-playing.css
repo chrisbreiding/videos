@@ -7,7 +7,7 @@
   position: relative;
   justify-content: center;
 
-  .cover {
+  & .cover {
     display: none;
     bottom: 0;
     left: 0;
@@ -20,72 +20,72 @@
     }
   }
 
-  .controls {
+  & .controls {
     display: flex;
     position: absolute;
     left: 0;
     top: 100%;
     z-index: 101;
 
-    button,
-    .button {
+    & button,
+    & .button {
       border: none;
       height: 2.2em;
       width: 2.4em;
 
-      .icon svg {
+      & .icon svg {
         font-size: 1.4em;
       }
     }
 
-    button {
-      background: light-color;
-      border-bottom: solid 1px lighten(neutral-color, 40%);
+    & button {
+      background: var(--light-color);
+      border-bottom: solid 1px color-mix(in srgb, var(--neutral-color), white 40%);
       border-radius: 0;
-      color: lighten(neutral-color, 40%);
-      border-color: lighten(neutral-color, 40%);
+      color: color-mix(in srgb, var(--neutral-color), white 40%);
+      border-color: color-mix(in srgb, var(--neutral-color), white 40%);
 
       &:hover,
       &:focus {
-        background: lighten(neutral-color, 80%);
+        background: color-mix(in srgb, var(--neutral-color), white 80%);
       }
 
       &:first-of-type {
-        border-left: solid 1px lighten(neutral-color, 40%);
+        border-left: solid 1px color-mix(in srgb, var(--neutral-color), white 40%);
         border-radius: 0 0 0 3px;
       }
 
       &:last-child {
-        border-right: solid 1px lighten(neutral-color, 40%);
+        border-right: solid 1px color-mix(in srgb, var(--neutral-color), white 40%);
         border-radius: 0 0 3px 0;
       }
 
       &.enabled {
-        color: lighten(action-color, 20%);
+        color: color-mix(in srgb, var(--action-color), white 20%);
 
         &:hover,
         &:focus {
-          color: action-color;
+          color: var(--action-color);
         }
       }
     }
 
-    .close {
+    & .close {
       background: #000;
       border-radius: 0 0 3px 0;
-      color: darken(light-color, 20%);
+      color: color-mix(in srgb, var(--light-color), black 20%);
       margin-right: 2em;
 
       &:hover,
       &:focus {
         background: #555;
-        color: #FFF;
+        color: #fff;
       }
     }
   }
 
-  .description,
-  .playlists {
+  & .description,
+  & .playlists {
     background: #f8f8f8;
     border-bottom: solid 1px #d3d3d3;
     display: none;
@@ -94,15 +94,15 @@
     position: absolute;
     top: 100%;
     right: 0;
-    white-space: pre-wrap
+    white-space: pre-wrap;
     z-index: 100;
 
-    p {
+    & p {
       margin: 0;
     }
   }
 
-  .description {
+  & .description {
     padding-top: 2.6em;
   }
 

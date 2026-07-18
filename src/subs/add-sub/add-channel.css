@@ -1,29 +1,29 @@
 .add-channel {
-  form {
+  & form {
     display: flex;
     justify-content: center;
     margin-bottom: 1em;
 
-    input {
+    & input {
       border-radius: 3px 0 0 3px;
       min-width: 180px;
 
       &:hover {
-        border-color: lighten(action-color, 10%);
+        border-color: color-mix(in srgb, var(--action-color), white 10%);
       }
 
       &:focus {
-        border-color: action-color;
+        border-color: var(--action-color);
       }
     }
 
-    button {
+    & button {
       border-left: none;
       border-radius: 0 3px 3px 0;
       display: block;
       padding: 0.4em 1em;
 
-      .icon svg {
+      & .icon svg {
         font-size: 1.1em;
       }
     }
@@ -31,40 +31,40 @@
 }
 
 .channels-list {
-  .channel-item {
-    background: #FFF;
+  & .channel-item {
+    background: #fff;
     margin: 0.6em 0;
 
     &.is-subscribed {
       background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
     }
 
-    .channel-info {
+    & .channel-info {
       display: flex;
       justify-content: space-between;
 
-      > img {
+      & > img {
         flex-shrink: 0;
         height: 3.6em;
       }
 
-      .channel-details {
+      & .channel-details {
         flex-grow: 2;
         overflow: hidden;
         padding: 0.4em 0.6em;
 
-        h3 {
+        & h3 {
           margin: 0;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
 
-        .load-playlists-button {
+        & .load-playlists-button {
           background: transparent;
-          border: solid 1px action-color;
+          border: solid 1px var(--action-color);
           border-radius: 3px;
-          color: action-color;
+          color: var(--action-color);
           cursor: pointer;
           font-size: 0.75em;
           margin-top: 0.3em;
@@ -72,8 +72,8 @@
 
           &:hover,
           &:focus {
-            background: action-color;
-            color: #FFF;
+            background: var(--action-color);
+            color: #fff;
           }
 
           &:disabled {
@@ -89,7 +89,7 @@
         }
       }
 
-      .add-button {
+      & .add-button {
         align-items: center;
         border: none;
         display: flex;
@@ -99,11 +99,11 @@
 
         &:hover,
         &:focus {
-          color: darken(action-color, 20%);
+          color: color-mix(in srgb, var(--action-color), black 20%);
         }
       }
 
-      .subscribed-indicator {
+      & .subscribed-indicator {
         align-items: center;
         color: #28a745;
         display: flex;
@@ -119,13 +119,13 @@
   background: #e8e8e8;
   border-top: solid 1px #eee;
 
-  .playlist-filter {
+  & .playlist-filter {
     align-items: center;
     display: flex;
     gap: 0.5em;
     padding: 0.5em;
 
-    input {
+    & input {
       border: solid 1px #ccc;
       border-radius: 3px;
       flex-grow: 1;
@@ -133,16 +133,16 @@
       padding: 0.3em 0.5em;
 
       &:hover {
-        border-color: lighten(action-color, 10%);
+        border-color: color-mix(in srgb, var(--action-color), white 10%);
       }
 
       &:focus {
-        border-color: action-color;
+        border-color: var(--action-color);
         outline: none;
       }
     }
 
-    .filter-count {
+    & .filter-count {
       color: #666;
       font-size: 0.75em;
       white-space: nowrap;
@@ -156,9 +156,9 @@
 
 .load-more-button {
   background: transparent;
-  border: solid 1px action-color;
+  border: solid 1px var(--action-color);
   border-radius: 3px;
-  color: action-color;
+  color: var(--action-color);
   cursor: pointer;
   display: block;
   font-size: 0.85em;
@@ -167,8 +167,8 @@
 
   &:hover,
   &:focus {
-    background: action-color;
-    color: #FFF;
+    background: var(--action-color);
+    color: #fff;
   }
 
   &:disabled {
@@ -184,7 +184,7 @@
 }
 
 .playlists-list {
-  .playlist-item {
+  & .playlist-item {
     align-items: center;
     border-top: solid 1px #cecece;
     display: flex;
@@ -197,17 +197,17 @@
       background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
     }
 
-    img {
+    & img {
       flex-shrink: 0;
       max-height: 4em;
     }
 
-    .playlist-details {
+    & .playlist-details {
       flex-grow: 2;
       overflow: hidden;
       padding: 0.4em 0.6em;
 
-      h4 {
+      & h4 {
         margin: 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -215,13 +215,13 @@
         font-size: 0.9em;
       }
 
-      .playlist-count {
+      & .playlist-count {
         color: #666;
         font-size: 0.75em;
       }
     }
 
-    button {
+    & button {
       align-items: center;
       align-self: stretch;
       border: none;
@@ -233,11 +233,11 @@
       &:hover,
       &:focus {
         background: #d4d4d4;
-        color: darken(action-color, 20%);
+        color: color-mix(in srgb, var(--action-color), black 20%);
       }
     }
 
-    .subscribed-indicator {
+    & .subscribed-indicator {
       align-items: center;
       align-self: stretch;
       color: #28a745;
@@ -248,7 +248,7 @@
     }
   }
 
-  .no-matching-playlists {
+  & .no-matching-playlists {
     color: #666;
     font-size: 0.85em;
     font-style: italic;

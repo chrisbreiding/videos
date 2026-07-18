@@ -7,11 +7,11 @@
 }
 
 .icon.with-text {
-  svg:first-child {
+  & svg:first-child {
     margin-right: 0.4em;
   }
 
-  svg:last-child {
+  & svg:last-child {
     margin-left: 0.4em;
   }
 }

@@ -2,38 +2,38 @@
   display: flex;
   overflow-y: scroll;
 
-  .subs-list {
+  & .subs-list {
     flex-shrink: 0;
     overflow-y: scroll;
     padding-right: 5px;
-    width: sidebar-width + 5;
+    width: calc(var(--sidebar-width) + 5px);
 
-    > header {
+    & > header {
       display: flex;
       flex-direction: row-reverse;
       padding: 0.6em 0;
     }
   }
 
-  .empty-message {
-    color: neutral-color;
+  & .empty-message {
+    color: var(--neutral-color);
     text-align: center;
     padding: 0.4em 0;
   }
 
-  .all-subs {
+  & .all-subs {
     display: none;
 
-    .thumb {
+    & .thumb {
       background: #333;
       display: flex;
       flex-wrap: wrap;
-      width: thumb-width;
+      width: var(--thumb-width);
     }
 
-    img {
-      height: (thumb-width / 2);
-      width: (thumb-width / 2);
+    & img {
+      height: calc(var(--thumb-width) / 2);
+      width: calc(var(--thumb-width) / 2);
     }
   }
 
@@ -41,28 +41,28 @@
     display: block;
   }
 
-  .videos,
-  .videos-empty {
+  & .videos,
+  & .videos-empty {
     flex-grow: 2;
     min-width: 30em;
     overflow-y: scroll;
   }
 
-  .loader {
-    color: primary-color;
+  & .loader {
+    color: var(--primary-color);
   }
 
-  .subs-empty,
-  .videos-empty {
-    color: neutral-color;
+  & .subs-empty,
+  & .videos-empty {
+    color: var(--neutral-color);
     text-align: center;
 
-    .icon svg {
+    & .icon svg {
       margin: 0 0.5em;
     }
   }
 
-  .videos-empty {
+  & .videos-empty {
     font-size: 1.2em;
     padding-top: 3em;
   }

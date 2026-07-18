@@ -3,9 +3,9 @@
   justify-content: space-between;
   margin: 0.6em;
 
-  .paginator-button {
+  & .paginator-button {
     align-items: center;
-    border: solid 1px darken(light-color, 20%);
+    border: solid 1px color-mix(in srgb, var(--light-color), black 20%);
     display: flex;
     font-size: 0.9em;
     min-width: 5em;
@@ -14,7 +14,7 @@
 
     &:hover,
     &:focus {
-      background: darken(light-color, 10%);
+      background: color-mix(in srgb, var(--light-color), black 10%);
     }
 
     &:first-child {
@@ -30,36 +30,36 @@
     }
   }
 
-  > span {
+  & > span {
     display: block;
     font-size: 0.9em;
     min-width: 5em;
     padding: 0.4em 0.6em;
   }
 
-  .search {
+  & .search {
     display: flex;
 
-    input {
+    & input {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
 
-    button {
+    & button {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       border-left: none;
     }
   }
 
-  .bookmark.is-bookmarked {
-    background: action-color;
-    border-color: action-color;
-    color: light-color;
+  & .bookmark.is-bookmarked {
+    background: var(--action-color);
+    border-color: var(--action-color);
+    color: var(--light-color);
 
     &:hover,
     &:focus {
-      background: darken(action-color, 20%);
+      background: color-mix(in srgb, var(--action-color), black 20%);
     }
   }
 }

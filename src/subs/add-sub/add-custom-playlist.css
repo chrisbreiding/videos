@@ -1,0 +1,32 @@
+.add-custom-playlist {
+  & fieldset {
+    margin-bottom: 0.8em;
+    position: relative;
+  }
+
+  & label {
+    display: block;
+    margin-bottom: 0.4em;
+  }
+
+  & input {
+    display: block;
+    width: 100%;
+  }
+
+  & .controls {
+    margin-top: 2em;
+  }
+
+  & .submit {
+    background: var(--action-color);
+    border-color: var(--action-color);
+    color: white;
+
+    &:hover,
+    &:focus {
+      background-color: color-mix(in srgb, var(--action-color), black 10%);
+      border-color: color-mix(in srgb, var(--action-color), black 10%);
+    }
+  }
+}

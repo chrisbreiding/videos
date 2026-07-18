@@ -11,7 +11,7 @@ body {
 }
 
 body {
-  background: light-color;
+  background: var(--light-color);
   color: #333;
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
@@ -23,14 +23,14 @@ p {
 
 a:link,
 a:visited {
-  color: action-color;
+  color: var(--action-color);
   text-decoration: none;
 }
 
 a:hover,
 a:focus,
 a:active {
-  color: darken(action-color, 20%);
+  color: color-mix(in srgb, var(--action-color), black 20%);
   text-decoration: underline;
 }
 
@@ -40,15 +40,15 @@ label {
 
 input,
 textarea {
-  background: #FFF;
-  border: solid 1px darken(light-color, 20%);
+  background: #fff;
+  border: solid 1px color-mix(in srgb, var(--light-color), black 20%);
   border-radius: 3px;
   font-size: 1em;
   outline: none;
   padding: 0.4em 0.6em;
 
   &:focus {
-    border-color: action-color;
+    border-color: var(--action-color);
   }
 }
 
@@ -59,29 +59,29 @@ input {
 button,
 .button {
   background: none;
-  border: solid 1px darken(light-color, 20%);
+  border: solid 1px color-mix(in srgb, var(--light-color), black 20%);
   border-radius: 3px;
-  color: action-color;
+  color: var(--action-color);
   cursor: pointer;
   font-size: 0.9em;
   padding: 0.4em 0.6em;
 
   &:hover,
   &:focus {
-    background-color: darken(light-color, 10%);
-    color: darken(action-color, 20%);
+    background-color: color-mix(in srgb, var(--light-color), black 10%);
+    color: color-mix(in srgb, var(--action-color), black 20%);
   }
 }
 
 .loader {
-  color: neutral-color;
+  color: var(--neutral-color);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 4em 0;
   text-align: center;
 
-  .icon svg {
+  & .icon svg {
     font-size: 2em;
     margin: 0 0.4em;
   }

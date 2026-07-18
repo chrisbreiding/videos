@@ -2,30 +2,30 @@
   display: flex;
   margin-top: 0.2em;
 
-  > span {
+  & > span {
     font-size: 0.9em;
     padding: 0.4em 0.6em;
   }
 
-  ul {
+  & ul {
     display: flex;
     flex-wrap: wrap;
 
-    li {
-      button {
+    & li {
+      & button {
         background: none;
         border: none;
         outline: none;
         display: flex;
 
-        .icon svg {
+        & .icon svg {
           flex-shrink: 0;
           margin-right: 0.6em;
           text-align: center;
           width: 0.8em;
         }
 
-        span {
+        & span {
           flex-grow: 2;
         }
       }

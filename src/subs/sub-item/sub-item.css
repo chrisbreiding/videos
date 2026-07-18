@@ -1,40 +1,38 @@
-remove-width = 28px;
-
 .sub-item {
   display: flex;
   margin-bottom: 0.4em;
-  position relative;
+  position: relative;
 
-  > span {
+  & > span {
     display: flex;
     flex-grow: 2;
     position: relative;
   }
 
-  .sub-title {
-    background: darken(light-color, 10%);
-    color: dark-color;
+  & .sub-title {
+    background: color-mix(in srgb, var(--light-color), black 10%);
+    color: var(--dark-color);
     flex-grow: 2;
-    height: square-thumb-height;
+    height: var(--square-thumb-height);
     outline: none;
     text-decoration: none;
 
     &:hover,
     &:focus {
-      background: darken(light-color, 30%);
+      background: color-mix(in srgb, var(--light-color), black 30%);
     }
 
     &.active {
-      background: darken(warning-color, 20%);
-      color: light-color;
+      background: color-mix(in srgb, var(--warning-color), black 20%);
+      color: var(--light-color);
 
-      .num-videos {
+      & .num-videos {
         color: #c7c7c7;
       }
     }
   }
 
-  .sub-bookmark {
+  & .sub-bookmark {
     background: none;
     border-bottom-left-radius: 3px;
     padding: 0.3em 0.4em;
@@ -44,47 +42,47 @@ remove-width = 28px;
 
     &:hover,
     &:focus {
-      background: darken(light-color, 30%);
+      background: color-mix(in srgb, var(--light-color), black 30%);
     }
 
     &.active {
-      color: light-color;
+      color: var(--light-color);
 
       &:hover,
       &:focus {
-        background: darken(warning-color, 40%);
+        background: color-mix(in srgb, var(--warning-color), black 40%);
       }
     }
   }
 
-  h3 {
+  & h3 {
     font-size: 1.1em;
     font-weight: 400;
     padding: 0.6em;
   }
 
   .editing & .custom-sub-item {
-    a,
-    .sub-item-icon {
+    & a,
+    & .sub-item-icon {
       display: none;
     }
   }
 
   .editing & .channel-sub-item,
   .editing & .playlist-sub-item {
-    a,
-    .sub-item-icon:not(.editable) {
+    & a,
+    & .sub-item-icon:not(.editable) {
       display: none;
     }
   }
 
-  input {
+  & input {
     border-radius: 0;
     box-sizing: border-box;
-    width: sidebar-width - thumb-width - remove-width;
+    width: 152px;
   }
 
-  input {
+  & input {
     display: none;
 
     .editing & {
@@ -92,7 +90,7 @@ remove-width = 28px;
     }
   }
 
-  .sub-item-icon.editable {
+  & .sub-item-icon.editable {
     display: none;
 
     .editing & {
@@ -100,33 +98,33 @@ remove-width = 28px;
     }
   }
 
-  .sub-item-icon.editable {
+  & .sub-item-icon.editable {
     background: none;
     border: none;
     font-size: 1em;
     padding: 0;
   }
 
-  .sub-item-icon,
-  img {
+  & .sub-item-icon,
+  & img {
     flex-shrink: 0;
   }
 
-  img {
-    width: thumb-width;
+  & img {
+    width: var(--thumb-width);
   }
 
-  .sub-item-icon {
-    background: dark-color;
+  & .sub-item-icon {
+    background: var(--dark-color);
     align-items: center;
     cursor: grab;
     display: flex;
     flex-grow: 0;
-    height: square-thumb-height;
+    height: var(--square-thumb-height);
     position: relative;
-    width: thumb-width;
+    width: var(--thumb-width);
 
-    // <img /> messes up drag-n-drop sorting, so need to cover it
+    /* <img /> messes up drag-n-drop sorting, so need to cover it */
     &:after {
       bottom: 0;
       content: '';
@@ -137,45 +135,45 @@ remove-width = 28px;
     }
   }
 
-  .sub-item-icon.editable {
+  & .sub-item-icon.editable {
     cursor: pointer;
   }
 
-  .num-videos {
-    color: neutral-color;
+  & .num-videos {
+    color: var(--neutral-color);
     display: none;
     margin: 0;
     padding: 0 0.6em;
   }
 
-  .custom-sub-item .num-videos {
+  & .custom-sub-item .num-videos {
     display: block;
   }
 
-  .remove {
+  & .remove {
     align-items: center;
-    background: darken(light-color, 10%);
+    background: color-mix(in srgb, var(--light-color), black 10%);
     border-radius: 0;
     border: none;
-    color: warning-color;
+    color: var(--warning-color);
     display: none;
     flex-shrink: 0;
     justify-content: center;
     text-align: center;
     text-decoration: none;
-    width: remove-width;
+    width: 28px;
 
     &:hover,
     &:focus {
-      background: light-color;
-      color: darken(warning-color, 20%);
+      background: var(--light-color);
+      color: color-mix(in srgb, var(--warning-color), black 20%);
     }
 
     .editing & {
       display: flex;
     }
 
-    .icon svg {
+    & .icon svg {
       font-size: 1.4em;
     }
   }
