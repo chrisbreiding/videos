@@ -32,8 +32,8 @@ describe('Resizer', () => {
 
   async function nowPlayingHeight(page: Page) {
     return page
-    .locator('.now-playing')
-    .evaluate((el) => parseInt((el as HTMLElement).style.height, 10))
+      .locator('.now-playing')
+      .evaluate((el) => parseInt((el as HTMLElement).style.height, 10))
   }
 
   test('resizes within the allowed range while dragging', async ({ page }) => {

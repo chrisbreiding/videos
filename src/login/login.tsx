@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -7,7 +6,7 @@ import { appState } from '../app/app-state'
 import { authStore } from './auth-store'
 import { Icon } from '../lib/util'
 
-export const Login = observer(() => {
+export const Login = () => {
   const navigate = useNavigate()
   const [loginFailed, setLoginFailed] = useState(false)
   const emailRef = useRef<HTMLInputElement>(null)
@@ -69,4 +68,4 @@ export const Login = observer(() => {
       </form>
     </div>
   )
-})
+}

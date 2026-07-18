@@ -262,12 +262,12 @@ export async function setupApp(page: Page, options: SetupAppOptions = {}) {
           channels.length > 0
             ? channels
             : [
-              {
-                contentDetails: {
-                  relatedPlaylists: { uploads: 'UU_uploads' },
+                {
+                  contentDetails: {
+                    relatedPlaylists: { uploads: 'UU_uploads' },
+                  },
                 },
-              },
-            ]
+              ]
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -313,10 +313,10 @@ export async function setupApp(page: Page, options: SetupAppOptions = {}) {
         if (options.pagination) {
           const pageData = options.pagination[pageToken || ''] ||
             options.pagination['default'] || {
-            videos,
-            prevPageToken: undefined,
-            nextPageToken: undefined,
-          }
+              videos,
+              prevPageToken: undefined,
+              nextPageToken: undefined,
+            }
           videosToReturn = pageData.videos
           prevPageToken = pageData.prevPageToken
           nextPageToken = pageData.nextPageToken
@@ -354,8 +354,8 @@ export async function setupApp(page: Page, options: SetupAppOptions = {}) {
         const videosToReturn =
           requestedIds.length > 0
             ? requestedIds
-            .map((id) => videosById[id] || videos.find((v) => v.id === id))
-            .filter((v): v is VideoData => Boolean(v))
+                .map((id) => videosById[id] || videos.find((v) => v.id === id))
+                .filter((v): v is VideoData => Boolean(v))
             : videos
 
         await route.fulfill({

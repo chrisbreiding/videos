@@ -178,8 +178,8 @@ describe('Adding/Removing the Now Playing Video from a Playlist', () => {
     await page.locator('.toggle-playlists').click()
 
     const playlistButton = page
-    .locator('.now-playing .playlist-picker button')
-    .filter({ hasText: 'Watch Later' })
+      .locator('.now-playing .playlist-picker button')
+      .filter({ hasText: 'Watch Later' })
 
     // Add to the custom playlist
     await playlistButton.click()

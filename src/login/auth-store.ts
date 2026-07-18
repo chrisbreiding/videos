@@ -1,21 +1,10 @@
-import { action, computed, makeObservable, observable } from 'mobx'
-
+import { Store } from '../lib/store'
 import { getDoc, signIn, signOut } from '../lib/firebase'
 import { checkApiKey as checkApiKeyYoutube } from '../lib/youtube'
 
-class AuthStore {
+class AuthStore extends Store {
   userId?: string
   youtubeApiKey?: string
-
-  constructor() {
-    makeObservable(this, {
-      userId: observable,
-      youtubeApiKey: observable,
-      isAuthenticated: computed,
-      setUserId: action,
-      setApiKey: action,
-    })
-  }
 
   get isAuthenticated() {
     return !!this.userId && !!this.youtubeApiKey
@@ -33,12 +22,14 @@ class AuthStore {
 
   setUserId(userId: string) {
     this.userId = userId
+    this.emit()
   }
 
   setApiKey(youtubeApiKey?: string) {
     if (!youtubeApiKey) return
 
     this.youtubeApiKey = youtubeApiKey
+    this.emit()
   }
 
   checkApiKey = (apiKey?: string): Promise<boolean> => {

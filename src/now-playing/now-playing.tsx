@@ -1,13 +1,12 @@
 import cs from 'classnames'
 import MarkDown from 'markdown-it'
-import { action } from 'mobx'
-import { observer, useLocalStore } from 'mobx-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 
 import { YoutubePlayer } from '../lib/youtube-player'
 import { appState } from '../app/app-state'
 import { DocumentTitle } from '../lib/document-title'
+import { useStore } from '../lib/store'
 import { Icon, durationSeconds } from '../lib/util'
 import { videosStore } from '../videos/videos-store'
 import { videosService } from '../videos/videos-service'
@@ -34,41 +33,39 @@ interface NowPlayingProps {
   removedFromPlaylist: (playlist: SubModel) => void
 }
 
-export const NowPlaying = observer((props: NowPlayingProps) => {
-  const state = useLocalStore(() => ({
-    title: '...',
-    description: 'Loading description...',
-    isShowingDescription: false,
-    isShowingPlaylists: false,
-    setTitle: action((title: string) => {
-      state.title = title
-    }),
-    setDescription: action((description: string) => {
-      state.description = description
-    }),
-    setShowingDescription: action((isShowingDescription: boolean) => {
-      if (isShowingDescription) state.isShowingPlaylists = false
-      state.isShowingDescription = isShowingDescription
-    }),
-    setShowingPlaylists: action((isShowingPlaylists: boolean) => {
-      if (isShowingPlaylists) state.isShowingDescription = false
-      state.isShowingPlaylists = isShowingPlaylists
-    }),
-    toggleShowingDescription: () => {
-      state.setShowingDescription(!state.isShowingDescription)
-    },
-    toggleShowingPlaylists: () => {
-      state.setShowingPlaylists(!state.isShowingPlaylists)
-    },
-  }))
+export const NowPlaying = (props: NowPlayingProps) => {
+  useStore(appState, videosStore)
+
+  const [title, setTitle] = useState('...')
+  const [description, setDescription] = useState('Loading description...')
+  const [isShowingDescription, setIsShowingDescription] = useState(false)
+  const [isShowingPlaylists, setIsShowingPlaylists] = useState(false)
+
+  const showDescription = (show: boolean) => {
+    if (show) setIsShowingPlaylists(false)
+    setIsShowingDescription(show)
+  }
+
+  const showPlaylists = (show: boolean) => {
+    if (show) setIsShowingDescription(false)
+    setIsShowingPlaylists(show)
+  }
+
+  const toggleShowingDescription = () => {
+    showDescription(!isShowingDescription)
+  }
+
+  const toggleShowingPlaylists = () => {
+    showPlaylists(!isShowingPlaylists)
+  }
 
   const setVideoProps = (video: VideoData | VideoModel) => {
-    state.setTitle(video.title!)
-    state.setDescription(video.description!)
+    setTitle(video.title!)
+    setDescription(video.description!)
   }
 
   useEffect(() => {
-    state.setShowingDescription(false)
+    showDescription(false)
 
     if (!props.id) return
 
@@ -80,12 +77,11 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
     }
 
     videosService.getVideo(props.id).then(setVideoProps)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.id])
 
   if (!props.id) return null
 
-  const description = md.render(state.description)
+  const descriptionHtml = md.render(description)
   const watched = appState.watchedVideos[props.id]
   const video = videosStore.getVideoById(props.id)
   const length = video ? durationSeconds(video.duration) : 0
@@ -99,12 +95,12 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
   return (
     <div
       className={cs('now-playing', {
-        'is-showing-description': state.isShowingDescription,
-        'is-showing-playlists': state.isShowingPlaylists,
+        'is-showing-description': isShowingDescription,
+        'is-showing-playlists': isShowingPlaylists,
       })}
       style={{ height: appState.nowPlayingHeight }}
     >
-      <DocumentTitle title={`${state.title} | Videos`} />
+      <DocumentTitle title={`${title} | Videos`} />
       <YoutubePlayer
         id={props.id}
         width={appState.nowPlayingWidth}
@@ -129,29 +125,29 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
         </button>
         <button
           className={cs('toggle-description', {
-            enabled: state.isShowingDescription,
+            enabled: isShowingDescription,
           })}
           title="Toggle Description"
-          onClick={state.toggleShowingDescription}
+          onClick={toggleShowingDescription}
         >
           <Icon name="info" />
         </button>
         <button
           className={cs('toggle-playlists', {
-            enabled: state.isShowingPlaylists,
+            enabled: isShowingPlaylists,
           })}
           title="Toggle Playlists"
-          onClick={state.toggleShowingPlaylists}
+          onClick={toggleShowingPlaylists}
         >
           <Icon name="list-ul" />
         </button>
       </div>
       <div
         className="description"
-        dangerouslySetInnerHTML={{ __html: description }}
+        dangerouslySetInnerHTML={{ __html: descriptionHtml }}
       />
       <div className="playlists">
-        {state.isShowingPlaylists && (
+        {isShowingPlaylists && (
           <PlaylistPicker
             videoId={props.id}
             customPlaylists={props.customPlaylists}
@@ -162,4 +158,4 @@ export const NowPlaying = observer((props: NowPlayingProps) => {
       </div>
     </div>
   )
-})
+}

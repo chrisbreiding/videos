@@ -1,4 +1,3 @@
-import { action, makeObservable, observable } from 'mobx'
 import dayjs, { type Dayjs } from 'dayjs'
 
 import type { VideoData } from '../lib/types'
@@ -12,20 +11,9 @@ export class VideoModel {
   order?: number
   thumb?: string
   title?: string
+  private _onChange?: () => void
 
-  constructor(props: VideoData) {
-    makeObservable(this, {
-      duration: observable,
-      id: observable,
-      channelId: observable,
-      published: observable.ref,
-      description: observable,
-      order: observable,
-      thumb: observable,
-      title: observable,
-      update: action,
-    })
-
+  constructor(props: VideoData, onChange?: () => void) {
     this.duration = props.duration
     this.id = props.id
     this.channelId = props.channelId
@@ -34,9 +22,11 @@ export class VideoModel {
     this.order = props.order
     this.thumb = props.thumb
     this.title = props.title
+    this._onChange = onChange
   }
 
   update({ order }: { order?: number }) {
     this.order = order
+    this._onChange?.()
   }
 }

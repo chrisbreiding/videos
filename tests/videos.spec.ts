@@ -46,10 +46,10 @@ describe('Viewing a Channel and Its Videos', () => {
 
     // Click on the channel
     await page
-    .locator('.sub-item')
-    .filter({ hasText: 'Tech Reviews' })
-    .locator('.sub-title')
-    .click()
+      .locator('.sub-item')
+      .filter({ hasText: 'Tech Reviews' })
+      .locator('.sub-title')
+      .click()
 
     await expect(page).toHaveURL('/subs/channel-1')
 
@@ -259,18 +259,18 @@ describe('Adding Videos to a Custom Playlist from a Channel', () => {
 
     // Click to add to the custom playlist
     await page
-    .locator('.playlist-picker button')
-    .filter({ hasText: 'Watch Later' })
-    .first()
-    .click()
+      .locator('.playlist-picker button')
+      .filter({ hasText: 'Watch Later' })
+      .first()
+      .click()
 
     // The checkbox icon should change to checked
     await expect(
       page
-      .locator('.playlist-picker button')
-      .filter({ hasText: 'Watch Later' })
-      .first()
-      .locator('.fa-square-check'),
+        .locator('.playlist-picker button')
+        .filter({ hasText: 'Watch Later' })
+        .first()
+        .locator('.fa-square-check'),
     ).toBeVisible()
   })
 
@@ -302,26 +302,26 @@ describe('Adding Videos to a Custom Playlist from a Channel', () => {
     // Video should already be checked in the playlist
     await expect(
       page
-      .locator('.playlist-picker button')
-      .filter({ hasText: 'Watch Later' })
-      .first()
-      .locator('.fa-square-check'),
+        .locator('.playlist-picker button')
+        .filter({ hasText: 'Watch Later' })
+        .first()
+        .locator('.fa-square-check'),
     ).toBeVisible()
 
     // Click to remove from playlist
     await page
-    .locator('.playlist-picker button')
-    .filter({ hasText: 'Watch Later' })
-    .first()
-    .click()
+      .locator('.playlist-picker button')
+      .filter({ hasText: 'Watch Later' })
+      .first()
+      .click()
 
     // Should now show unchecked
     await expect(
       page
-      .locator('.playlist-picker button')
-      .filter({ hasText: 'Watch Later' })
-      .first()
-      .locator('.fa-square'),
+        .locator('.playlist-picker button')
+        .filter({ hasText: 'Watch Later' })
+        .first()
+        .locator('.fa-square'),
     ).toBeVisible()
   })
 })
@@ -453,8 +453,8 @@ describe('Viewing a Custom Playlist With Videos', () => {
 
     // The videos should now be swapped
     await expect
-    .poll(() => page.locator('.video h4').allTextContents())
-    .not.toEqual(['First Video', 'Second Video'])
+      .poll(() => page.locator('.video h4').allTextContents())
+      .not.toEqual(['First Video', 'Second Video'])
   })
 
   test('canceling a video drag with escape leaves the order unchanged', async ({
@@ -506,8 +506,8 @@ describe('Viewing a Custom Playlist With Videos', () => {
 
     // Order should be unchanged since the drag was canceled
     await expect
-    .poll(() => page.locator('.video h4').allTextContents())
-    .toEqual(['First Video', 'Second Video'])
+      .poll(() => page.locator('.video h4').allTextContents())
+      .toEqual(['First Video', 'Second Video'])
   })
 
   test('dragging videos after navigating from the All Subs page reorders correctly', async ({
@@ -550,8 +550,8 @@ describe('Viewing a Custom Playlist With Videos', () => {
 
     await expect(page.getByText('First Video')).toBeVisible({ timeout: 10000 })
     await expect
-    .poll(() => page.locator('.video h4').allTextContents())
-    .toEqual(['First Video', 'Second Video', 'Third Video', 'Fourth Video'])
+      .poll(() => page.locator('.video h4').allTextContents())
+      .toEqual(['First Video', 'Second Video', 'Third Video', 'Fourth Video'])
 
     // Drag the 1st video into the 3rd position
     const handles = page.locator('.video-sort-handle')
@@ -578,8 +578,8 @@ describe('Viewing a Custom Playlist With Videos', () => {
 
     // The first video should now be in the 3rd position, with no runtime errors
     await expect
-    .poll(() => page.locator('.video h4').allTextContents())
-    .toEqual(['Second Video', 'Third Video', 'First Video', 'Fourth Video'])
+      .poll(() => page.locator('.video h4').allTextContents())
+      .toEqual(['Second Video', 'Third Video', 'First Video', 'Fourth Video'])
     expect(pageErrors).toEqual([])
   })
 })

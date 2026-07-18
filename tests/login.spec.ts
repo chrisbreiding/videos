@@ -26,7 +26,9 @@ async function stubUnauthenticated(page: Page, { signInSucceeds = true } = {}) {
         },
 
         signIn: () => {
-          if (!signInSucceeds) { return Promise.reject(new Error('invalid credentials')) }
+          if (!signInSucceeds) {
+            return Promise.reject(new Error('invalid credentials'))
+          }
 
           signedIn = true
           return Promise.resolve({ user: { uid: 'test-user-123' } })

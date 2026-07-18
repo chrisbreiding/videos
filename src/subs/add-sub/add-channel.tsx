@@ -1,9 +1,9 @@
 import cs from 'classnames'
-import { observer } from 'mobx-react'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { Icon } from '../../lib/util'
+import { useStore } from '../../lib/store'
 import { videosService } from '../../videos/videos-service'
 import { subsStore } from '../subs-store'
 import type {
@@ -12,7 +12,9 @@ import type {
   PlaylistsForChannelResult,
 } from '../../lib/types'
 
-export const AddChannel = observer(() => {
+export const AddChannel = () => {
+  useStore(subsStore)
+
   const navigate = useNavigate()
   const params = useParams()
   const [loadingPlaylists, setLoadingPlaylists] = useState<
@@ -122,8 +124,8 @@ export const AddChannel = observer(() => {
     const filter = playlistFilters[channelId] || ''
     const filteredPlaylists = filter
       ? playlistData.videos.filter((p) =>
-        p.title.toLowerCase().includes(filter.toLowerCase()),
-      )
+          p.title.toLowerCase().includes(filter.toLowerCase()),
+        )
       : playlistData.videos
     const isLoadingMore = loadingMorePlaylists[channelId]
 
@@ -255,4 +257,4 @@ export const AddChannel = observer(() => {
       <ul className="channels-list">{renderResults()}</ul>
     </div>
   )
-})
+}

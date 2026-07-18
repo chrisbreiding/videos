@@ -68,15 +68,15 @@ export const IconPicker = ({ chosenIcon, onUpdate }: IconPickerProps) => {
     }, 100)
   }, [onUpdate])
 
-  const onColorChange =
-    (key: string, shouldDebounce: boolean) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (shouldDebounce) {
-          updateColorDebounced(key, e.target.value)
-        } else {
-          onUpdate({ [`${key}Color`]: e.target.value })
-        }
+  const onColorChange = (key: string, shouldDebounce: boolean) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (shouldDebounce) {
+        updateColorDebounced(key, e.target.value)
+      } else {
+        onUpdate({ [`${key}Color`]: e.target.value })
       }
+    }
+  }
 
   const updateFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value)

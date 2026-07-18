@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce'
-import { action, computed, makeObservable, observable } from 'mobx'
 import type { Location } from 'react-router'
 
+import { Store } from '../lib/store'
 import { getItem, setItem } from '../lib/local-data'
 import { deleteField, update } from '../lib/remote-data'
 import type { WatchedVideo, WatchedVideos } from '../lib/types'
@@ -10,7 +10,7 @@ export const minNowPlayingHeight = 100
 const maxNowPlayingHeightOffset = 10
 const nowPlayingSizeRatio = 1080 / 1920
 
-class AppState {
+class AppState extends Store {
   _nowPlayingHeight = 540
   autoPlayEnabled = true
   isSorting = false
@@ -20,25 +20,7 @@ class AppState {
   savedLocation?: Location
 
   constructor() {
-    makeObservable(this, {
-      _nowPlayingHeight: observable,
-      autoPlayEnabled: observable,
-      isSorting: observable,
-      windowHeight: observable,
-      allSubsMarkedVideoId: observable,
-      watchedVideos: observable,
-      maxNowPlayingHeight: computed,
-      nowPlayingHeight: computed,
-      nowPlayingWidth: computed,
-      _setProp: action,
-      setSorting: action,
-      setAllSubsMarkedVideoId: action,
-      setWatchedVideos: action,
-      saveVideoProgress: action,
-      _onWindowResize: action,
-      updateNowPlayingHeight: action,
-      toggleAutoPlay: action,
-    })
+    super()
 
     window.addEventListener('resize', this._onWindowResize)
 
@@ -73,16 +55,19 @@ class AppState {
 
   setSorting(isSorting: boolean) {
     this.isSorting = isSorting
+    this.emit()
   }
 
   setAllSubsMarkedVideoId(allSubsMarkedVideoId?: string, save = true) {
     this.allSubsMarkedVideoId = allSubsMarkedVideoId
 
     if (save) this.save()
+    this.emit()
   }
 
   setWatchedVideos(watchedVideos?: WatchedVideos) {
     this.watchedVideos = watchedVideos || {}
+    this.emit()
   }
 
   saveVideoProgress(
@@ -106,6 +91,7 @@ class AppState {
     }
 
     this.watchedVideos[videoId] = entry
+    this.emit()
 
     if (immediate) {
       this._saveVideoProgressDebounced.cancel()
@@ -129,11 +115,13 @@ class AppState {
 
   _onWindowResize = () => {
     this.windowHeight = window.innerHeight
+    this.emit()
   }
 
   updateNowPlayingHeight(height: number) {
     this._saveNowPlayingHeight(height)
     this._nowPlayingHeight = height
+    this.emit()
   }
 
   _saveNowPlayingHeight = debounce((height: number) => {
@@ -143,6 +131,7 @@ class AppState {
   toggleAutoPlay = () => {
     this.autoPlayEnabled = !this.autoPlayEnabled
     this._saveAutoPlay(this.autoPlayEnabled)
+    this.emit()
   }
 
   _saveAutoPlay = debounce((isEnabled: boolean) => {
@@ -151,6 +140,7 @@ class AppState {
 
   setSavedLocation(location?: Location) {
     this.savedLocation = location
+    this.emit()
   }
 
   save() {

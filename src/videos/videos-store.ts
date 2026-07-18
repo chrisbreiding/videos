@@ -1,12 +1,13 @@
-import { action, computed, makeObservable, observable, toJS } from 'mobx'
 import dayjs from 'dayjs'
 
+import { Store } from '../lib/store'
 import { videosService } from './videos-service'
 import { VideoModel } from './video-model'
 import type { SubModel } from '../sub/sub-model'
-import type { CustomPlaylistVideo, VideosData } from '../lib/types'
+import type { VideosData } from '../lib/types'
+import { sortByProperty } from '../lib/util'
 
-class VideosStore {
+class VideosStore extends Store {
   _videos: VideoModel[] = []
   _isSortable = false
   hasLoadedAllPlaylists = false
@@ -14,31 +15,9 @@ class VideosStore {
   prevPageToken?: string | null
   nextPageToken?: string | null
 
-  constructor() {
-    makeObservable(this, {
-      _videos: observable,
-      _isSortable: observable,
-      hasLoadedAllPlaylists: observable,
-      isLoading: observable,
-      prevPageToken: observable,
-      nextPageToken: observable,
-      videos: computed,
-      getVideosDataForPlaylist: action,
-      getVideosDataForAllPlaylists: action,
-      getVideosDataForChannelSearch: action,
-      getVideosDataForPlaylistSearch: action,
-      getVideosDataForCustomPlaylist: action,
-      _beforeLoad: action,
-      _afterLoad: action,
-      _updateVideosData: action,
-    })
-  }
-
   get videos(): VideoModel[] {
     if (this._isSortable) {
-      return this._videos
-      .slice()
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      return sortByProperty(this._videos.slice(), 'order')
     }
 
     const sortedVideos = this._videos.slice().sort((video1, video2) => {
@@ -114,15 +93,7 @@ class VideosStore {
     let videos = await videosService.getVideosDataForCustomPlaylist(playlist)
 
     videos = videos.map((video) => {
-      return Object.assign(
-        video,
-        (
-          toJS(playlist.videos) as unknown as Record<
-            string,
-            CustomPlaylistVideo
-          >
-        )[video.id],
-      )
+      return Object.assign(video, playlist.videos.get(video.id))
     })
 
     this._updateVideosData({
@@ -153,17 +124,22 @@ class VideosStore {
     this.isLoading = true
     this.prevPageToken = null
     this.nextPageToken = null
+    this.emit()
   }
 
   _afterLoad(isSortable: boolean) {
     this._isSortable = isSortable
     this.isLoading = false
+    this.emit()
   }
 
   _updateVideosData({ videos, prevPageToken, nextPageToken }: VideosData) {
-    if (videos) this._videos = videos.map((video) => new VideoModel(video))
+    if (videos) {
+      this._videos = videos.map((video) => new VideoModel(video, this.emit))
+    }
     if (prevPageToken) this.prevPageToken = prevPageToken
     if (nextPageToken) this.nextPageToken = nextPageToken
+    this.emit()
   }
 
   sort(sortedIds: string[]) {
@@ -178,6 +154,8 @@ class VideosStore {
     sortedIds.forEach((id, order) => {
       this.getVideoById(id)!.update({ order })
     })
+
+    this.emit()
 
     return true
   }

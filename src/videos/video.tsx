@@ -1,16 +1,18 @@
 import cs from 'classnames'
-import { observer } from 'mobx-react'
 import { Link } from 'react-router'
 import { useSortable } from '@dnd-kit/react/sortable'
 
 import { Icon, duration, durationSeconds, date } from '../lib/util'
 import { appState } from '../app/app-state'
+import { useStore } from '../lib/store'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
 import type { VideoModel } from './video-model'
 import type { SubModel } from '../sub/sub-model'
 import type { LinkLocation } from '../lib/types'
 
 const WatchProgress = ({ id, duration }: { id: string; duration?: string }) => {
+  useStore(appState)
+
   const watched = appState.watchedVideos[id]
   if (!watched) return null
 
@@ -44,7 +46,7 @@ interface VideoProps {
   removedFromPlaylist: (playlist: SubModel) => void
 }
 
-export const Video = observer((props: VideoProps) => {
+export const Video = (props: VideoProps) => {
   const { ref, handleRef } = useSortable({
     id: props.video.id,
     index: props.index,
@@ -122,4 +124,4 @@ export const Video = observer((props: VideoProps) => {
       {playlistPicker()}
     </div>
   )
-})
+}

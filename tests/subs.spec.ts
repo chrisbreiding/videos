@@ -509,8 +509,8 @@ describe('Adding a Custom Playlist', () => {
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
 
     const filterInput = page
-    .locator('.icon-picker fieldset', { hasText: 'Filter' })
-    .locator('input')
+      .locator('.icon-picker fieldset', { hasText: 'Filter' })
+      .locator('input')
 
     // Filter down to matching icons
     await filterInput.fill('adjust')
@@ -520,13 +520,13 @@ describe('Adding a Custom Playlist', () => {
     await filterInput.fill('not-a-real-icon-name')
     await expect(page.locator('.icon-picker .empty-icons')).toBeVisible()
     await expect(
-      page.getByText('No icons matching filter \'not-a-real-icon-name\''),
+      page.getByText("No icons matching filter 'not-a-real-icon-name'"),
     ).toBeVisible()
 
     // Submitting the form should be prevented and not navigate away
     await page
-    .locator('.icon-picker form')
-    .evaluate((form) => (form as HTMLFormElement).requestSubmit())
+      .locator('.icon-picker form')
+      .evaluate((form) => (form as HTMLFormElement).requestSubmit())
     await expect(page.locator('.icon-picker-modal')).toBeVisible()
   })
 
@@ -747,9 +747,9 @@ describe('Reordering Subs', () => {
     await expect(subItems.nth(0)).toContainText('First Channel')
 
     const firstHandleBox = (await subItems
-    .nth(0)
-    .locator('span.sub-item-icon')
-    .boundingBox())!
+      .nth(0)
+      .locator('span.sub-item-icon')
+      .boundingBox())!
 
     await page.mouse.move(
       firstHandleBox.x + firstHandleBox.width / 2,
@@ -795,9 +795,9 @@ describe('Reordering Subs', () => {
     await expect(subItems.nth(0)).toContainText('First Channel')
 
     const firstHandleBox = (await subItems
-    .nth(0)
-    .locator('span.sub-item-icon')
-    .boundingBox())!
+      .nth(0)
+      .locator('span.sub-item-icon')
+      .boundingBox())!
     const secondItemBox = (await subItems.nth(1).boundingBox())!
 
     await page.mouse.move(
@@ -850,9 +850,9 @@ describe('Reordering Subs', () => {
     await expect(subItems.nth(0)).toContainText('First Channel')
 
     const firstHandleBox = (await subItems
-    .nth(0)
-    .locator('span.sub-item-icon')
-    .boundingBox())!
+      .nth(0)
+      .locator('span.sub-item-icon')
+      .boundingBox())!
     const secondItemBox = (await subItems.nth(1).boundingBox())!
 
     await page.mouse.move(

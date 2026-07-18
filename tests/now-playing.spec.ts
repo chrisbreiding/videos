@@ -262,8 +262,8 @@ describe('Now Playing Height', () => {
   // The rendered inline `height` style reflects the clamped nowPlayingHeight
   async function renderedHeight(page: Page): Promise<number> {
     return page
-    .locator('.now-playing')
-    .evaluate((el) => parseInt((el as HTMLElement).style.height, 10))
+      .locator('.now-playing')
+      .evaluate((el) => parseInt((el as HTMLElement).style.height, 10))
   }
 
   test('clamps to the max height when the stored height exceeds it', async ({

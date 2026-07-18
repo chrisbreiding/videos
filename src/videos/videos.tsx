@@ -1,10 +1,10 @@
 import cs from 'classnames'
-import { observer } from 'mobx-react'
 import type { Location } from 'react-router'
 import { DragDropProvider, type DragEndEvent } from '@dnd-kit/react'
 import { move } from '@dnd-kit/helpers'
 
 import { updatedLink } from '../lib/util'
+import { useStore } from '../lib/store'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
 
@@ -23,7 +23,9 @@ interface VideosProps {
   onUpdateVideoMarkerLink: (marker: string) => void
 }
 
-const VideosList = observer((props: VideosProps) => {
+const VideosList = (props: VideosProps) => {
+  useStore(videosStore, subsStore)
+
   const {
     showChannelImage,
     isSortable,
@@ -68,7 +70,7 @@ const VideosList = observer((props: VideosProps) => {
       })}
     </div>
   )
-})
+}
 
 export const Videos = (props: VideosProps) => {
   const handleDragEnd = (event: DragEndEvent) => {

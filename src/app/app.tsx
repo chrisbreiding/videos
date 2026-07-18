@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import {
   Navigate,
@@ -14,6 +13,7 @@ import { appState, minNowPlayingHeight } from './app-state'
 import { authStore } from '../login/auth-store'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
+import { useStore } from '../lib/store'
 import { onAuthStateChanged, watchDoc } from '../lib/firebase'
 import { Icon, parseQueryString, updatedLink } from '../lib/util'
 
@@ -26,7 +26,9 @@ import { AddCustomPlaylist } from '../subs/add-sub/add-custom-playlist'
 import { AddChannel } from '../subs/add-sub/add-channel'
 import type { SubModel } from '../sub/sub-model'
 
-export const App = observer(() => {
+export const App = () => {
+  useStore(appState, authStore, subsStore)
+
   const location = useLocation()
   const navigate = useNavigate()
   const [isResizing, setIsResizing] = useState(false)
@@ -218,4 +220,4 @@ export const App = observer(() => {
       </div>
     </div>
   )
-})
+}

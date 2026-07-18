@@ -1,9 +1,8 @@
-import { action, computed, makeObservable, observable, values } from 'mobx'
-
+import { Store } from '../lib/store'
 import { SubModel } from '../sub/sub-model'
 import { removeSub, removeVideoFromSub, update } from '../lib/remote-data'
 import {
-  convertMapEntriesToObject,
+  convertMapToObject,
   sortByProperty,
   transformObject,
 } from '../lib/util'
@@ -15,32 +14,13 @@ import type {
   SubProps,
 } from '../lib/types'
 
-class SubsStore {
-  _subs = observable.map<string, SubModel>()
+class SubsStore extends Store {
+  _subs = new Map<string, SubModel>()
   searchResults: ChannelSearchResult[] = []
   isLoading = true
 
-  constructor() {
-    makeObservable(this, {
-      _subs: observable,
-      searchResults: observable.ref,
-      isLoading: observable,
-      subs: computed,
-      channels: computed,
-      channelIds: computed,
-      fourChannels: computed,
-      customPlaylists: computed,
-      subscribedChannelIds: computed,
-      subscribedPlaylistIds: computed,
-      setSearchResults: action,
-      setSubs: action,
-      remove: action,
-      _addSub: action,
-    })
-  }
-
   get subs(): SubModel[] {
-    return sortByProperty(values(this._subs).slice(), 'order')
+    return sortByProperty(Array.from(this._subs.values()), 'order')
   }
 
   get channels(): SubModel[] {
@@ -93,11 +73,12 @@ class SubsStore {
 
   setSearchResults(searchResults: ChannelSearchResult[]) {
     this.searchResults = searchResults
+    this.emit()
   }
 
   setSubs(subs: Record<string, SubProps>) {
     Object.values(subs).forEach((sub) => {
-      this._subs.set(sub.id, new SubModel(sub))
+      this._subs.set(sub.id, new SubModel(sub, this.emit))
     })
 
     const oldIds = Object.values(this._subsObject()).map((sub) => sub.id)
@@ -108,6 +89,7 @@ class SubsStore {
     })
 
     this.isLoading = false
+    this.emit()
   }
 
   update(id: string, props: Partial<SubProps>) {
@@ -119,6 +101,7 @@ class SubsStore {
   remove(id: string) {
     this._subs.delete(id)
     removeSub(id)
+    this.emit()
   }
 
   async search(query: string) {
@@ -161,8 +144,9 @@ class SubsStore {
     const sub = Object.assign(base, props, {
       order: this._newOrder(this._subsObject()),
     }) as unknown as SubProps
-    this._subs.set(sub.id, new SubModel(sub))
+    this._subs.set(sub.id, new SubModel(sub, this.emit))
     this.save()
+    this.emit()
   }
 
   _newOrder(items: Record<string, { order?: number }>) {
@@ -230,7 +214,7 @@ class SubsStore {
   }
 
   _subsObject(): Record<string, SubModel> {
-    return convertMapEntriesToObject(this._subs.toJSON())
+    return convertMapToObject(this._subs)
   }
 }
 

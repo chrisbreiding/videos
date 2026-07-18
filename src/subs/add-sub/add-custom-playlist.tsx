@@ -1,5 +1,3 @@
-import { toJS } from 'mobx'
-import { observer } from 'mobx-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -12,7 +10,7 @@ import { Modal } from '../../modal/modal'
 import type { IconConfig } from '../../lib/types'
 import { solidIconNames } from '../../../generated/font-awesome'
 
-export const AddCustomPlaylist = observer(() => {
+export const AddCustomPlaylist = () => {
   const navigate = useNavigate()
   const titleRef = useRef<HTMLInputElement>(null)
   const [iconState, setIconState] = useState<IconConfig>({
@@ -48,7 +46,7 @@ export const AddCustomPlaylist = observer(() => {
     const title = titleRef.current!.value
     if (!title) return
 
-    const id = subsStore.addCustomPlaylist({ title, icon: toJS(iconState) })
+    const id = subsStore.addCustomPlaylist({ title, icon: iconState })
     navigate(`/subs/${id}`)
   }
 
@@ -85,4 +83,4 @@ export const AddCustomPlaylist = observer(() => {
       {renderIconPicker()}
     </form>
   )
-})
+}

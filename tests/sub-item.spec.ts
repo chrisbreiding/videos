@@ -111,10 +111,10 @@ describe('Sub Item - Editing a Channel', () => {
 
     // Once the debounce elapses, the new title is persisted
     await expect
-    .poll(() => page.evaluate(() => window.__setCalls!.length), {
-      timeout: 2000,
-    })
-    .toBeGreaterThan(0)
+      .poll(() => page.evaluate(() => window.__setCalls!.length), {
+        timeout: 2000,
+      })
+      .toBeGreaterThan(0)
 
     const calls = await page.evaluate(() => window.__setCalls)
     const lastCall = calls![calls!.length - 1] as {
@@ -204,9 +204,9 @@ describe('Sub Item - Editing a Channel', () => {
     })
 
     await page
-    .locator('.sub-item', { has: page.locator('.channel-sub-item') })
-    .locator('.remove')
-    .click()
+      .locator('.sub-item', { has: page.locator('.channel-sub-item') })
+      .locator('.remove')
+      .click()
   })
 
   test('ignores a thumbnail click while an update is already in progress', async ({
@@ -346,10 +346,10 @@ describe('Sub Item - Editing a Channel', () => {
 
     // The failure is caught and logged, and the thumbnail is left unchanged
     await expect
-    .poll(() =>
-      consoleErrors.some((t) => t.includes('Failed to update thumbnail')),
-    )
-    .toBe(true)
+      .poll(() =>
+        consoleErrors.some((t) => t.includes('Failed to update thumbnail')),
+      )
+      .toBe(true)
     await expect(thumbButton.locator('img')).toHaveAttribute(
       'src',
       'https://example.com/old-thumb.jpg',
@@ -407,9 +407,9 @@ describe('Sub Item - Removing a Sub', () => {
     })
 
     await page
-    .locator('.sub-item', { has: page.locator('.channel-sub-item') })
-    .locator('.remove')
-    .click()
+      .locator('.sub-item', { has: page.locator('.channel-sub-item') })
+      .locator('.remove')
+      .click()
 
     await expect(page.locator('.channel-sub-item')).toHaveCount(0)
   })
@@ -437,9 +437,9 @@ describe('Sub Item - Removing a Sub', () => {
     page.once('dialog', (dialog) => dialog.dismiss())
 
     await page
-    .locator('.sub-item', { has: page.locator('.channel-sub-item') })
-    .locator('.remove')
-    .click()
+      .locator('.sub-item', { has: page.locator('.channel-sub-item') })
+      .locator('.remove')
+      .click()
 
     // The sub is still present
     await expect(page.locator('.channel-sub-item')).toBeVisible()

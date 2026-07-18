@@ -67,8 +67,9 @@ export default [
       },
     },
     rules: {
-      // Conflicts with prettier if on
+      // The following 2 conflict with prettier if on
       'space-before-function-paren': 'off',
+      indent: 'off',
       // TypeScript resolves references itself, and JSX's automatic runtime means
       // React need not be imported into scope.
       'no-undef': 'off',

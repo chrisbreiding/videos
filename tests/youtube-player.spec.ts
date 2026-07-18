@@ -260,10 +260,10 @@ describe('YoutubePlayer', () => {
     await page.mouse.up()
 
     await expect
-    .poll(() =>
-      page.evaluate(() => window.__ytPlayers![0].calls.setSize.length),
-    )
-    .toBeGreaterThan(0)
+      .poll(() =>
+        page.evaluate(() => window.__ytPlayers![0].calls.setSize.length),
+      )
+      .toBeGreaterThan(0)
   })
 
   test('destroys the player when it is closed', async ({ page }) => {

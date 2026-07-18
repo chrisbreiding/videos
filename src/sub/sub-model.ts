@@ -1,12 +1,3 @@
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  ObservableMap,
-  toJS,
-} from 'mobx'
-
 import { convertMapToObject, resolveIcon, transformObject } from '../lib/util'
 import type {
   CustomPlaylistVideo,
@@ -40,32 +31,14 @@ export class SubModel {
   title?: string
   markedVideoId: string | null = null
   bookmarkedPageToken: string | null = null
-  videos: ObservableMap<string, CustomPlaylistVideo> = observable.map()
+  videos: Map<string, CustomPlaylistVideo> = new Map()
+  private _onChange?: () => void
 
   get videoIds() {
     return Array.from(this.videos.keys())
   }
 
-  constructor(props: SubProps) {
-    makeObservable(this, {
-      author: observable,
-      icon: observable,
-      id: observable,
-      type: observable,
-      order: observable,
-      playlistId: observable,
-      thumb: observable,
-      title: observable,
-      markedVideoId: observable,
-      bookmarkedPageToken: observable,
-      videos: observable,
-      videoIds: computed,
-      update: action,
-      addVideo: action,
-      removeVideo: action,
-      updateVideosOrder: action,
-    })
-
+  constructor(props: SubProps, onChange?: () => void) {
     this.author = props.author
     this.icon = resolveIconConfig(props.icon)
     this.id = props.id
@@ -76,19 +49,23 @@ export class SubModel {
     this.title = props.title
     this.markedVideoId = props.markedVideoId || null
     this.bookmarkedPageToken = props.bookmarkedPageToken || null
-    this.videos = observable.map(props.videos)
+    this.videos = new Map(Object.entries(props.videos ?? {}))
+    this._onChange = onChange
   }
 
   update(props: Partial<SubProps>) {
     Object.assign(this, props)
+    this._onChange?.()
   }
 
   addVideo(video: CustomPlaylistVideo) {
     this.videos.set(video.id, video)
+    this._onChange?.()
   }
 
   removeVideo(videoId: string) {
     this.videos.delete(videoId)
+    this._onChange?.()
   }
 
   updateVideosOrder(
@@ -97,12 +74,11 @@ export class SubModel {
     videosWithNewOrders.forEach(({ id, order }) => {
       this.videos.get(id)!.order = order
     })
+    this._onChange?.()
   }
 
   videosObject(): Record<string, CustomPlaylistVideo> {
-    return convertMapToObject(
-      toJS(this.videos) as Map<string, CustomPlaylistVideo>,
-    )
+    return convertMapToObject(this.videos)
   }
 
   serialize(): Record<string, unknown> {

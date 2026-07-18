@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react'
 import { useCallback, useState } from 'react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { NavLink } from 'react-router'
@@ -25,7 +24,7 @@ interface SubItemProps {
   onRemove: () => void
 }
 
-const BookmarkLink = observer(({ link }: { link?: BookmarkLinkTo }) => {
+const BookmarkLink = ({ link }: { link?: BookmarkLinkTo }) => {
   if (!link) return null
 
   const onClick = (e: React.MouseEvent) => {
@@ -37,75 +36,70 @@ const BookmarkLink = observer(({ link }: { link?: BookmarkLinkTo }) => {
       <Icon name="bookmark" />
     </NavLink>
   )
-})
+}
 
-const Channel = observer(
-  ({
-    sub,
-    link,
-    bookmarkLink,
-    onUpdate,
-    handleRef,
-  }: {
-    sub: SubModel
-    link: LinkLocation
-    bookmarkLink?: BookmarkLinkTo
-    onUpdate: (props: Partial<SubProps>) => void
-    handleRef: HandleRef
-  }) => {
-    const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
+const Channel = ({
+  sub,
+  link,
+  bookmarkLink,
+  onUpdate,
+  handleRef,
+}: {
+  sub: SubModel
+  link: LinkLocation
+  bookmarkLink?: BookmarkLinkTo
+  onUpdate: (props: Partial<SubProps>) => void
+  handleRef: HandleRef
+}) => {
+  const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
 
-    const onTitleUpdate = useCallback(
-      (title: string) => {
-        onUpdate({ title })
-      },
-      [onUpdate],
-    )
+  const onTitleUpdate = useCallback(
+    (title: string) => {
+      onUpdate({ title })
+    },
+    [onUpdate],
+  )
 
-    const onThumbClick = useCallback(async () => {
-      if (isUpdatingThumb) return
+  const onThumbClick = useCallback(async () => {
+    if (isUpdatingThumb) return
 
-      setIsUpdatingThumb(true)
+    setIsUpdatingThumb(true)
 
-      try {
-        const getDetails =
-          sub.type === 'channel'
-            ? getChannelDetails(sub.id)
-            : getPlaylistDetails(sub.playlistId!)
+    try {
+      const getDetails =
+        sub.type === 'channel'
+          ? getChannelDetails(sub.id)
+          : getPlaylistDetails(sub.playlistId!)
 
-        const details = await getDetails
-        onUpdate({ thumb: details.thumb })
-      } catch (err) {
-        console.error('Failed to update thumbnail:', err) // eslint-disable-line no-console
-      } finally {
-        setIsUpdatingThumb(false)
-      }
-    }, [isUpdatingThumb, onUpdate, setIsUpdatingThumb, sub])
+      const details = await getDetails
+      onUpdate({ thumb: details.thumb })
+    } catch (err) {
+      console.error('Failed to update thumbnail:', err) // eslint-disable-line no-console
+    } finally {
+      setIsUpdatingThumb(false)
+    }
+  }, [isUpdatingThumb, onUpdate, setIsUpdatingThumb, sub])
 
-    return (
-      <span className={`${sub.type}-sub-item`}>
-        <span className="sub-item-icon" ref={handleRef}>
-          <img src={sub.thumb} />
-        </span>
-        <button
-          className="sub-item-icon editable"
-          onClick={onThumbClick}
-          disabled={isUpdatingThumb}
-        >
-          <img src={sub.thumb} />
-        </button>
-        <Title sub={sub} link={link} />
-        <SubTitleInput
-          value={sub.title || sub.author}
-          onUpdate={onTitleUpdate}
-        />
-        <BookmarkLink link={bookmarkLink} />
+  return (
+    <span className={`${sub.type}-sub-item`}>
+      <span className="sub-item-icon" ref={handleRef}>
+        <img src={sub.thumb} />
       </span>
-    )
-  },
-)
+      <button
+        className="sub-item-icon editable"
+        onClick={onThumbClick}
+        disabled={isUpdatingThumb}
+      >
+        <img src={sub.thumb} />
+      </button>
+      <Title sub={sub} link={link} />
+      <SubTitleInput value={sub.title || sub.author} onUpdate={onTitleUpdate} />
+      <BookmarkLink link={bookmarkLink} />
+    </span>
+  )
+}
 
-export const SubItem = observer((props: SubItemProps) => {
+export const SubItem = (props: SubItemProps) => {
   const { ref, handleRef } = useSortable({
     id: props.sub.id,
     index: props.index,
@@ -129,4 +123,4 @@ export const SubItem = observer((props: SubItemProps) => {
       </button>
     </li>
   )
-})
+}

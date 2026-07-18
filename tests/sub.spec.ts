@@ -384,8 +384,8 @@ describe('Custom Playlists', () => {
     await page.mouse.up()
 
     await expect
-    .poll(() => page.locator('.video h4').allTextContents())
-    .not.toEqual(['First Video', 'Second Video'])
+      .poll(() => page.locator('.video h4').allTextContents())
+      .not.toEqual(['First Video', 'Second Video'])
   })
 
   test('dropping a video back in its original spot does not resave the order', async ({

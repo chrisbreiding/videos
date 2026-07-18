@@ -1,10 +1,10 @@
 import cs from 'classnames'
-import { observer } from 'mobx-react'
 import { useEffect, useRef, useCallback } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { appState } from '../app/app-state'
 import { DocumentTitle } from '../lib/document-title'
+import { useStore } from '../lib/store'
 import { Icon, parseQueryString, updatedLink } from '../lib/util'
 import { subsStore } from '../subs/subs-store'
 import { videosStore } from '../videos/videos-store'
@@ -14,7 +14,9 @@ import { Search } from '../search/search'
 import { Videos } from '../videos/videos'
 import type { SubModel } from './sub-model'
 
-export const Sub = observer(() => {
+export const Sub = () => {
+  useStore(videosStore, subsStore, appState)
+
   const location = useLocation()
   const query = parseQueryString(location.search)
   const navigate = useNavigate()
@@ -295,4 +297,4 @@ export const Sub = observer(() => {
       <Paginator prevLink={prevLink} nextLink={nextLink} />
     </main>
   )
-})
+}

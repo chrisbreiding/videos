@@ -1,21 +1,14 @@
-import { observer, useLocalStore } from 'mobx-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { subsStore } from '../subs/subs-store'
 import { parseQueryString } from '../lib/util'
-import { action } from 'mobx'
 
 // this route and component exist so a bookmarklet can be used to add a video
 // to a playlist directly from YouTube
-export const AddToPlaylist = observer(() => {
+export const AddToPlaylist = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const state = useLocalStore(() => ({
-    error: null as string | null,
-    setError: action((error: string | null) => {
-      state.error = error
-    }),
-  }))
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const { playlistId, videoId } = parseQueryString(location.search)
@@ -27,20 +20,20 @@ export const AddToPlaylist = observer(() => {
       subsStore.addVideoToPlaylist(playlist, videoId!)
       navigate({ pathname: `/subs/${playlist.id}`, search: '' })
     } else {
-      state.setError('Playlist not found')
+      setError('Playlist not found')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location])
 
   return (
     <div className="add-to-playlist">
-      {!state.error && <p>Adding video to playlist...</p>}
-      {!!state.error && (
+      {!error && <p>Adding video to playlist...</p>}
+      {!!error && (
         <>
           <p>Failed to add video to playlist:</p>
-          <p>{state.error}</p>
+          <p>{error}</p>
         </>
       )}
     </div>
   )
-})
+}
