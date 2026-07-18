@@ -70,19 +70,14 @@ describe('Adding a Channel', () => {
     ).toBeVisible()
   })
 
-  test('falls back to the channel author when the channel has no title', async ({
+  test('falls back to the item title when the channel has no channel title', async ({
     page,
   }) => {
     await setupApp(page, {
       subs: {},
       search: [
-        {
-          id: 'channel-1',
-          title: '',
-          author: 'Author Only Channel',
-          thumb: 'https://example.com/thumb.jpg',
-        },
-      ] as ChannelSearchResult[],
+        { ...createChannel({ id: 'channel-1' }), channelTitle: '' },
+      ] as unknown as ChannelSearchResult[],
       channels: [
         { contentDetails: { relatedPlaylists: { uploads: 'UU123' } } },
       ],
@@ -91,10 +86,10 @@ describe('Adding a Channel', () => {
     await page.goto('/add-channel')
 
     const searchInput = page.locator('input[placeholder="Search Channels"]')
-    await searchInput.fill('Author')
+    await searchInput.fill('Test')
     await page.locator('.add-channel form button').click()
 
-    await expect(page.getByText('Author Only Channel')).toBeVisible({
+    await expect(page.getByText('Test Channel')).toBeVisible({
       timeout: 10000,
     })
   })
@@ -520,7 +515,7 @@ describe('Adding a Custom Playlist', () => {
     await filterInput.fill('not-a-real-icon-name')
     await expect(page.locator('.icon-picker .empty-icons')).toBeVisible()
     await expect(
-      page.getByText("No icons matching filter 'not-a-real-icon-name'"),
+      page.getByText('No icons matching filter \'not-a-real-icon-name\''),
     ).toBeVisible()
 
     // Submitting the form should be prevented and not navigate away

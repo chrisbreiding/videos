@@ -139,7 +139,6 @@ describe('Loading All Subs', () => {
       {
         id: 'channel-2',
         title: 'Found Channel',
-        author: 'Found Channel',
         thumb: 'https://example.com/thumb.jpg',
       },
     ]

@@ -205,7 +205,7 @@ export const AddChannel = () => {
           <div className="channel-info">
             <img src={channel.thumb} />
             <div className="channel-details">
-              <h3>{channel.title || channel.author}</h3>
+              <h3>{channel.title}</h3>
               <button
                 className="load-playlists-button"
                 onClick={() =>

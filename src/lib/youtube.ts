@@ -87,8 +87,7 @@ function mapChannelDetails(
   return result.items.map((item) => {
     return {
       id: item.id.channelId,
-      title: item.snippet.channelTitle,
-      author: item.snippet.title,
+      title: item.snippet.channelTitle || item.snippet.title,
       thumb: item.snippet.thumbnails.medium.url,
     }
   })
@@ -353,7 +352,6 @@ export async function getPlaylistsForChannel(
     nextPageToken,
     totalResults: result.pageInfo.totalResults,
     videos: result.items.map((playlist) => ({
-      author: playlist.snippet.title,
       channelId,
       count: playlist.contentDetails.itemCount,
       description: playlist.snippet.description,

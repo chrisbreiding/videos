@@ -21,13 +21,13 @@ function resolveIconConfig(icon?: RemoteIconConfig): IconConfig | undefined {
 }
 
 export class SubModel {
-  author?: string
   icon?: IconConfig
   id: string
   type: SubType
   order?: number
   playlistId?: string
   thumb?: string
+  originalTitle?: string
   title?: string
   markedVideoId: string | null = null
   bookmarkedPageToken: string | null = null
@@ -39,13 +39,13 @@ export class SubModel {
   }
 
   constructor(props: SubProps, onChange?: () => void) {
-    this.author = props.author
     this.icon = resolveIconConfig(props.icon)
     this.id = props.id
     this.type = props.type
     this.order = props.order
     this.playlistId = props.playlistId
     this.thumb = props.thumb
+    this.originalTitle = props.originalTitle
     this.title = props.title
     this.markedVideoId = props.markedVideoId || null
     this.bookmarkedPageToken = props.bookmarkedPageToken || null
@@ -104,7 +104,7 @@ export class SubModel {
         order,
       }))
     } else {
-      props.author = this.author
+      props.originalTitle = this.originalTitle
       props.thumb = this.thumb
     }
 

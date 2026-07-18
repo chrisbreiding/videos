@@ -245,8 +245,10 @@ export async function setupApp(page: Page, options: SetupAppOptions = {}) {
               items: search.map((channel) => ({
                 id: { channelId: channel.id },
                 snippet: {
-                  channelTitle: channel.title,
-                  title: channel.author || channel.title,
+                  channelTitle:
+                    (channel as ChannelSearchResult & { channelTitle?: string })
+                      .channelTitle ?? channel.title,
+                  title: channel.title,
                   thumbnails: {
                     medium: {
                       url: channel.thumb || 'https://example.com/thumb.jpg',
@@ -406,8 +408,8 @@ type SubOptions = Partial<Omit<SubProps, 'type'>>
 export function createChannel(options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'channel-1',
+    originalTitle: options.title || 'Test Channel',
     title: options.title || 'Test Channel',
-    author: options.author || options.title || 'Test Channel',
     thumb: options.thumb || 'https://example.com/channel-thumb.jpg',
     playlistId: options.playlistId || 'UU123',
     type: 'channel',
@@ -423,8 +425,8 @@ export function createChannel(options: SubOptions = {}): SubProps {
 export function createPlaylist(options: SubOptions = {}): SubProps {
   return {
     id: options.id || 'playlist-1',
+    originalTitle: options.title || 'Test Playlist',
     title: options.title || 'Test Playlist',
-    author: options.author || options.title || 'Test Playlist',
     thumb: options.thumb || 'https://example.com/playlist-thumb.jpg',
     playlistId: options.playlistId || options.id || 'PL123',
     type: 'playlist',

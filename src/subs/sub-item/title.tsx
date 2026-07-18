@@ -9,7 +9,7 @@ export const Title = ({ sub, link }: { sub: SubModel; link: LinkLocation }) => (
     to={link}
     className={({ isActive }) => cs('sub-title', { active: isActive })}
   >
-    <h3>{sub.title || sub.author}</h3>
+    <h3>{sub.title}</h3>
     <p className="num-videos">
       {sub.videos.size} {sub.videos.size === 1 ? 'video' : 'videos'}
     </p>

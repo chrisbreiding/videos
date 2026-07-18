@@ -171,44 +171,6 @@ describe('Sub Item - Editing a Channel', () => {
     )
   })
 
-  test('falls back to the author when the channel has no title', async ({
-    page,
-  }) => {
-    await setupApp(page, {
-      subs: {
-        'channel-1': {
-          id: 'channel-1',
-          author: 'Author Only',
-          thumb: 'https://example.com/thumb.jpg',
-          playlistId: 'UU123',
-          type: 'channel',
-          order: 0,
-        },
-      },
-      videos: [],
-    })
-
-    await page.goto('/')
-    await expect(page.locator('.subs-list')).toBeVisible({ timeout: 10000 })
-
-    await page.getByRole('button', { name: 'Edit' }).click()
-
-    // The title input and the remove confirmation both fall back to
-    // sub.author when sub.title is not set
-    const titleInput = page.locator('.channel-sub-item input')
-    await expect(titleInput).toHaveValue('Author Only')
-
-    page.once('dialog', (dialog) => {
-      expect(dialog.message()).toContain('Author Only')
-      dialog.dismiss()
-    })
-
-    await page
-      .locator('.sub-item', { has: page.locator('.channel-sub-item') })
-      .locator('.remove')
-      .click()
-  })
-
   test('ignores a thumbnail click while an update is already in progress', async ({
     page,
   }) => {

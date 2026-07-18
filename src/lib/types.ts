@@ -47,7 +47,6 @@ export interface VideosData {
 export interface ChannelSearchResult {
   id: string
   title: string
-  author: string
   thumb: string
 }
 
@@ -65,7 +64,6 @@ export interface PlaylistDetails {
 
 // A playlist as summarized on the "add channel" screen.
 export interface PlaylistSummary {
-  author: string
   channelId: string
   count: number
   description: string
@@ -91,13 +89,13 @@ export interface CustomPlaylistVideo {
 
 // Props used to construct a SubModel and the serialized shape stored remotely.
 export interface SubProps {
-  author?: string
   icon?: RemoteIconConfig
   id: string
   type: SubType
   order?: number
   playlistId?: string
   thumb?: string
+  originalTitle?: string
   title?: string
   markedVideoId?: string | null
   bookmarkedPageToken?: string | null

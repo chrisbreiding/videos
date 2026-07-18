@@ -93,7 +93,7 @@ const Channel = ({
         <img src={sub.thumb} />
       </button>
       <Title sub={sub} link={link} />
-      <SubTitleInput value={sub.title || sub.author} onUpdate={onTitleUpdate} />
+      <SubTitleInput value={sub.title} onUpdate={onTitleUpdate} />
       <BookmarkLink link={bookmarkLink} />
     </span>
   )
@@ -106,7 +106,7 @@ export const SubItem = (props: SubItemProps) => {
   })
 
   function remove() {
-    if (confirm(`Remove ${props.sub.title || props.sub.author}?`)) {
+    if (confirm(`Remove ${props.sub.title}?`)) {
       props.onRemove()
     }
   }
