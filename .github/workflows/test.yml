@@ -9,6 +9,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +29,61 @@ jobs:
         run: npx playwright install --with-deps firefox
 
       - name: Run tests with coverage
-        run: npm run test:coverage
+        run: |
+          rm -rf .nyc_output
+          COVERAGE=1 npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report/
+          retention-days: 1
+
+      - name: Upload coverage data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.shard }}
+          path: .nyc_output/
+          retention-days: 1
+
+  report:
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download blob reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+
+      - name: Merge Playwright reports
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Download coverage data
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-data-*
+          path: .nyc_output
+          merge-multiple: true
+
+      - name: Build coverage report
+        run: npx nyc report --temp-dir=.nyc_output --report-dir=coverage --reporter=text-summary --reporter=html
 
       - name: Check coverage thresholds
         run: npx nyc check-coverage --temp-dir=.nyc_output --lines 100 --statements 100 --functions 100 --branches 100
