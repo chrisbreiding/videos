@@ -265,6 +265,19 @@ describe('Searching', () => {
       timeout: 10000,
     })
     await expect(page.getByText('Dogs Compilation')).not.toBeVisible()
+
+    // Clearing the search field and resubmitting sends an empty search term,
+    // which onSearchUpdate falls back to `undefined` for (removing it from
+    // the URL). This exercises a second, distinct fetchVideosDataForPlaylistSearch
+    // call so its completion (updateVideosData + afterLoad) is asserted on
+    // rather than only its first call.
+    await searchInput.fill('')
+    await page.locator('.search button').click()
+
+    await expect(page).not.toHaveURL(/search=/)
+    await expect(page.getByText('Dogs Compilation')).toBeVisible({
+      timeout: 10000,
+    })
   })
 })
 
