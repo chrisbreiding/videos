@@ -29,9 +29,11 @@ export const YoutubePlayer = ({
   const trackIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
     undefined,
   )
+  const onEndRef = useRef(onEnd)
   const onTimeRef = useRef(onTime)
   const startTimeRef = useRef(startTime)
 
+  onEndRef.current = onEnd
   onTimeRef.current = onTime
   startTimeRef.current = startTime
 
@@ -56,7 +58,7 @@ export const YoutubePlayer = ({
         },
         onStateChange: (e) => {
           if (e.data === YT.PlayerState.ENDED) {
-            onEnd()
+            onEndRef.current()
           }
 
           if (e.data === YT.PlayerState.PAUSED) {

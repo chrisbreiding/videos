@@ -9,6 +9,7 @@ import { App } from './app/app'
 import { DocumentTitle } from './lib/document-title'
 import { Login } from './login/login'
 import { Logout } from './login/logout'
+import { VideosProvider } from './videos/videos-context'
 
 // Makes icons available to be referenced by their icon name
 fontAwesome.add(fas, far, fab)
@@ -21,11 +22,13 @@ createRoot(document.getElementById('app')!).render(
   <>
     <DocumentTitle title="Videos" />
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/*" element={<App />} />
-      </Routes>
+      <VideosProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </VideosProvider>
     </BrowserRouter>
   </>,
 )

@@ -8,12 +8,12 @@ import { appState } from '../app/app-state'
 import { DocumentTitle } from '../lib/document-title'
 import { useStore } from '../lib/store'
 import { Icon, durationSeconds } from '../lib/util'
-import { videosStore } from '../videos/videos-store'
+import { useVideosContext } from '../videos/videos-context'
 import { videosService } from '../videos/videos-service'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
-import type { VideoModel } from '../videos/video-model'
+import { VideoModel } from '../videos/video-model'
 import type { SubModel } from '../sub/sub-model'
-import type { LinkLocation, VideoData } from '../lib/types'
+import type { LinkLocation } from '../lib/types'
 
 const md = new MarkDown({ linkify: true })
 
@@ -34,7 +34,8 @@ interface NowPlayingProps {
 }
 
 export const NowPlaying = (props: NowPlayingProps) => {
-  useStore(appState, videosStore)
+  useStore(appState)
+  const { getVideoById } = useVideosContext()
 
   const [title, setTitle] = useState('...')
   const [description, setDescription] = useState('Loading description...')
@@ -59,31 +60,37 @@ export const NowPlaying = (props: NowPlayingProps) => {
     showPlaylists(!isShowingPlaylists)
   }
 
-  const setVideoProps = (video: VideoData | VideoModel) => {
-    setTitle(video.title!)
-    setDescription(video.description!)
+  const setVideoProps = (video: VideoModel) => {
+    setTitle(video.title)
+    setDescription(video.description)
   }
 
   useEffect(() => {
     showDescription(false)
 
     if (!props.id) return
+    const id = props.id
 
-    const video = videosStore.getVideoById(props.id)
+    const video = getVideoById(id)
 
     if (video) {
       setVideoProps(video)
       return
     }
 
-    videosService.getVideo(props.id).then(setVideoProps)
-  }, [props.id])
+    const loadVideo = async () => {
+      const videoData = await videosService.getVideo(id)
+      setVideoProps(VideoModel.fromVideoData(videoData))
+    }
+
+    loadVideo()
+  }, [props.id, getVideoById])
 
   if (!props.id) return null
 
   const descriptionHtml = md.render(description)
   const watched = appState.watchedVideos[props.id]
-  const video = videosStore.getVideoById(props.id)
+  const video = getVideoById(props.id)
   const length = video ? durationSeconds(video.duration) : 0
   // start from the beginning if progress is within 10% or 10s of end,
   // whichever is greater

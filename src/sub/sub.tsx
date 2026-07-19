@@ -7,7 +7,7 @@ import { DocumentTitle } from '../lib/document-title'
 import { useStore } from '../lib/store'
 import { Icon, parseQueryString, updatedLink } from '../lib/util'
 import { subsStore } from '../subs/subs-store'
-import { videosStore } from '../videos/videos-store'
+import { useVideosContext } from '../videos/videos-context'
 
 import { Paginator } from '../paginator/paginator'
 import { Search } from '../search/search'
@@ -15,13 +15,26 @@ import { Videos } from '../videos/videos'
 import type { SubModel } from './sub-model'
 
 export const Sub = () => {
-  useStore(videosStore, subsStore, appState)
+  useStore(subsStore, appState)
+  const {
+    videos,
+    isLoading,
+    hasLoadedAllPlaylists,
+    prevPageToken,
+    nextPageToken,
+    getVideosDataForPlaylist,
+    getVideosDataForAllPlaylists,
+    getVideosDataForChannelSearch,
+    getVideosDataForPlaylistSearch,
+    getVideosDataForCustomPlaylist,
+    sort,
+  } = useVideosContext()
 
   const location = useLocation()
   const query = parseQueryString(location.search)
   const navigate = useNavigate()
   const params = useParams()
-  const previousLoadingValueRef = useRef(videosStore.isLoading)
+  const previousLoadingValueRef = useRef(isLoading)
   const searchQueryRef = useRef<string | null | undefined>(null)
   const pageTokenRef = useRef<string | null | undefined>(null)
   const playlistIdRef = useRef<string | null | undefined>(null)
@@ -36,10 +49,7 @@ export const Sub = () => {
   }
 
   const finishedLoadingVideos = () => {
-    return (
-      previousLoadingValueRef.current === true &&
-      videosStore.isLoading === false
-    )
+    return previousLoadingValueRef.current === true && isLoading === false
   }
 
   const shouldLoadAllPlaylists = (
@@ -49,13 +59,13 @@ export const Sub = () => {
   ) => {
     if (sub) return false
     if (oldPlaylistId && !newPlaylistId) return true
-    if (videosStore.hasLoadedAllPlaylists) return false
+    if (hasLoadedAllPlaylists) return false
 
     return true
   }
 
   const getVideos = () => {
-    if (videosStore.isLoading) return
+    if (isLoading) return
 
     const sub = getSub()
 
@@ -73,7 +83,7 @@ export const Sub = () => {
 
     if (shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
       isAllSubsRef.current = true
-      videosStore.getVideosDataForAllPlaylists(subsStore.channelIds)
+      getVideosDataForAllPlaylists(subsStore.channelIds)
 
       return
     }
@@ -93,21 +103,14 @@ export const Sub = () => {
     ) {
       if (newSearchQuery) {
         if (sub.type === 'playlist') {
-          videosStore.getVideosDataForPlaylistSearch(
-            sub.playlistId!,
-            newSearchQuery,
-          )
+          getVideosDataForPlaylistSearch(sub.playlistId!, newSearchQuery)
         } else {
-          videosStore.getVideosDataForChannelSearch(
-            sub,
-            newSearchQuery,
-            newToken,
-          )
+          getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
         }
       } else if (sub.type === 'custom') {
-        videosStore.getVideosDataForCustomPlaylist(sub)
+        getVideosDataForCustomPlaylist(sub)
       } else {
-        videosStore.getVideosDataForPlaylist(newPlaylistId!, newToken)
+        getVideosDataForPlaylist(newPlaylistId!, newToken)
       }
     }
   }
@@ -182,14 +185,14 @@ export const Sub = () => {
   const onSortEnd = useCallback(
     (sortProps: string[]) => {
       appState.setSorting(false)
-      const changed = videosStore.sort(sortProps)
+      const changed = sort(sortProps)
 
       if (changed) {
-        subsStore.updatePlaylistVideosOrder(params.id, videosStore.videos)
+        subsStore.updatePlaylistVideosOrder(params.id, videos)
         subsStore.save()
       }
     },
-    [params.id],
+    [params.id, sort, videos],
   )
 
   const onSearchUpdate = useCallback(
@@ -231,7 +234,7 @@ export const Sub = () => {
   }
 
   const renderVideos = (sub: SubModel | undefined) => {
-    if (!videosStore.videos.length) {
+    if (!videos.length) {
       return (
         <div className="videos-empty">
           <Icon name="film" />
@@ -275,12 +278,11 @@ export const Sub = () => {
       scrollToMarker(query.marker)
     }
 
-    previousLoadingValueRef.current = videosStore.isLoading
+    previousLoadingValueRef.current = isLoading
   })
 
   const sub = getSub()
   const subId = params.id
-  const { isLoading, prevPageToken, nextPageToken } = videosStore
   const prevLink = paginatorLink(subId, prevPageToken)
   const nextLink = paginatorLink(subId, nextPageToken)
 

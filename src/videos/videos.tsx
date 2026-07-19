@@ -6,7 +6,7 @@ import { move } from '@dnd-kit/helpers'
 import { updatedLink } from '../lib/util'
 import { useStore } from '../lib/store'
 import { subsStore } from '../subs/subs-store'
-import { videosStore } from '../videos/videos-store'
+import { useVideosContext } from '../videos/videos-context'
 
 import { Video } from './video'
 import type { SubModel } from '../sub/sub-model'
@@ -24,7 +24,8 @@ interface VideosProps {
 }
 
 const VideosList = (props: VideosProps) => {
-  useStore(videosStore, subsStore)
+  useStore(subsStore)
+  const { videos } = useVideosContext()
 
   const {
     showChannelImage,
@@ -38,7 +39,7 @@ const VideosList = (props: VideosProps) => {
 
   return (
     <div className={cs('videos-list', { 'videos-is-sortable': isSortable })}>
-      {videosStore.videos.map((video, index) => {
+      {videos.map((video, index) => {
         const id = video.id
         const playVideoLink = updatedLink(location, {
           search: { nowPlaying: id },
@@ -73,8 +74,10 @@ const VideosList = (props: VideosProps) => {
 }
 
 export const Videos = (props: VideosProps) => {
+  const { videos } = useVideosContext()
+
   const handleDragEnd = (event: DragEndEvent) => {
-    const ids = videosStore.videos.map((video) => video.id)
+    const ids = videos.map((video) => video.id)
     const sortedIds = event.canceled ? ids : move(ids, event)
 
     props.onSortEnd(sortedIds)

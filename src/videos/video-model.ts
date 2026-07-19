@@ -3,30 +3,37 @@ import dayjs, { type Dayjs } from 'dayjs'
 import type { VideoData } from '../lib/types'
 
 export class VideoModel {
-  duration?: string
+  channelId: string
+  description: string
+  duration: string
   id: string
-  channelId?: string
-  published: Dayjs | null = null
-  description?: string
   order?: number
-  thumb?: string
-  title?: string
-  private _onChange?: () => void
+  published: Dayjs
+  thumb: string
+  title: string
 
-  constructor(props: VideoData, onChange?: () => void) {
-    this.duration = props.duration
-    this.id = props.id
-    this.channelId = props.channelId
-    this.published = dayjs(props.published)
-    this.description = props.description
-    this.order = props.order
-    this.thumb = props.thumb
-    this.title = props.title
-    this._onChange = onChange
+  static fromVideoData(props: VideoData): VideoModel {
+    return new VideoModel({
+      ...props,
+      published: dayjs(props.published),
+    })
   }
 
-  update({ order }: { order?: number }) {
-    this.order = order
-    this._onChange?.()
+  constructor(props: Omit<VideoModel, 'updateOrder'>) {
+    this.channelId = props.channelId
+    this.description = props.description
+    this.duration = props.duration
+    this.id = props.id
+    this.order = props.order
+    this.published = props.published
+    this.thumb = props.thumb
+    this.title = props.title
+  }
+
+  updateOrder(order?: number) {
+    return new VideoModel({
+      ...this,
+      order,
+    })
   }
 }

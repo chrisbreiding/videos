@@ -12,7 +12,7 @@ import {
 import { appState, minNowPlayingHeight } from './app-state'
 import { authStore } from '../login/auth-store'
 import { subsStore } from '../subs/subs-store'
-import { videosStore } from '../videos/videos-store'
+import { useVideosContext } from '../videos/videos-context'
 import { useStore } from '../lib/store'
 import { onAuthStateChanged, watchDoc } from '../lib/firebase'
 import { Icon, parseQueryString, updatedLink } from '../lib/util'
@@ -28,6 +28,7 @@ import type { SubModel } from '../sub/sub-model'
 
 export const App = () => {
   useStore(appState, authStore, subsStore)
+  const { nextVideoId } = useVideosContext()
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -81,8 +82,8 @@ export const App = () => {
   const onVideoEnded = () => {
     if (!appState.autoPlayEnabled) return
 
-    const nextVideoId = videosStore.nextVideoId(getNowPlayingId())
-    if (!nextVideoId) return
+    const nextId = nextVideoId(getNowPlayingId())
+    if (!nextId) return
 
     const match = matchPath(
       { path: '/subs/:id', end: false },
@@ -94,13 +95,13 @@ export const App = () => {
       const sub = subsStore.getSubById(subId)
 
       if (sub) {
-        subsStore.update(sub.id, { markedVideoId: nextVideoId })
+        subsStore.update(sub.id, { markedVideoId: nextId })
       }
     }
 
     navigate(
       updatedLink(location, {
-        search: { nowPlaying: nextVideoId },
+        search: { nowPlaying: nextId },
       }),
     )
   }
