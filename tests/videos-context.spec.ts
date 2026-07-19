@@ -91,6 +91,11 @@ describe('videos/videos-context', () => {
 
     await page.goto('/subs/channel-1?nowPlaying=missing-video')
     await expect(page.locator('.now-playing')).toBeVisible({ timeout: 10000 })
+    // `.now-playing` renders as soon as the `nowPlaying` query param is
+    // present, independent of whether the video list has finished loading.
+    // Wait for the list too, so `nextVideoId` always sees both videos and
+    // reliably exercises the videoIndex === -1 branch below.
+    await expect(page.locator('.video')).toHaveCount(2, { timeout: 10000 })
 
     await endPlayback(page)
 
