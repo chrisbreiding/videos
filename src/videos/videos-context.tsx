@@ -11,7 +11,7 @@ import {
   fetchVideosDataForPlaylistSearch as fetchVideosDataForPlaylistSearchYoutube,
   fetchVideosDataForAllPlaylists as fetchVideosDataForAllPlaylistsYoutube,
 } from '../lib/youtube'
-import { getApiKey } from '../login/auth-context'
+import { useAuthContext } from '../login/auth-context'
 import { VideoModel } from './video-model'
 import type { SubModel } from '../sub/sub-model'
 import type {
@@ -61,6 +61,7 @@ export const VideosContext = createContext<VideosContextValue | undefined>(
 )
 
 export const VideosProvider = ({ children }: { children: ReactNode }) => {
+  const { getApiKey } = useAuthContext()
   const [videos, setVideos] = useState<VideoModel[]>([])
   const [isSortable, setIsSortable] = useState(false)
   const [hasLoadedAllPlaylists, setHasLoadedAllPlaylists] = useState(false)

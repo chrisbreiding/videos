@@ -12,7 +12,7 @@ import {
   transformObject,
 } from '../lib/util'
 import { fetchPlaylistIdForChannel, searchChannels } from '../lib/youtube'
-import { getApiKey } from '../login/auth-context'
+import { useAuthContext } from '../login/auth-context'
 import type {
   ChannelSearchResult,
   IconConfig,
@@ -71,6 +71,7 @@ function newId(subs: SubModel[]) {
 }
 
 export const SubsProvider = ({ children }: { children: ReactNode }) => {
+  const { getApiKey } = useAuthContext()
   const [subsMap, setSubsMap] = useState(new Map<string, SubModel>())
   const [searchResults, setSearchResults] = useState<ChannelSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(true)
