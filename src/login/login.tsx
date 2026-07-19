@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router'
 
 import { onAuthStateChanged } from '../lib/firebase'
 import { useAppContext } from '../app/app-context'
-import { authStore } from './auth-store'
+import { useAuthContext } from './auth-context'
 import { Icon } from '../lib/util'
 
 export const Login = () => {
   const navigate = useNavigate()
   const { savedLocation, setSavedLocation } = useAppContext()
+  const { login } = useAuthContext()
   const [loginFailed, setLoginFailed] = useState(false)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
@@ -34,7 +35,7 @@ export const Login = () => {
     const password = passwordRef.current!.value
 
     try {
-      await authStore.login(email, password)
+      await login(email, password)
 
       setLoginFailed(false)
       const location = savedLocation || { pathname: '/' }

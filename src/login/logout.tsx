@@ -1,19 +1,21 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
-import { authStore } from './auth-store'
+import { useAuthContext } from './auth-context'
 import { Icon } from '../lib/util'
 
 export const Logout = () => {
   const navigate = useNavigate()
+  const { logout } = useAuthContext()
 
   useEffect(() => {
-    const logout = async () => {
-      await authStore.logout()
+    const doLogout = async () => {
+      await logout()
       navigate({ pathname: '/login' })
     }
 
-    logout()
+    doLogout()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
 
   return (

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from 'react-router'
 
 import { App } from './app/app'
 import { AppProvider } from './app/app-context'
+import { AuthProvider } from './login/auth-context'
 import { DocumentTitle } from './lib/document-title'
 import { Login } from './login/login'
 import { Logout } from './login/logout'
@@ -23,15 +24,17 @@ createRoot(document.getElementById('app')!).render(
   <>
     <DocumentTitle title="Videos" />
     <BrowserRouter>
-      <AppProvider>
-        <VideosProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/*" element={<App />} />
-          </Routes>
-        </VideosProvider>
-      </AppProvider>
+      <AuthProvider>
+        <AppProvider>
+          <VideosProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/*" element={<App />} />
+            </Routes>
+          </VideosProvider>
+        </AppProvider>
+      </AuthProvider>
     </BrowserRouter>
   </>,
 )

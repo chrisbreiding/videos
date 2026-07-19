@@ -8,7 +8,7 @@ import { useAppContext } from '../app/app-context'
 import { DocumentTitle } from '../lib/document-title'
 import { Icon, durationSeconds } from '../lib/util'
 import { useVideosContext } from '../videos/videos-context'
-import { videosService } from '../videos/videos-service'
+import { getVideos } from '../lib/youtube'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
 import { VideoModel } from '../videos/video-model'
 import type { SubModel } from '../sub/sub-model'
@@ -79,7 +79,7 @@ export const NowPlaying = (props: NowPlayingProps) => {
     }
 
     const loadVideo = async () => {
-      const videoData = await videosService.getVideo(id)
+      const videoData = (await getVideos([id]))[0]
       setVideoProps(VideoModel.fromVideoData(videoData))
     }
 

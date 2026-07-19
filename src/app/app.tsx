@@ -10,7 +10,7 @@ import {
 } from 'react-router'
 
 import { minNowPlayingHeight, useAppContext } from './app-context'
-import { authStore } from '../login/auth-store'
+import { useAuthContext } from '../login/auth-context'
 import { subsStore } from '../subs/subs-store'
 import { useVideosContext } from '../videos/videos-context'
 import { useStore } from '../lib/store'
@@ -27,8 +27,10 @@ import { AddChannel } from '../subs/add-sub/add-channel'
 import type { SubModel } from '../sub/sub-model'
 
 export const App = () => {
-  useStore(authStore, subsStore)
+  useStore(subsStore)
   const { nextVideoId } = useVideosContext()
+  const { isAuthenticated, setUserId, setApiKey, checkApiKey } =
+    useAuthContext()
   const {
     autoPlayEnabled,
     isSorting,
@@ -67,14 +69,12 @@ export const App = () => {
     const unsubscribe = watchDoc(async (data) => {
       const apiKey = data.youtubeApiKey
 
-      if (apiKey) {
-        const isValid = await authStore.checkApiKey(apiKey)
+      const isValid = await checkApiKey(apiKey)
 
-        if (isValid) {
-          authStore.setApiKey(apiKey)
-        }
-        // TODO: handle missing or invalid api key
+      if (isValid) {
+        setApiKey(apiKey!)
       }
+      // TODO: handle missing or invalid api key
 
       if (data.subs) {
         subsStore.setSubs(data.subs)
@@ -144,7 +144,7 @@ export const App = () => {
 
     const unsubscribe = onAuthStateChanged((user) => {
       if (user) {
-        authStore.setUserId(user.uid)
+        setUserId(user.uid)
         return getApiKey()
       }
 
@@ -162,7 +162,7 @@ export const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!authStore.isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <div className="loader">
         <Icon name="sign-in" /> Authenticating...

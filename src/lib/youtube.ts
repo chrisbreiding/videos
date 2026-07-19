@@ -1,5 +1,5 @@
 import { getItem } from './local-data'
-import { authStore } from '../login/auth-store'
+import { getApiKey } from '../login/auth-context'
 import type {
   ChannelDetails,
   ChannelSearchResult,
@@ -71,7 +71,7 @@ function getBaseUrl(): string {
 async function queryYouTube<T>(url: string, data: QueryParams): Promise<T> {
   const baseUrl = getBaseUrl()
 
-  const apiKey = await authStore.getApiKey()
+  const apiKey = await getApiKey()
   const params = new URLSearchParams({ key: apiKey, ...data } as Record<
     string,
     string

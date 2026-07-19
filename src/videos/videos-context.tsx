@@ -1,7 +1,13 @@
 import dayjs from 'dayjs'
 import { createContext, ReactNode, useContext, useState } from 'react'
 
-import { videosService } from './videos-service'
+import {
+  getVideos,
+  getVideosDataForChannelSearch as getVideosDataForChannelSearchApi,
+  getVideosDataForPlaylist as getVideosDataForPlaylistApi,
+  getVideosDataForPlaylistSearch as getVideosDataForPlaylistSearchApi,
+  getVideosDataForAllPlaylists as getVideosDataForAllPlaylistsApi,
+} from '../lib/youtube'
 import { VideoModel } from './video-model'
 import type { SubModel } from '../sub/sub-model'
 import type { VideosData } from '../lib/types'
@@ -82,10 +88,7 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     beforeLoad()
 
-    const videosData = await videosService.getVideosDataForPlaylist(
-      playlistId,
-      pageToken,
-    )
+    const videosData = await getVideosDataForPlaylistApi(playlistId, pageToken)
 
     updateVideosData(videosData)
     afterLoad(false)
@@ -96,7 +99,7 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
 
     beforeLoad()
 
-    const videos = await videosService.getVideosDataForAllPlaylists(playlistIds)
+    const videos = await getVideosDataForAllPlaylistsApi(playlistIds)
 
     updateVideosData({
       videos,
@@ -114,7 +117,7 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     beforeLoad()
 
-    const videosData = await videosService.getVideosDataForChannelSearch(
+    const videosData = await getVideosDataForChannelSearchApi(
       channel.id,
       query,
       pageToken,
@@ -130,7 +133,7 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     beforeLoad()
 
-    const videosData = await videosService.getVideosDataForPlaylistSearch(
+    const videosData = await getVideosDataForPlaylistSearchApi(
       playlistId,
       query,
     )
@@ -142,7 +145,9 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
   const getVideosDataForCustomPlaylist = async (playlist: SubModel) => {
     beforeLoad()
 
-    let videos = await videosService.getVideosDataForCustomPlaylist(playlist)
+    let videos = playlist.videos.size
+      ? await getVideos(playlist.videoIds)
+      : []
 
     videos = videos.map((video) => {
       return Object.assign(video, playlist.videos.get(video.id))
