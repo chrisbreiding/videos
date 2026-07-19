@@ -45,6 +45,34 @@ describe('Authenticated App', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
   })
 
+  test('shows a loading indicator while subs are loading', async ({
+    page,
+  }) => {
+    await stubFirebaseAuth(page, { omitSubsFromInitialSnapshot: true })
+
+    await page.goto('/')
+
+    await expect(page.getByText('Loading...')).toBeVisible()
+
+    await page.evaluate(() => {
+      window.__triggerSnapshotUpdate!({
+        youtubeApiKey: 'fake-api-key',
+        watchedVideos: {},
+        subs: {
+          'channel-1': {
+            id: 'channel-1',
+            title: 'Test Channel',
+            playlistId: 'UU123',
+            type: 'channel',
+            order: 0,
+          },
+        },
+      })
+    })
+
+    await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
+  })
+
   test('displays subscribed channel in sidebar', async ({ page }) => {
     await stubFirebaseAuth(page, {
       subs: {

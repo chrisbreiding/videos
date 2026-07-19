@@ -26,6 +26,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const getApiKey = async () => {
     if (youtubeApiKey) return youtubeApiKey
 
+    // App only renders the components that call getApiKey (subs/videos
+    // context) once isAuthenticated is true, which requires youtubeApiKey to
+    // already be cached (see app.tsx). This fallback can't be reached in the
+    // current app, but is kept as a safety net in case that invariant changes.
+    /* istanbul ignore next 5 */
     const { youtubeApiKey: fetchedApiKey } = (await getDoc())!
 
     setApiKey(fetchedApiKey)

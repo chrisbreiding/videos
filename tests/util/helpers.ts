@@ -11,6 +11,10 @@ interface StubFirebaseAuthOptions {
   youtubeApiKey?: string
   subs?: Record<string, SubProps>
   watchedVideos?: WatchedVideos
+  // Leaves `subs` out of the initial onSnapshot payload so tests can observe
+  // the app while it's authenticated but still waiting on subs to load.
+  // Use window.__triggerSnapshotUpdate to deliver subs afterwards.
+  omitSubsFromInitialSnapshot?: boolean
 }
 
 /**
@@ -34,11 +38,18 @@ export async function stubFirebaseAuth(
       },
     },
     watchedVideos = {},
+    omitSubsFromInitialSnapshot = false,
   } = options
 
   // Set up Firebase stubs before the app loads
   await page.addInitScript(
-    ({ userId, youtubeApiKey, subs, watchedVideos }) => {
+    ({
+      userId,
+      youtubeApiKey,
+      subs,
+      watchedVideos,
+      omitSubsFromInitialSnapshot,
+    }) => {
       let snapshotCallback: (snapshot: {
         exists: boolean
         data: () => unknown
@@ -85,7 +96,11 @@ export async function stubFirebaseAuth(
             setTimeout(() => {
               callback({
                 exists: true,
-                data: () => ({ youtubeApiKey, subs, watchedVideos }),
+                data: () => ({
+                  youtubeApiKey,
+                  subs: omitSubsFromInitialSnapshot ? undefined : subs,
+                  watchedVideos,
+                }),
               })
             }, 0)
             return () => {}
@@ -97,7 +112,7 @@ export async function stubFirebaseAuth(
         deleteField: () => Promise.resolve(),
       }
     },
-    { userId, youtubeApiKey, subs, watchedVideos },
+    { userId, youtubeApiKey, subs, watchedVideos, omitSubsFromInitialSnapshot },
   )
 }
 
