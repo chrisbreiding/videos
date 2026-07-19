@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 
 import { YoutubePlayer } from '../lib/youtube-player'
-import { appState } from '../app/app-state'
+import { useAppContext } from '../app/app-context'
 import { DocumentTitle } from '../lib/document-title'
-import { useStore } from '../lib/store'
 import { Icon, durationSeconds } from '../lib/util'
 import { useVideosContext } from '../videos/videos-context'
 import { videosService } from '../videos/videos-service'
@@ -34,7 +33,8 @@ interface NowPlayingProps {
 }
 
 export const NowPlaying = (props: NowPlayingProps) => {
-  useStore(appState)
+  const { watchedVideos, nowPlayingHeight, nowPlayingWidth, saveVideoProgress } =
+    useAppContext()
   const { getVideoById } = useVideosContext()
 
   const [title, setTitle] = useState('...')
@@ -89,7 +89,7 @@ export const NowPlaying = (props: NowPlayingProps) => {
   if (!props.id) return null
 
   const descriptionHtml = md.render(description)
-  const watched = appState.watchedVideos[props.id]
+  const watched = watchedVideos[props.id]
   const video = getVideoById(props.id)
   const length = video ? durationSeconds(video.duration) : 0
   // start from the beginning if progress is within 10% or 10s of end,
@@ -105,17 +105,17 @@ export const NowPlaying = (props: NowPlayingProps) => {
         'is-showing-description': isShowingDescription,
         'is-showing-playlists': isShowingPlaylists,
       })}
-      style={{ height: appState.nowPlayingHeight }}
+      style={{ height: nowPlayingHeight }}
     >
       <DocumentTitle title={`${title} | Videos`} />
       <YoutubePlayer
         id={props.id}
-        width={appState.nowPlayingWidth}
-        height={appState.nowPlayingHeight}
+        width={nowPlayingWidth}
+        height={nowPlayingHeight}
         startTime={startTime}
         onEnd={props.onEnd}
         onTime={(watchTimestamp, immediate) =>
-          appState.saveVideoProgress(props.id!, watchTimestamp, immediate)
+          saveVideoProgress(props.id!, watchTimestamp, immediate)
         }
       />
       <div className="cover" />

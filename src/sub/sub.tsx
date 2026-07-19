@@ -2,7 +2,7 @@ import cs from 'classnames'
 import { useEffect, useRef, useCallback } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 
-import { appState } from '../app/app-state'
+import { useAppContext } from '../app/app-context'
 import { DocumentTitle } from '../lib/document-title'
 import { useStore } from '../lib/store'
 import { Icon, parseQueryString, updatedLink } from '../lib/util'
@@ -15,7 +15,9 @@ import { Videos } from '../videos/videos'
 import type { SubModel } from './sub-model'
 
 export const Sub = () => {
-  useStore(subsStore, appState)
+  useStore(subsStore)
+  const { allSubsMarkedVideoId, setAllSubsMarkedVideoId, setSorting } =
+    useAppContext()
   const {
     videos,
     isLoading,
@@ -131,7 +133,7 @@ export const Sub = () => {
   }
 
   const getMarkedVideoId = (sub: SubModel | undefined) => {
-    if (isAllSubsRef.current) return appState.allSubsMarkedVideoId
+    if (isAllSubsRef.current) return allSubsMarkedVideoId
 
     return sub ? sub.markedVideoId : null
   }
@@ -141,12 +143,12 @@ export const Sub = () => {
       const sub = getSub()
 
       if (isAllSubsRef.current) {
-        appState.setAllSubsMarkedVideoId(id)
+        setAllSubsMarkedVideoId(id)
       } else if (sub) {
         subsStore.update(sub.id, { markedVideoId: id })
       }
     },
-    [getSub],
+    [getSub, setAllSubsMarkedVideoId],
   )
 
   const updateVideoMarkerLink = useCallback(
@@ -179,12 +181,12 @@ export const Sub = () => {
   }, [updateVideoMark, updateVideoMarkerLink])
 
   const onSortStart = useCallback(() => {
-    appState.setSorting(true)
-  }, [])
+    setSorting(true)
+  }, [setSorting])
 
   const onSortEnd = useCallback(
     (sortProps: string[]) => {
-      appState.setSorting(false)
+      setSorting(false)
       const changed = sort(sortProps)
 
       if (changed) {
@@ -192,7 +194,7 @@ export const Sub = () => {
         subsStore.save()
       }
     },
-    [params.id, sort, videos],
+    [params.id, setSorting, sort, videos],
   )
 
   const onSearchUpdate = useCallback(

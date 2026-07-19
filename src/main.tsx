@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router'
 
 import { App } from './app/app'
+import { AppProvider } from './app/app-context'
 import { DocumentTitle } from './lib/document-title'
 import { Login } from './login/login'
 import { Logout } from './login/logout'
@@ -22,13 +23,15 @@ createRoot(document.getElementById('app')!).render(
   <>
     <DocumentTitle title="Videos" />
     <BrowserRouter>
-      <VideosProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/*" element={<App />} />
-        </Routes>
-      </VideosProvider>
+      <AppProvider>
+        <VideosProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </VideosProvider>
+      </AppProvider>
     </BrowserRouter>
   </>,
 )

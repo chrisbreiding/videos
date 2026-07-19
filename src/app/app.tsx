@@ -9,7 +9,7 @@ import {
   useNavigate,
 } from 'react-router'
 
-import { appState, minNowPlayingHeight } from './app-state'
+import { minNowPlayingHeight, useAppContext } from './app-context'
 import { authStore } from '../login/auth-store'
 import { subsStore } from '../subs/subs-store'
 import { useVideosContext } from '../videos/videos-context'
@@ -27,8 +27,21 @@ import { AddChannel } from '../subs/add-sub/add-channel'
 import type { SubModel } from '../sub/sub-model'
 
 export const App = () => {
-  useStore(appState, authStore, subsStore)
+  useStore(authStore, subsStore)
   const { nextVideoId } = useVideosContext()
+  const {
+    autoPlayEnabled,
+    isSorting,
+    windowHeight,
+    maxNowPlayingHeight,
+    nowPlayingHeight,
+    setSorting,
+    setAllSubsMarkedVideoId,
+    setWatchedVideos,
+    updateNowPlayingHeight: updateNowPlayingHeightContext,
+    toggleAutoPlay,
+    setSavedLocation,
+  } = useAppContext()
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -68,11 +81,11 @@ export const App = () => {
       }
 
       if (data.allSubsMarkedVideoId) {
-        appState.setAllSubsMarkedVideoId(data.allSubsMarkedVideoId, false)
+        setAllSubsMarkedVideoId(data.allSubsMarkedVideoId, false)
       }
 
       if (data.watchedVideos) {
-        appState.setWatchedVideos(data.watchedVideos)
+        setWatchedVideos(data.watchedVideos)
       }
     })
 
@@ -80,7 +93,7 @@ export const App = () => {
   }
 
   const onVideoEnded = () => {
-    if (!appState.autoPlayEnabled) return
+    if (!autoPlayEnabled) return
 
     const nextId = nextVideoId(getNowPlayingId())
     if (!nextId) return
@@ -111,7 +124,7 @@ export const App = () => {
   }
 
   const updateNowPlayingHeight = (height: number) => {
-    appState.updateNowPlayingHeight(height)
+    updateNowPlayingHeightContext(height)
   }
 
   const endResizing = () => {
@@ -119,11 +132,11 @@ export const App = () => {
   }
 
   const onSortStart = () => {
-    appState.setSorting(true)
+    setSorting(true)
   }
 
   const onSortEnd = () => {
-    appState.setSorting(false)
+    setSorting(false)
   }
 
   useEffect(() => {
@@ -135,7 +148,7 @@ export const App = () => {
         return getApiKey()
       }
 
-      appState.setSavedLocation(location)
+      setSavedLocation(location)
       navigate({ pathname: '/login' })
     })
 
@@ -175,17 +188,17 @@ export const App = () => {
     <div
       className={cs('app', {
         'is-resizing': isResizing,
-        'is-sorting': appState.isSorting,
+        'is-sorting': isSorting,
       })}
-      style={{ height: appState.windowHeight }}
+      style={{ height: windowHeight }}
     >
       <NowPlaying
-        autoPlayEnabled={appState.autoPlayEnabled}
+        autoPlayEnabled={autoPlayEnabled}
         id={nowPlayingId}
         customPlaylists={subsStore.customPlaylists}
         closeLink={getCloseNowPlayingLink()}
         onEnd={onVideoEnded}
-        onToggleAutoPlay={appState.toggleAutoPlay}
+        onToggleAutoPlay={toggleAutoPlay}
         addedToPlaylist={(playlist: SubModel) =>
           subsStore.addVideoToPlaylist(playlist, nowPlayingId!)
         }
@@ -195,9 +208,9 @@ export const App = () => {
       />
       {nowPlayingId && (
         <Resizer
-          height={appState.nowPlayingHeight}
+          height={nowPlayingHeight}
           minHeight={minNowPlayingHeight}
-          maxHeight={appState.maxNowPlayingHeight}
+          maxHeight={maxNowPlayingHeight}
           onResizeStart={startResizing}
           onResize={updateNowPlayingHeight}
           onResizeEnd={endResizing}

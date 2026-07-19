@@ -1,5 +1,5 @@
 // Specs load app modules from inside the browser via dynamic imports of
-// absolute dev-server URLs (e.g. `await import('/src/app/app-state.ts')`),
+// absolute dev-server URLs (e.g. `await import('/src/lib/firebase.ts')`),
 // which isn't a module specifier tsc can resolve from Node. Silence that
 // without giving up type-checking on the rest of each file.
 declare module '/src/*'

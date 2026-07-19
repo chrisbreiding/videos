@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { onAuthStateChanged } from '../lib/firebase'
-import { appState } from '../app/app-state'
+import { useAppContext } from '../app/app-context'
 import { authStore } from './auth-store'
 import { Icon } from '../lib/util'
 
 export const Login = () => {
   const navigate = useNavigate()
+  const { savedLocation, setSavedLocation } = useAppContext()
   const [loginFailed, setLoginFailed] = useState(false)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
@@ -36,9 +37,9 @@ export const Login = () => {
       await authStore.login(email, password)
 
       setLoginFailed(false)
-      const location = appState.savedLocation || { pathname: '/' }
+      const location = savedLocation || { pathname: '/' }
       navigate(location)
-      appState.setSavedLocation()
+      setSavedLocation()
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log('error logging in:', (err as Error).message)
