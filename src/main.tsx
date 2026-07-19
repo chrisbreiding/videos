@@ -6,13 +6,10 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router'
 
 import { App } from './app/app'
-import { AppProvider } from './app/app-context'
-import { AuthProvider } from './login/auth-context'
 import { DocumentTitle } from './lib/document-title'
+import { Providers } from './lib/providers'
 import { Login } from './login/login'
 import { Logout } from './login/logout'
-import { SubsProvider } from './subs/subs-context'
-import { VideosProvider } from './videos/videos-context'
 
 // Makes icons available to be referenced by their icon name
 fontAwesome.add(fas, far, fab)
@@ -25,19 +22,13 @@ createRoot(document.getElementById('app')!).render(
   <>
     <DocumentTitle title="Videos" />
     <BrowserRouter>
-      <AuthProvider>
-        <AppProvider>
-          <SubsProvider>
-            <VideosProvider>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/logout" element={<Logout />} />
-                <Route path="/*" element={<App />} />
-              </Routes>
-            </VideosProvider>
-          </SubsProvider>
-        </AppProvider>
-      </AuthProvider>
+      <Providers>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </Providers>
     </BrowserRouter>
   </>,
 )
