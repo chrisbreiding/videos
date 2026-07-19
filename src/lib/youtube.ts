@@ -1,5 +1,4 @@
 import { getItem } from './local-data'
-import { getApiKey } from '../login/auth-context'
 import type {
   ChannelDetails,
   ChannelSearchResult,
@@ -68,10 +67,13 @@ function getBaseUrl(): string {
   )
 }
 
-async function queryYouTube<T>(url: string, data: QueryParams): Promise<T> {
+async function queryYouTube<T>(
+  url: string,
+  apiKey: string,
+  data: QueryParams,
+): Promise<T> {
   const baseUrl = getBaseUrl()
 
-  const apiKey = await getApiKey()
   const params = new URLSearchParams({ key: apiKey, ...data } as Record<
     string,
     string
@@ -119,9 +121,13 @@ function mapVideoDetails(
   })
 }
 
-export async function getVideos(ids: string[]): Promise<VideoData[]> {
+export async function fetchVideos(
+  ids: string[],
+  apiKey: string,
+): Promise<VideoData[]> {
   const result = await queryYouTube<YouTubeListResult<YouTubeVideoItem>>(
     'videos',
+    apiKey,
     {
       id: ids.join(),
       part: 'snippet,contentDetails',
@@ -133,13 +139,12 @@ export async function getVideos(ids: string[]): Promise<VideoData[]> {
 
 export async function checkApiKey(apiKey: string): Promise<boolean> {
   const params = {
-    key: apiKey,
     part: 'id',
     channelId: 'UCJTWU5K7kl9EE109HBeoldA',
   }
 
   try {
-    await queryYouTube('activities', params)
+    await queryYouTube('activities', apiKey, params)
     return true
   } catch {
     return false
@@ -148,9 +153,11 @@ export async function checkApiKey(apiKey: string): Promise<boolean> {
 
 export async function searchChannels(
   query: string,
+  apiKey: string,
 ): Promise<ChannelSearchResult[]> {
   const result = await queryYouTube<YouTubeListResult<YouTubeSearchResultItem>>(
     'search',
+    apiKey,
     {
       q: query,
       part: 'snippet',
@@ -162,10 +169,11 @@ export async function searchChannels(
   return mapChannelDetails(result)
 }
 
-export async function getVideosDataForChannelSearch(
+export async function fetchVideosDataForChannelSearch(
   channelId: string,
   query: string,
-  pageToken?: string | null,
+  pageToken: string | null | undefined,
+  apiKey: string,
 ): Promise<VideosData> {
   const params: QueryParams = {
     channelId,
@@ -178,9 +186,9 @@ export async function getVideosDataForChannelSearch(
 
   const { items, prevPageToken, nextPageToken } = await queryYouTube<
     YouTubeListResult<YouTubeSearchResultItem>
-  >('search', params)
+  >('search', apiKey, params)
 
-  const videos = await getVideos(videoIdsFromId(items))
+  const videos = await fetchVideos(videoIdsFromId(items), apiKey)
 
   return {
     videos,
@@ -191,9 +199,10 @@ export async function getVideosDataForChannelSearch(
   }
 }
 
-export async function getVideosDataForPlaylist(
+export async function fetchVideosDataForPlaylist(
   playlistId: string,
-  pageToken?: string | null,
+  pageToken: string | null | undefined,
+  apiKey: string,
   maxResults: number = RESULTS_PER_PAGE,
 ): Promise<VideosData> {
   const params: QueryParams = {
@@ -205,9 +214,9 @@ export async function getVideosDataForPlaylist(
 
   const { items, prevPageToken, nextPageToken } = await queryYouTube<
     YouTubeListResult<YouTubePlaylistItemItem>
-  >('playlistItems', params)
+  >('playlistItems', apiKey, params)
 
-  const videos = await getVideos(videoIdsFromContentDetails(items))
+  const videos = await fetchVideos(videoIdsFromContentDetails(items), apiKey)
 
   return {
     videos,
@@ -218,8 +227,9 @@ export async function getVideosDataForPlaylist(
   }
 }
 
-async function getAllVideosFromPlaylist(
+async function fetchAllVideosFromPlaylist(
   playlistId: string,
+  apiKey: string,
   pageToken: string | null = null,
   accumulatedVideos: VideoData[] = [],
 ): Promise<VideoData[]> {
@@ -232,22 +242,28 @@ async function getAllVideosFromPlaylist(
 
   const { items, nextPageToken } = await queryYouTube<
     YouTubeListResult<YouTubePlaylistItemItem>
-  >('playlistItems', params)
-  const videos = await getVideos(videoIdsFromContentDetails(items))
+  >('playlistItems', apiKey, params)
+  const videos = await fetchVideos(videoIdsFromContentDetails(items), apiKey)
   const allVideos = accumulatedVideos.concat(videos)
 
   if (nextPageToken) {
-    return getAllVideosFromPlaylist(playlistId, nextPageToken, allVideos)
+    return fetchAllVideosFromPlaylist(
+      playlistId,
+      apiKey,
+      nextPageToken,
+      allVideos,
+    )
   }
 
   return allVideos
 }
 
-export async function getVideosDataForPlaylistSearch(
+export async function fetchVideosDataForPlaylistSearch(
   playlistId: string,
   query: string,
+  apiKey: string,
 ): Promise<VideosData> {
-  const videos = await getAllVideosFromPlaylist(playlistId)
+  const videos = await fetchAllVideosFromPlaylist(playlistId, apiKey)
   const lowerQuery = query.toLowerCase()
   const filteredVideos = videos.filter((video) => {
     return (
@@ -263,23 +279,31 @@ export async function getVideosDataForPlaylistSearch(
   }
 }
 
-export async function getVideosDataForAllPlaylists(
+export async function fetchVideosDataForAllPlaylists(
   playlistIds: string[],
+  apiKey: string,
 ): Promise<VideoData[]> {
-  const getVideos = playlistIds.map((playlistId) => {
-    return getVideosDataForPlaylist(playlistId, null, RESULTS_PER_PAGE - 10)
+  const fetchVideos = playlistIds.map((playlistId) => {
+    return fetchVideosDataForPlaylist(
+      playlistId,
+      null,
+      apiKey,
+      RESULTS_PER_PAGE - 10,
+    )
   })
 
-  const playlists = await Promise.all(getVideos)
+  const playlists = await Promise.all(fetchVideos)
 
   return playlists.flatMap((playlist) => playlist.videos)
 }
 
-export async function getPlaylistIdForChannel(
+export async function fetchPlaylistIdForChannel(
   channelId: string,
+  apiKey: string,
 ): Promise<string> {
   const result = await queryYouTube<YouTubeListResult<YouTubeChannelItem>>(
     'channels',
+    apiKey,
     {
       id: channelId,
       part: 'contentDetails',
@@ -289,11 +313,13 @@ export async function getPlaylistIdForChannel(
   return result.items[0].contentDetails.relatedPlaylists.uploads
 }
 
-export async function getChannelDetails(
+export async function fetchChannelDetails(
   channelId: string,
+  apiKey: string,
 ): Promise<ChannelDetails> {
   const result = await queryYouTube<YouTubeListResult<YouTubeChannelItem>>(
     'channels',
+    apiKey,
     {
       id: channelId,
       part: 'snippet',
@@ -308,11 +334,13 @@ export async function getChannelDetails(
   }
 }
 
-export async function getPlaylistDetails(
+export async function fetchPlaylistDetails(
   playlistId: string,
+  apiKey: string,
 ): Promise<PlaylistDetails> {
   const result = await queryYouTube<YouTubeListResult<YouTubePlaylistItem>>(
     'playlists',
+    apiKey,
     {
       id: playlistId,
       part: 'snippet',
@@ -327,9 +355,10 @@ export async function getPlaylistDetails(
   }
 }
 
-export async function getPlaylistsForChannel(
+export async function fetchPlaylistsForChannel(
   channelId: string,
-  pageToken?: string | null,
+  pageToken: string | null | undefined,
+  apiKey: string,
 ): Promise<PlaylistsForChannelResult> {
   const params: QueryParams = {
     channelId,
@@ -340,6 +369,7 @@ export async function getPlaylistsForChannel(
 
   const result = await queryYouTube<YouTubeListResult<YouTubePlaylistItem>>(
     'playlists',
+    apiKey,
     params,
   )
 

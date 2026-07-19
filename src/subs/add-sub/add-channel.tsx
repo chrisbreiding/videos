@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router'
 
 import { Icon } from '../../lib/util'
 import { useStore } from '../../lib/store'
-import { getPlaylistsForChannel } from '../../lib/youtube'
+import { useVideosContext } from '../../videos/videos-context'
 import { subsStore } from '../subs-store'
 import type {
   ChannelSearchResult,
@@ -14,6 +14,7 @@ import type {
 
 export const AddChannel = () => {
   useStore(subsStore)
+  const { fetchPlaylistsForChannel } = useVideosContext()
 
   const navigate = useNavigate()
   const params = useParams()
@@ -80,7 +81,7 @@ export const AddChannel = () => {
   const loadPlaylists = async (channelId: string) => {
     setLoadingPlaylists((prev) => ({ ...prev, [channelId]: true }))
 
-    const playlistsData = await getPlaylistsForChannel(channelId)
+    const playlistsData = await fetchPlaylistsForChannel(channelId)
 
     setLoadingPlaylists((prev) => ({ ...prev, [channelId]: false }))
     setPlaylists((prev) => ({ ...prev, [channelId]: playlistsData }))
@@ -89,7 +90,7 @@ export const AddChannel = () => {
   const loadMorePlaylists = async (channelId: string, pageToken?: string) => {
     setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: true }))
 
-    const newPlaylists = await getPlaylistsForChannel(channelId, pageToken)
+    const newPlaylists = await fetchPlaylistsForChannel(channelId, pageToken)
 
     setLoadingMorePlaylists((prev) => ({ ...prev, [channelId]: false }))
     setPlaylists((prev) => ({

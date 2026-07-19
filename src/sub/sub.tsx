@@ -24,11 +24,11 @@ export const Sub = () => {
     hasLoadedAllPlaylists,
     prevPageToken,
     nextPageToken,
-    getVideosDataForPlaylist,
-    getVideosDataForAllPlaylists,
-    getVideosDataForChannelSearch,
-    getVideosDataForPlaylistSearch,
-    getVideosDataForCustomPlaylist,
+    fetchVideosDataForPlaylist,
+    fetchVideosDataForAllPlaylists,
+    fetchVideosDataForChannelSearch,
+    fetchVideosDataForPlaylistSearch,
+    fetchVideosDataForCustomPlaylist,
     sort,
   } = useVideosContext()
 
@@ -85,7 +85,7 @@ export const Sub = () => {
 
     if (shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
       isAllSubsRef.current = true
-      getVideosDataForAllPlaylists(subsStore.channelIds)
+      fetchVideosDataForAllPlaylists(subsStore.channelIds)
 
       return
     }
@@ -105,14 +105,14 @@ export const Sub = () => {
     ) {
       if (newSearchQuery) {
         if (sub.type === 'playlist') {
-          getVideosDataForPlaylistSearch(sub.playlistId!, newSearchQuery)
+          fetchVideosDataForPlaylistSearch(sub.playlistId!, newSearchQuery)
         } else {
-          getVideosDataForChannelSearch(sub, newSearchQuery, newToken)
+          fetchVideosDataForChannelSearch(sub, newSearchQuery, newToken)
         }
       } else if (sub.type === 'custom') {
-        getVideosDataForCustomPlaylist(sub)
+        fetchVideosDataForCustomPlaylist(sub)
       } else {
-        getVideosDataForPlaylist(newPlaylistId!, newToken)
+        fetchVideosDataForPlaylist(newPlaylistId!, newToken)
       }
     }
   }

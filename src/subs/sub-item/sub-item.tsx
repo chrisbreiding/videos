@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/react/sortable'
 import { NavLink } from 'react-router'
 
 import { Icon } from '../../lib/util'
-import { getChannelDetails, getPlaylistDetails } from '../../lib/youtube'
+import { useVideosContext } from '../../videos/videos-context'
 
 import { Title } from './title'
 import { SubTitleInput } from './sub-title-input'
@@ -52,6 +52,7 @@ const Channel = ({
   handleRef: HandleRef
 }) => {
   const [isUpdatingThumb, setIsUpdatingThumb] = useState(false)
+  const { fetchChannelDetails, fetchPlaylistDetails } = useVideosContext()
 
   const onTitleUpdate = useCallback(
     (title: string) => {
@@ -68,8 +69,8 @@ const Channel = ({
     try {
       const getDetails =
         sub.type === 'channel'
-          ? getChannelDetails(sub.id)
-          : getPlaylistDetails(sub.playlistId!)
+          ? fetchChannelDetails(sub.id)
+          : fetchPlaylistDetails(sub.playlistId!)
 
       const details = await getDetails
       onUpdate({ thumb: details.thumb })
@@ -78,7 +79,14 @@ const Channel = ({
     } finally {
       setIsUpdatingThumb(false)
     }
-  }, [isUpdatingThumb, onUpdate, setIsUpdatingThumb, sub])
+  }, [
+    isUpdatingThumb,
+    onUpdate,
+    setIsUpdatingThumb,
+    sub,
+    fetchChannelDetails,
+    fetchPlaylistDetails,
+  ])
 
   return (
     <span className={`${sub.type}-sub-item`}>

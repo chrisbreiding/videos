@@ -12,13 +12,14 @@ describe('lib/youtube', () => {
   test('checkApiKey resolves false when the request fails', async ({
     page,
   }) => {
-    await stubFirebaseAuth(page)
+    await setupApp(page)
+    await page.goto('/')
+    await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
+
     await page.route(
       'https://www.googleapis.com/youtube/v3/activities**',
       (route) => route.abort(),
     )
-    await page.goto('/')
-    await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
       const { checkApiKey } = await import('/src/lib/youtube.ts')
@@ -29,7 +30,7 @@ describe('lib/youtube', () => {
     expect(result).toBe(false)
   })
 
-  test('getVideosDataForChannelSearch includes the page token when paginating', async ({
+  test('fetchVideosDataForChannelSearch includes the page token when paginating', async ({
     page,
   }) => {
     await stubFirebaseAuth(page)
@@ -60,10 +61,10 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     await page.evaluate(async () => {
-      const { getVideosDataForChannelSearch } =
+      const { fetchVideosDataForChannelSearch } =
         await import('/src/lib/youtube.ts')
 
-      return getVideosDataForChannelSearch(
+      return fetchVideosDataForChannelSearch(
         'channel-1',
         'query',
         'page-token-abc',
@@ -73,7 +74,7 @@ describe('lib/youtube', () => {
     expect(requestedUrl).toContain('pageToken=page-token-abc')
   })
 
-  test('getVideosDataForChannelSearch keeps the next page token when a full page of results comes back', async ({
+  test('fetchVideosDataForChannelSearch keeps the next page token when a full page of results comes back', async ({
     page,
   }) => {
     await stubFirebaseAuth(page)
@@ -120,17 +121,17 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { getVideosDataForChannelSearch } =
+      const { fetchVideosDataForChannelSearch } =
         await import('/src/lib/youtube.ts')
 
-      return getVideosDataForChannelSearch('channel-1', 'query')
+      return fetchVideosDataForChannelSearch('channel-1', 'query')
     })
 
     expect(result.videos).toHaveLength(25)
     expect(result.nextPageToken).toBe('next-page-token')
   })
 
-  test('getVideosDataForPlaylistSearch fetches every page of a playlist before filtering', async ({
+  test('fetchVideosDataForPlaylistSearch fetches every page of a playlist before filtering', async ({
     page,
   }) => {
     const videoOnFirstPage = createVideo({
@@ -155,10 +156,10 @@ describe('lib/youtube', () => {
     await expect(page.locator('.subs')).toBeVisible({ timeout: 10000 })
 
     const result = await page.evaluate(async () => {
-      const { getVideosDataForPlaylistSearch } =
+      const { fetchVideosDataForPlaylistSearch } =
         await import('/src/lib/youtube.ts')
 
-      return getVideosDataForPlaylistSearch('UU123', 'apple')
+      return fetchVideosDataForPlaylistSearch('UU123', 'apple')
     })
 
     expect(result.videos).toHaveLength(1)

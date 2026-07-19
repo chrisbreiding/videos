@@ -183,7 +183,7 @@ describe('Loading All Subs', () => {
 })
 
 describe('Searching', () => {
-  test('searches within a channel sub via getVideosDataForChannelSearch', async ({
+  test('searches within a channel sub via fetchVideosDataForChannelSearch', async ({
     page,
   }) => {
     await setupApp(page, {
@@ -234,7 +234,7 @@ describe('Searching', () => {
     })
   })
 
-  test('searches within a playlist sub via getVideosDataForPlaylistSearch', async ({
+  test('searches within a playlist sub via fetchVideosDataForPlaylistSearch', async ({
     page,
   }) => {
     await setupApp(page, {

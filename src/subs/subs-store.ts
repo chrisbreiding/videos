@@ -6,7 +6,8 @@ import {
   sortByProperty,
   transformObject,
 } from '../lib/util'
-import { getPlaylistIdForChannel, searchChannels } from '../lib/youtube'
+import { fetchPlaylistIdForChannel, searchChannels } from '../lib/youtube'
+import { getApiKey } from '../login/auth-context'
 import type {
   ChannelSearchResult,
   IconConfig,
@@ -105,13 +106,15 @@ class SubsStore extends Store {
   }
 
   async search(query: string) {
-    const searchResults = await searchChannels(query)
+    const apiKey = await getApiKey()
+    const searchResults = await searchChannels(query, apiKey)
 
     this.setSearchResults(searchResults)
   }
 
   async addChannel(channel: ChannelSearchResult) {
-    const playlistId = await getPlaylistIdForChannel(channel.id)
+    const apiKey = await getApiKey()
+    const playlistId = await fetchPlaylistIdForChannel(channel.id, apiKey)
 
     this._addSub(channel, {
       playlistId,

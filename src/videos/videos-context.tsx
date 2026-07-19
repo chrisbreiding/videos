@@ -2,15 +2,25 @@ import dayjs from 'dayjs'
 import { createContext, ReactNode, useContext, useState } from 'react'
 
 import {
-  getVideos,
-  getVideosDataForChannelSearch as getVideosDataForChannelSearchApi,
-  getVideosDataForPlaylist as getVideosDataForPlaylistApi,
-  getVideosDataForPlaylistSearch as getVideosDataForPlaylistSearchApi,
-  getVideosDataForAllPlaylists as getVideosDataForAllPlaylistsApi,
+  fetchVideos,
+  fetchChannelDetails as fetchChannelDetailsFromYoutube,
+  fetchPlaylistDetails as fetchPlaylistDetailsFromYoutube,
+  fetchPlaylistsForChannel as fetchPlaylistsForChannelYoutube,
+  fetchVideosDataForChannelSearch as fetchVideosDataForChannelSearchYoutube,
+  fetchVideosDataForPlaylist as fetchVideosDataForPlaylistYoutube,
+  fetchVideosDataForPlaylistSearch as fetchVideosDataForPlaylistSearchYoutube,
+  fetchVideosDataForAllPlaylists as fetchVideosDataForAllPlaylistsYoutube,
 } from '../lib/youtube'
+import { getApiKey } from '../login/auth-context'
 import { VideoModel } from './video-model'
 import type { SubModel } from '../sub/sub-model'
-import type { VideosData } from '../lib/types'
+import type {
+  ChannelDetails,
+  PlaylistDetails,
+  PlaylistsForChannelResult,
+  VideoData,
+  VideosData,
+} from '../lib/types'
 import { sortByProperty } from '../lib/util'
 
 interface VideosContextValue {
@@ -19,21 +29,28 @@ interface VideosContextValue {
   hasLoadedAllPlaylists: boolean
   prevPageToken?: string | null
   nextPageToken?: string | null
-  getVideosDataForPlaylist: (
+  fetchVideosDataForPlaylist: (
     playlistId: string,
     pageToken?: string | null,
   ) => Promise<void>
-  getVideosDataForAllPlaylists: (playlistIds: string[]) => Promise<void>
-  getVideosDataForChannelSearch: (
+  fetchVideosDataForAllPlaylists: (playlistIds: string[]) => Promise<void>
+  fetchVideosDataForChannelSearch: (
     channel: SubModel,
     query: string,
     pageToken?: string | null,
   ) => Promise<void>
-  getVideosDataForPlaylistSearch: (
+  fetchVideosDataForPlaylistSearch: (
     playlistId: string,
     query: string,
   ) => Promise<void>
-  getVideosDataForCustomPlaylist: (playlist: SubModel) => Promise<void>
+  fetchVideosDataForCustomPlaylist: (playlist: SubModel) => Promise<void>
+  fetchVideosByIds: (ids: string[]) => Promise<VideoData[]>
+  fetchChannelDetails: (channelId: string) => Promise<ChannelDetails>
+  fetchPlaylistDetails: (playlistId: string) => Promise<PlaylistDetails>
+  fetchPlaylistsForChannel: (
+    channelId: string,
+    pageToken?: string | null,
+  ) => Promise<PlaylistsForChannelResult>
   getVideoById: (id: string) => VideoModel | undefined
   nextVideoId: (videoId?: string) => string | null
   sort: (sortedIds: string[]) => boolean
@@ -82,24 +99,60 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
     return videos.find((video) => video.id === id)
   }
 
-  const getVideosDataForPlaylist = async (
+  const fetchVideosByIds = async (ids: string[]) => {
+    const apiKey = await getApiKey()
+
+    return fetchVideos(ids, apiKey)
+  }
+
+  const fetchChannelDetails = async (channelId: string) => {
+    const apiKey = await getApiKey()
+
+    return fetchChannelDetailsFromYoutube(channelId, apiKey)
+  }
+
+  const fetchPlaylistDetails = async (playlistId: string) => {
+    const apiKey = await getApiKey()
+
+    return fetchPlaylistDetailsFromYoutube(playlistId, apiKey)
+  }
+
+  const fetchPlaylistsForChannel = async (
+    channelId: string,
+    pageToken?: string | null,
+  ) => {
+    const apiKey = await getApiKey()
+
+    return fetchPlaylistsForChannelYoutube(channelId, pageToken, apiKey)
+  }
+
+  const fetchVideosDataForPlaylist = async (
     playlistId: string,
     pageToken?: string | null,
   ) => {
     beforeLoad()
 
-    const videosData = await getVideosDataForPlaylistApi(playlistId, pageToken)
+    const apiKey = await getApiKey()
+    const videosData = await fetchVideosDataForPlaylistYoutube(
+      playlistId,
+      pageToken,
+      apiKey,
+    )
 
     updateVideosData(videosData)
     afterLoad(false)
   }
 
-  const getVideosDataForAllPlaylists = async (playlistIds: string[]) => {
+  const fetchVideosDataForAllPlaylists = async (playlistIds: string[]) => {
     if (!playlistIds.length) return
 
     beforeLoad()
 
-    const videos = await getVideosDataForAllPlaylistsApi(playlistIds)
+    const apiKey = await getApiKey()
+    const videos = await fetchVideosDataForAllPlaylistsYoutube(
+      playlistIds,
+      apiKey,
+    )
 
     updateVideosData({
       videos,
@@ -110,43 +163,47 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
     afterLoad(false)
   }
 
-  const getVideosDataForChannelSearch = async (
+  const fetchVideosDataForChannelSearch = async (
     channel: SubModel,
     query: string,
     pageToken?: string | null,
   ) => {
     beforeLoad()
 
-    const videosData = await getVideosDataForChannelSearchApi(
+    const apiKey = await getApiKey()
+    const videosData = await fetchVideosDataForChannelSearchYoutube(
       channel.id,
       query,
       pageToken,
+      apiKey,
     )
 
     updateVideosData(videosData)
     afterLoad(false)
   }
 
-  const getVideosDataForPlaylistSearch = async (
+  const fetchVideosDataForPlaylistSearch = async (
     playlistId: string,
     query: string,
   ) => {
     beforeLoad()
 
-    const videosData = await getVideosDataForPlaylistSearchApi(
+    const apiKey = await getApiKey()
+    const videosData = await fetchVideosDataForPlaylistSearchYoutube(
       playlistId,
       query,
+      apiKey,
     )
 
     updateVideosData(videosData)
     afterLoad(false)
   }
 
-  const getVideosDataForCustomPlaylist = async (playlist: SubModel) => {
+  const fetchVideosDataForCustomPlaylist = async (playlist: SubModel) => {
     beforeLoad()
 
     let videos = playlist.videos.size
-      ? await getVideos(playlist.videoIds)
+      ? await fetchVideosByIds(playlist.videoIds)
       : []
 
     videos = videos.map((video) => {
@@ -206,11 +263,15 @@ export const VideosProvider = ({ children }: { children: ReactNode }) => {
     hasLoadedAllPlaylists,
     prevPageToken,
     nextPageToken,
-    getVideosDataForPlaylist,
-    getVideosDataForAllPlaylists,
-    getVideosDataForChannelSearch,
-    getVideosDataForPlaylistSearch,
-    getVideosDataForCustomPlaylist,
+    fetchVideosDataForPlaylist,
+    fetchVideosDataForAllPlaylists,
+    fetchVideosDataForChannelSearch,
+    fetchVideosDataForPlaylistSearch,
+    fetchVideosDataForCustomPlaylist,
+    fetchVideosByIds,
+    fetchChannelDetails,
+    fetchPlaylistDetails,
+    fetchPlaylistsForChannel,
     getVideoById,
     nextVideoId,
     sort,

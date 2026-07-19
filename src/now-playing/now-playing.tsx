@@ -8,7 +8,6 @@ import { useAppContext } from '../app/app-context'
 import { DocumentTitle } from '../lib/document-title'
 import { Icon, durationSeconds } from '../lib/util'
 import { useVideosContext } from '../videos/videos-context'
-import { getVideos } from '../lib/youtube'
 import { PlaylistPicker } from '../playlist-picker/playlist-picker'
 import { VideoModel } from '../videos/video-model'
 import type { SubModel } from '../sub/sub-model'
@@ -33,9 +32,13 @@ interface NowPlayingProps {
 }
 
 export const NowPlaying = (props: NowPlayingProps) => {
-  const { watchedVideos, nowPlayingHeight, nowPlayingWidth, saveVideoProgress } =
-    useAppContext()
-  const { getVideoById } = useVideosContext()
+  const {
+    watchedVideos,
+    nowPlayingHeight,
+    nowPlayingWidth,
+    saveVideoProgress,
+  } = useAppContext()
+  const { getVideoById, fetchVideosByIds } = useVideosContext()
 
   const [title, setTitle] = useState('...')
   const [description, setDescription] = useState('Loading description...')
@@ -79,12 +82,12 @@ export const NowPlaying = (props: NowPlayingProps) => {
     }
 
     const loadVideo = async () => {
-      const videoData = (await getVideos([id]))[0]
+      const videoData = (await fetchVideosByIds([id]))[0]
       setVideoProps(VideoModel.fromVideoData(videoData))
     }
 
     loadVideo()
-  }, [props.id, getVideoById])
+  }, [props.id, getVideoById, fetchVideosByIds])
 
   if (!props.id) return null
 
