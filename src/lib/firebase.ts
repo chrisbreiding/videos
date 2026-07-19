@@ -124,7 +124,7 @@ export const watchDoc = (
     // The real (non-stubbed) branch below only fires when a real snapshot succeeds
     // against live, authenticated Firestore; unauthenticated listeners only ever
     // reach the onSnapshot error callback, which this test environment can't avoid.
-    /* istanbul ignore next 2 */
+    /* istanbul ignore next */
     const exists =
       snapshot instanceof DocumentSnapshot ? snapshot.exists() : snapshot.exists
 

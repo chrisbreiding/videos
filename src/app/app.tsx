@@ -170,15 +170,7 @@ export const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!isAuthenticated) {
-    return (
-      <div className="loader">
-        <Icon name="sign-in" /> Authenticating...
-      </div>
-    )
-  }
-
-  if (isLoadingSubs) {
+  if (!isAuthenticated || isLoadingSubs) {
     return (
       <div className="loader">
         <Icon name="play-circle" spin /> Loading...

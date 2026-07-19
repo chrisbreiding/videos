@@ -29,7 +29,7 @@ describe('login/auth-context', () => {
     await stubFirebaseAuth(page, { youtubeApiKey: '' })
     await page.goto('/')
 
-    await expect(page.locator('.loader')).toContainText('Authenticating...')
+    await expect(page.locator('.loader')).toContainText('Loading...')
 
     // Give any pending async work a chance to run before asserting nothing
     // happened, since there's no visible state change to wait on here.
