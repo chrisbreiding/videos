@@ -16,11 +16,11 @@ export const AuthContext = createContext<AuthContextValue | undefined>(
   undefined,
 )
 
-// subs-store.ts sits outside the React tree, so it can't call
-// useAuthContext() to get the api key itself. AuthProvider points this at
-// its own getApiKey on mount (it only ever mounts once), so the exported
-// getApiKey below reads and caches through the same state that drives
-// isAuthenticated.
+// Non-React modules (e.g. lib/youtube.ts) sit outside the React tree, so they
+// can't call useAuthContext() to get the api key themselves. AuthProvider
+// points this at its own getApiKey on mount (it only ever mounts once), so the
+// exported getApiKey below reads and caches through the same state that
+// drives isAuthenticated.
 let getApiKeyImpl: () => Promise<string>
 
 export const getApiKey = (): Promise<string> => getApiKeyImpl()

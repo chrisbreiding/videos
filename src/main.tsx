@@ -11,6 +11,7 @@ import { AuthProvider } from './login/auth-context'
 import { DocumentTitle } from './lib/document-title'
 import { Login } from './login/login'
 import { Logout } from './login/logout'
+import { SubsProvider } from './subs/subs-context'
 import { VideosProvider } from './videos/videos-context'
 
 // Makes icons available to be referenced by their icon name
@@ -26,13 +27,15 @@ createRoot(document.getElementById('app')!).render(
     <BrowserRouter>
       <AuthProvider>
         <AppProvider>
-          <VideosProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/logout" element={<Logout />} />
-              <Route path="/*" element={<App />} />
-            </Routes>
-          </VideosProvider>
+          <SubsProvider>
+            <VideosProvider>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/*" element={<App />} />
+              </Routes>
+            </VideosProvider>
+          </SubsProvider>
         </AppProvider>
       </AuthProvider>
     </BrowserRouter>

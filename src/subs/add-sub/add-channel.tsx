@@ -3,9 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { Icon } from '../../lib/util'
-import { useStore } from '../../lib/store'
 import { useVideosContext } from '../../videos/videos-context'
-import { subsStore } from '../subs-store'
+import { useSubsContext } from '../subs-context'
 import type {
   ChannelSearchResult,
   PlaylistSummary,
@@ -13,7 +12,15 @@ import type {
 } from '../../lib/types'
 
 export const AddChannel = () => {
-  useStore(subsStore)
+  const {
+    searchResults,
+    setSearchResults,
+    search: searchChannels,
+    addChannel,
+    addPlaylist,
+    isChannelSubscribed,
+    isPlaylistSubscribed,
+  } = useSubsContext()
   const { fetchPlaylistsForChannel } = useVideosContext()
 
   const navigate = useNavigate()
@@ -42,15 +49,15 @@ export const AddChannel = () => {
     if (!query || query === oldQuery) return
     prevQueryRef.current = query
     queryInputRef.current!.value = query
-    subsStore.search(query)
+    searchChannels(query)
   }
 
   useEffect(() => {
     queryInputRef.current!.focus()
     return () => {
-      subsStore.setSearchResults([])
+      setSearchResults([])
     }
-  }, [])
+  }, [setSearchResults])
 
   useEffect(() => {
     search()
@@ -67,11 +74,11 @@ export const AddChannel = () => {
   }
 
   const onAddChannel = (channel: ChannelSearchResult) => {
-    subsStore.addChannel(channel)
+    addChannel(channel)
   }
 
   const onAddPlaylist = (playlist: PlaylistSummary) => {
-    subsStore.addPlaylist(playlist)
+    addPlaylist(playlist)
   }
 
   const onFilterChange = (channelId: string, value: string) => {
@@ -143,14 +150,12 @@ export const AddChannel = () => {
         </div>
         <ul className="playlists-list">
           {filteredPlaylists.map((playlist) => {
-            const isPlaylistSubscribed = subsStore.isPlaylistSubscribed(
-              playlist.id,
-            )
+            const isSubscribed = isPlaylistSubscribed(playlist.id)
 
             return (
               <li
                 key={playlist.id}
-                className={`playlist-item${isPlaylistSubscribed ? ' is-subscribed' : ''}`}
+                className={`playlist-item${isSubscribed ? ' is-subscribed' : ''}`}
               >
                 <img src={playlist.thumb} />
                 <div className="playlist-details">
@@ -159,7 +164,7 @@ export const AddChannel = () => {
                     {playlist.count} videos
                   </span>
                 </div>
-                {isPlaylistSubscribed ? (
+                {isSubscribed ? (
                   <span className="subscribed-indicator">
                     <Icon name="check" />
                   </span>
@@ -190,10 +195,10 @@ export const AddChannel = () => {
   }
 
   const renderResults = () => {
-    return subsStore.searchResults.map((channel) => {
+    return searchResults.map((channel) => {
       const channelPlaylistData = playlists[channel.id]
       const isLoading = loadingPlaylists[channel.id]
-      const isSubscribed = subsStore.isChannelSubscribed(channel.id)
+      const isSubscribed = isChannelSubscribed(channel.id)
 
       return (
         <li

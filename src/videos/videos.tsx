@@ -4,8 +4,7 @@ import { DragDropProvider, type DragEndEvent } from '@dnd-kit/react'
 import { move } from '@dnd-kit/helpers'
 
 import { updatedLink } from '../lib/util'
-import { useStore } from '../lib/store'
-import { subsStore } from '../subs/subs-store'
+import { useSubsContext } from '../subs/subs-context'
 import { useVideosContext } from '../videos/videos-context'
 
 import { Video } from './video'
@@ -24,7 +23,12 @@ interface VideosProps {
 }
 
 const VideosList = (props: VideosProps) => {
-  useStore(subsStore)
+  const {
+    customPlaylists,
+    getChannelImage,
+    addVideoToPlaylist,
+    removeVideoFromPlaylist,
+  } = useSubsContext()
   const { videos } = useVideosContext()
 
   const {
@@ -53,18 +57,16 @@ const VideosList = (props: VideosProps) => {
             onPlay={() => onPlay(id)}
             playLink={playVideoLink}
             addVideoMarkerLink={onUpdateVideoMarkerLink}
-            customPlaylists={subsStore.customPlaylists}
+            customPlaylists={customPlaylists}
             video={video}
             isMarked={id === markedVideoId}
             onRemoveMark={onRemoveMark}
-            channelImage={
-              showChannelImage && subsStore.getChannelImage(video.channelId)
-            }
+            channelImage={showChannelImage && getChannelImage(video.channelId)}
             addedToPlaylist={(playlist: SubModel) =>
-              subsStore.addVideoToPlaylist(playlist, id)
+              addVideoToPlaylist(playlist, id)
             }
             removedFromPlaylist={(playlist: SubModel) =>
-              subsStore.removeVideoFromPlaylist(playlist, id)
+              removeVideoFromPlaylist(playlist, id)
             }
           />
         )

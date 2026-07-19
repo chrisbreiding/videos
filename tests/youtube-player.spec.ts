@@ -223,8 +223,13 @@ describe('YoutubePlayer', () => {
     // prop and reloads the existing player instance rather than remounting it
     await expect(page).toHaveURL(/nowPlaying=end-2/)
 
+    // the URL updates in the same tick as the state change that reloads the
+    // player, but the two commits aren't guaranteed to land together, so poll
+    // rather than reading the calls immediately after the URL settles
+    await expect
+      .poll(() => page.evaluate(() => window.__ytPlayers![0].calls.stopVideo))
+      .toBe(1)
     const calls = await page.evaluate(() => window.__ytPlayers![0].calls)
-    expect(calls.stopVideo).toBe(1)
     expect(calls.loadVideoById).toEqual([{ videoId: 'end-2', startSeconds: 0 }])
     expect(await page.evaluate(() => window.__ytPlayers!.length)).toBe(1)
   })

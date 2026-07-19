@@ -4,8 +4,7 @@ import { NavLink, type Location } from 'react-router'
 import { DragDropProvider, type DragEndEvent } from '@dnd-kit/react'
 import { move } from '@dnd-kit/helpers'
 
-import { subsStore } from './subs-store'
-import { useStore } from '../lib/store'
+import { useSubsContext } from './subs-context'
 import { Icon, updatedLink } from '../lib/util'
 
 import { SubItem } from './sub-item/sub-item'
@@ -20,7 +19,7 @@ export const Subs = ({
   onSortStart: () => void
   onSortEnd: () => void
 }) => {
-  useStore(subsStore)
+  const { subs, fourChannels, update, remove, sort } = useSubsContext()
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -29,11 +28,11 @@ export const Subs = ({
   }
 
   const updateSub = (id: string, props: Partial<SubProps>) => {
-    subsStore.update(id, props)
+    update(id, props)
   }
 
   const removeSub = (id: string) => {
-    subsStore.remove(id)
+    remove(id)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -41,14 +40,14 @@ export const Subs = ({
 
     if (event.canceled) return
 
-    const ids = subsStore.subs.map((sub) => sub.id)
+    const ids = subs.map((sub) => sub.id)
     const sortedIds = move(ids, event)
 
-    subsStore.sort(sortedIds)
+    sort(sortedIds)
   }
 
   const renderEditButton = () => {
-    if (!subsStore.subs.length) return null
+    if (!subs.length) return null
 
     return (
       <button onClick={toggleEditing}>{isEditing ? 'Done' : 'Edit'}</button>
@@ -56,7 +55,7 @@ export const Subs = ({
   }
 
   const renderSubs = () => {
-    if (!subsStore.subs.length) {
+    if (!subs.length) {
       return null
     }
 
@@ -73,13 +72,13 @@ export const Subs = ({
       <ul
         className={cs({
           editing: isEditing,
-          'has-subs': !!subsStore.subs.length,
+          'has-subs': !!subs.length,
         })}
       >
         <li className="sub-item all-subs">
           <span>
             <span className="thumb">
-              {subsStore.fourChannels.map((sub) => (
+              {fourChannels.map((sub) => (
                 <img key={sub.id} src={sub.thumb} />
               ))}
             </span>
@@ -94,7 +93,7 @@ export const Subs = ({
             </NavLink>
           </span>
         </li>
-        {subsStore.subs.map((sub, index) => {
+        {subs.map((sub, index) => {
           const link = updatedLink(location, {
             pathname: `/subs/${sub.id}`,
             search,
@@ -123,7 +122,7 @@ export const Subs = ({
   }
 
   const renderAddSubButtons = () => {
-    if (!subsStore.subs.length) {
+    if (!subs.length) {
       return (
         <p className="empty-message">
           Add a channel to get started <Icon name="arrow-right" />
@@ -145,7 +144,7 @@ export const Subs = ({
     )
   }
 
-  // const hasNoSubs = !subsStore.subs.length
+  // const hasNoSubs = !subs.length
 
   // TODO: if no subs, redirect to /add-channel and show nothing here
 

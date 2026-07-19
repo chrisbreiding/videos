@@ -1,6 +1,4 @@
 import { Icon } from '../lib/util'
-import { useStore } from '../lib/store'
-import { subsStore } from '../subs/subs-store'
 import type { SubModel } from '../sub/sub-model'
 
 interface PlaylistPickerProps {
@@ -11,8 +9,6 @@ interface PlaylistPickerProps {
 }
 
 export const PlaylistPicker = (props: PlaylistPickerProps) => {
-  useStore(subsStore)
-
   function setPlaylist(playlist: SubModel, inPlaylist: boolean) {
     if (inPlaylist) {
       props.addedToPlaylist(playlist)

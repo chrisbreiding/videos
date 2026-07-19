@@ -4,9 +4,8 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { useAppContext } from '../app/app-context'
 import { DocumentTitle } from '../lib/document-title'
-import { useStore } from '../lib/store'
 import { Icon, parseQueryString, updatedLink } from '../lib/util'
-import { subsStore } from '../subs/subs-store'
+import { useSubsContext } from '../subs/subs-context'
 import { useVideosContext } from '../videos/videos-context'
 
 import { Paginator } from '../paginator/paginator'
@@ -15,7 +14,13 @@ import { Videos } from '../videos/videos'
 import type { SubModel } from './sub-model'
 
 export const Sub = () => {
-  useStore(subsStore)
+  const {
+    channelIds,
+    getSubById,
+    update: updateSub,
+    updatePlaylistVideosOrder,
+    save: saveSubs,
+  } = useSubsContext()
   const { allSubsMarkedVideoId, setAllSubsMarkedVideoId, setSorting } =
     useAppContext()
   const {
@@ -43,8 +48,8 @@ export const Sub = () => {
   const isAllSubsRef = useRef(false)
 
   const getSub = useCallback(() => {
-    return subsStore.getSubById(params.id)
-  }, [params.id])
+    return getSubById(params.id)
+  }, [getSubById, params.id])
 
   const scrollToMarker = (marker?: string) => {
     document.querySelector(`#${marker}`)?.scrollIntoView()
@@ -85,7 +90,7 @@ export const Sub = () => {
 
     if (shouldLoadAllPlaylists(sub, oldPlaylistId, newPlaylistId)) {
       isAllSubsRef.current = true
-      fetchVideosDataForAllPlaylists(subsStore.channelIds)
+      fetchVideosDataForAllPlaylists(channelIds)
 
       return
     }
@@ -145,10 +150,10 @@ export const Sub = () => {
       if (isAllSubsRef.current) {
         setAllSubsMarkedVideoId(id)
       } else if (sub) {
-        subsStore.update(sub.id, { markedVideoId: id })
+        updateSub(sub.id, { markedVideoId: id })
       }
     },
-    [getSub, setAllSubsMarkedVideoId],
+    [getSub, setAllSubsMarkedVideoId, updateSub],
   )
 
   const updateVideoMarkerLink = useCallback(
@@ -170,9 +175,9 @@ export const Sub = () => {
         ? null
         : pageTokenRef.current
       sub.update({ bookmarkedPageToken })
-      subsStore.save()
+      saveSubs()
     },
-    [],
+    [saveSubs],
   )
 
   const removeVideoMark = useCallback(() => {
@@ -190,11 +195,11 @@ export const Sub = () => {
       const changed = sort(sortProps)
 
       if (changed) {
-        subsStore.updatePlaylistVideosOrder(params.id, videos)
-        subsStore.save()
+        updatePlaylistVideosOrder(params.id, videos)
+        saveSubs()
       }
     },
-    [params.id, setSorting, sort, videos],
+    [params.id, saveSubs, setSorting, sort, updatePlaylistVideosOrder, videos],
   )
 
   const onSearchUpdate = useCallback(

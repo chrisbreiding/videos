@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { Icon } from '../../lib/util'
-import { subsStore } from '../subs-store'
+import { useSubsContext } from '../subs-context'
 
 import { IconThumb } from '../../icon-thumb/icon-thumb'
 import { IconPicker } from '../../icon-picker/icon-picker'
@@ -11,6 +11,7 @@ import type { IconConfig } from '../../lib/types'
 import { solidIconNames } from '../../../generated/font-awesome'
 
 export const AddCustomPlaylist = () => {
+  const { addCustomPlaylist } = useSubsContext()
   const navigate = useNavigate()
   const titleRef = useRef<HTMLInputElement>(null)
   const [iconState, setIconState] = useState<IconConfig>({
@@ -46,7 +47,7 @@ export const AddCustomPlaylist = () => {
     const title = titleRef.current!.value
     if (!title) return
 
-    const id = subsStore.addCustomPlaylist({ title, icon: iconState })
+    const id = addCustomPlaylist({ title, icon: iconState })
     navigate(`/subs/${id}`)
   }
 
