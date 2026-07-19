@@ -10,6 +10,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  /* Each CI shard runs against its own single dev server, so keep workers at
+   * 1 there; parallelism on CI comes from running shards as separate jobs. */
+  workers: process.env.CI ? 1 : undefined,
   /* Blob reports from each CI shard are merged into a single HTML report */
   reporter: process.env.CI ? 'blob' : 'html',
   use: {

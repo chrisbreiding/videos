@@ -22,12 +22,16 @@ const test = base.extend<{ autoCoverage: void }>({
       let coverage: unknown
       try {
         coverage = await page.evaluate(() => window.__coverage__)
-      } catch {
+      } catch (error) {
         // Page may already be closed (e.g. navigation/crash); nothing to collect.
+        console.warn(`[autoCoverage] page.evaluate failed: ${(error as Error).message}`)
         return
       }
 
-      if (!coverage) return
+      if (!coverage) {
+        console.warn(`[autoCoverage] no window.__coverage__ found on page for ${page.url()}`)
+        return
+      }
 
       fs.mkdirSync(NYC_OUTPUT_DIR, { recursive: true })
       const file = path.join(NYC_OUTPUT_DIR, `${crypto.randomUUID()}.json`)
