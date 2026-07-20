@@ -33,10 +33,6 @@ jobs:
           rm -rf .nyc_output
           COVERAGE=1 npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - name: Debug coverage output
-        if: always()
-        run: ls -la .nyc_output || echo ".nyc_output does not exist"
-
       - name: Upload blob report
         if: always()
         uses: actions/upload-artifact@v4
@@ -54,6 +50,7 @@ jobs:
           path: .nyc_output/
           retention-days: 1
           if-no-files-found: error
+          include-hidden-files: true
 
   report:
     needs: test
